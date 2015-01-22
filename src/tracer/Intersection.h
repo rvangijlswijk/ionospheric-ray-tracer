@@ -9,28 +9,23 @@
 
 #include "Ray.h"
 #include "../math/Vector2f.h"
+#include "../scene/Geometry.h"
 
 namespace raytracer {
 namespace tracer {
 
-using namespace math;
+	using namespace math;
+	using namespace scene;
 
-class Intersection {
+	class Intersection {
 
-	public:
-		Intersection();
+		public:
+			Intersection();
+			Ray r;
+			Geometry::object_type o;
+			Vector2f pos;
 
-		enum object_type {
-			ionosphere,
-			terrain,
-			none
-		};
-
-		Ray r;
-		object_type o;
-		Vector2f pos;
-
-};
+	};
 
 } /* namespace tracer */
 } /* namespace raytracer */

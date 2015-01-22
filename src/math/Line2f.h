@@ -16,10 +16,11 @@ class Line2f {
 
 	public:
 		Line2f();
+		Line2f(Vector2f bg, Vector2f e);
 		Vector2f begin;
 		Vector2f end;
 		Vector2f getVector();
-		Vector2f intersect(Line2f &line);
+		Vector2f intersect(Line2f line);
 };
 
 } /* namespace math */

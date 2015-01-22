@@ -11,36 +11,42 @@
 namespace raytracer {
 namespace math {
 
-Line2f::Line2f() {
+	Line2f::Line2f() {
 
-}
+	}
 
-Vector2f Line2f::getVector() {
+	Line2f::Line2f(Vector2f bg, Vector2f e) {
 
-	Vector2f v;
-	v.x = end.x - begin.x;
-	v.y = end.y - begin.y;
+		begin = bg;
+		end = e;
+	}
 
-	return v;
-}
+	Vector2f Line2f::getVector() {
 
-/**
- * Find intersection point of this line with another line
- */
-Vector2f Line2f::intersect(Line2f &line) {
+		Vector2f v;
+		v.x = end.x - begin.x;
+		v.y = end.y - begin.y;
 
-	Vector2f intersection;
-	intersection.x = ((begin.x * end.y - begin.y * end.x) * (line.begin.x - line.end.x)
-		- (begin.x - end.x) * (line.begin.x * line.end.y - line.begin.y * line.end.x))
-		/((begin.x - end.x) * (line.begin.y - line.end.y) - (begin.y - end.y) * (line.begin.x - line.end.x));
+		return v;
+	}
 
-	intersection.y = ((begin.x * end.y - begin.y * end.x) * (line.begin.y - line.end.y)
-			- (begin.y - end.y) * (line.begin.x * line.end.y - line.begin.y * line.end.x))
+	/**
+	 * Find intersection point of this line with another line
+	 */
+	Vector2f Line2f::intersect(Line2f line) {
+
+		Vector2f intersection;
+		intersection.x = ((begin.x * end.y - begin.y * end.x) * (line.begin.x - line.end.x)
+			- (begin.x - end.x) * (line.begin.x * line.end.y - line.begin.y * line.end.x))
 			/((begin.x - end.x) * (line.begin.y - line.end.y) - (begin.y - end.y) * (line.begin.x - line.end.x));
 
+		intersection.y = ((begin.x * end.y - begin.y * end.x) * (line.begin.y - line.end.y)
+				- (begin.y - end.y) * (line.begin.x * line.end.y - line.begin.y * line.end.x))
+				/((begin.x - end.x) * (line.begin.y - line.end.y) - (begin.y - end.y) * (line.begin.x - line.end.x));
 
-	return intersection;
-}
+
+		return intersection;
+	}
 
 } /* namespace math */
 } /* namespace raytracer */

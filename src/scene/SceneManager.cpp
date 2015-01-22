@@ -12,20 +12,13 @@ namespace scene {
 
 	using namespace std;
 
-	// ionosphere
-	Line2f ionosphere;
-	// terrain
-	Line2f terrain;
-
 	SceneManager::SceneManager() {
 
-		// init scene
-		ionosphere.begin = Vector2f(0, 100);
-		ionosphere.end = Vector2f(100, 100);
-		terrain.begin = Vector2f(0, 1);
-		terrain.end = Vector2f(100, 1);
 	}
 
+	/**
+	 * Find which object in the scene intersects with a ray
+	 */
 	Intersection SceneManager::intersect(Ray &r, Line2f &rayLine) {
 
 		Vector2f pos;
@@ -33,28 +26,36 @@ namespace scene {
 		Vector2f rayOrigin;
 		rayOrigin.x = r.o.x;
 		rayOrigin.y = r.o.y;
-		pos = rayLine.intersect(ionosphere);
-		// cout << "intersection:(" << pos.x << "," << pos.y << ")\n";
 
-		// is it within the scene?
-		if (pos.y > 0 && pos.y <= 150 && pos.x > 0 && pos.x < 300 && pos.distance(rayOrigin) > 1) {
-			is.pos = pos;
-			is.o = Intersection::ionosphere;
-			cout << "Hit ionosphere!\n";
-		} else {
-			pos = rayLine.intersect(terrain);
-			cout << "intersection:(" << pos.x << "," << pos.y << ")\n";
+		for(Geometry g : sceneObjects) {
+
+			pos = rayLine.intersect(g.getMesh());
+			// is it within the scene?
 			if (pos.y > 0 && pos.y <= 150 && pos.x > 0 && pos.x < 300 && pos.distance(rayOrigin) > 1) {
+				cout << "intersection:(" << pos.x << "," << pos.y << ")\n";
 				is.pos = pos;
-				is.o = Intersection::terrain;
-				cout << "Hit terrain!\n";
-			} else {
-				is.o = Intersection::none;
-				cout << "Hit none!\n";
+				is.o = g.type;
+				return is;
 			}
 		}
 
 		return is;
+	}
+
+	/**
+	 * Add an object to the scene
+	 */
+	void SceneManager::addToScene(Geometry obj) {
+
+		sceneObjects.push_back(obj);
+	}
+
+	/**
+	 * Return a list of all objects in the scene
+	 */
+	list<Geometry> SceneManager::getScene() {
+
+		return sceneObjects;
 	}
 
 } /* namespace scene */

@@ -12,24 +12,24 @@
 namespace raytracer {
 namespace exporter {
 
-using namespace std;
-using namespace math;
+	using namespace std;
+	using namespace math;
 
-MatlabExporter::MatlabExporter() {
-	// TODO Auto-generated constructor stub
-}
-
-void MatlabExporter::dump(const char *filepath, list<Vector2f> dataset) {
-
-	ofstream data;
-	data.open(filepath);
-	while (!dataset.empty()) {
-		data << dataset.front().x << "," << dataset.front().y << "\n";
-		dataset.pop_front();
+	MatlabExporter::MatlabExporter() {
+		// TODO Auto-generated constructor stub
 	}
-	data.close();
 
-}
+	void MatlabExporter::dump(const char *filepath, list<Vector2f> dataset) {
+
+		ofstream data;
+		data.open(filepath);
+		while (!dataset.empty()) {
+			data << dataset.front().x << "," << dataset.front().y << "\n";
+			dataset.pop_front();
+		}
+		data.close();
+
+	}
 
 } /* namespace exporter */
 } /* namespace raytracer */

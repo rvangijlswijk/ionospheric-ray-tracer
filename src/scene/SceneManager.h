@@ -8,19 +8,28 @@
 #ifndef SCENEMANAGER_H_
 #define SCENEMANAGER_H_
 
+#include <list>
 #include "../math/Line2f.h"
 #include "../tracer/Ray.h"
 #include "../tracer/Intersection.h"
+#include "Geometry.h"
 
 namespace raytracer {
 namespace scene {
 
+	using namespace std;
 	using namespace tracer;
 
 	class SceneManager {
+
 		public:
 			SceneManager();
 			Intersection intersect(Ray &r, Line2f &rayLine);
+			void addToScene(Geometry obj);
+			list<Geometry> getScene();
+
+		private:
+			list<Geometry> sceneObjects;
 	};
 
 } /* namespace scene */

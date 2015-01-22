@@ -9,6 +9,8 @@
 #include "Application.h"
 #include "../tracer/Ray.h"
 #include "../exporter/MatlabExporter.h"
+#include "../scene/Ionosphere.h"
+#include "../scene/Terrain.h"
 
 namespace raytracer {
 namespace core {
@@ -19,8 +21,9 @@ namespace core {
 
 	list<Vector2f> rayPath;
 
-	Application::Application() {
+	void Application::init() {
 
+		createScene();
 		start();
 		run();
 	}
@@ -50,12 +53,29 @@ namespace core {
 		isRunning = false;
 	}
 
+	/**
+	 * Add geometries to the scenemanager
+	 */
+	void Application::createScene() {
+
+		Ionosphere io = Ionosphere(Vector2f(0, 100), Vector2f(150, 100));
+		Terrain tr = Terrain(Vector2f(0, 1), Vector2f(150, 1));
+
+		scm.addToScene(io);
+		scm.addToScene(tr);
+	}
+
+	SceneManager Application::getSceneManager() {
+
+		return scm;
+	}
+
 } /* namespace core */
 } /* namespace raytracer */
 
 
 int main() {
 
-	raytracer::core::Application app;
+	raytracer::core::Application::getInstance().init();
 
 }

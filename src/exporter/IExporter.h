@@ -13,17 +13,17 @@
 namespace raytracer {
 namespace exporter {
 
-using namespace std;
-using namespace math;
+	using namespace std;
+	using namespace math;
 
-class IExporter {
+	class IExporter {
 
-	public:
-		IExporter() {}
-		virtual ~IExporter() {}
-		virtual void dump(const char *filepath, list<Vector2f> dataset) = 0;
+		public:
+			IExporter() {}
+			virtual ~IExporter() {}
+			virtual void dump(const char *filepath, list<Vector2f> dataset) = 0;
 
-};
+	};
 
 }
 }

@@ -8,19 +8,32 @@
 #define GEOMETRY_H_
 
 #include "../tracer/Ray.h"
+#include "../math/Line2f.h"
+#include "../math/Vector2f.h"
 
 namespace raytracer {
 namespace scene {
 
-using namespace tracer;
+	using namespace tracer;
 
-class Geometry {
+	class Geometry {
 
-	public:
-		Geometry();
-		void refract(Ray &r);
-		void attenuate(Ray &r);
-};
+		public:
+			Geometry();
+			Geometry(Line2f mesh);
+			Geometry(Vector2f begin, Vector2f end);
+			Ray interact(Ray &r);
+			Line2f getMesh();
+			enum object_type {
+				ionosphere,
+				terrain,
+				none
+			};
+			object_type type;
+
+		protected:
+			Line2f mesh2d;
+	};
 
 } /* namespace scene */
 } /* namespace raytracer */
