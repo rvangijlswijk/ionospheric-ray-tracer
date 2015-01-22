@@ -8,7 +8,7 @@
 #include <list>
 #include "Application.h"
 #include "../tracer/Ray.h"
-#include "../exporter/MatlabExporter.h"
+#include "../exporter/CsvExporter.h"
 #include "../scene/Ionosphere.h"
 #include "../scene/Terrain.h"
 
@@ -40,12 +40,14 @@ namespace core {
 		r.o = Vector2f(0,0);
 		r.d = Vector2f(1,1.94);
 
-		r.trace(rayPath);
-
-		MatlabExporter me;
-		me.dump("data.dat", rayPath);
+		while (r.trace(rayPath) != 0) {
+			// continue tracking this ray
+		}
 
 		stop();
+
+		CsvExporter ce;
+		ce.dump("Debug/data.csv", rayPath);
 	}
 
 	void Application::stop() {

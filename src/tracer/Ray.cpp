@@ -26,7 +26,7 @@ namespace tracer {
 	 * Trace a ray recursively using the whitted-style raytracing algorithm.
 	 * Raytracing stops once a ray hits the ground
 	 */
-	void Ray::trace(list<Vector2f> &path) {
+	int Ray::trace(list<Vector2f> &path) {
 
 		//cout << "Tracing ray " << o.x << "," << o.y << " (" << d.x << "," << d.y << ")" << "\n";
 
@@ -51,10 +51,12 @@ namespace tracer {
 			r2.o = hit.pos;
 			r2.d.x = d.x;
 			r2.d.y = -d.y;
-			r2.trace(path);
+			return r2.trace(path);
 		} else if (hit.o == Geometry::terrain) {
-			// stop?
+			return 0;
 		}
+
+		return 1;
 	}
 
 } /* namespace tracer */

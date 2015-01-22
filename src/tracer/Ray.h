@@ -20,7 +20,7 @@ namespace tracer {
 
 		public:
 			Ray();
-			void trace(list<Vector2f> &path);
+			int trace(list<Vector2f> &path);
 			Vector2f o;	// origin
 			Vector2f d;	// direction
 	};
