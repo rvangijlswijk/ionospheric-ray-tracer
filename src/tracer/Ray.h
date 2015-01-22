@@ -23,6 +23,14 @@ namespace tracer {
 			int trace(list<Vector2f> &path);
 			Vector2f o;	// origin
 			Vector2f d;	// direction
+			float frequency;
+			enum wave_behavior {
+				reflection,
+				refraction,
+				transmission,
+				absorption,
+				none
+			};
 	};
 
 } /* namespace tracer */

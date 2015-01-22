@@ -5,6 +5,8 @@
 //============================================================================
 
 #include <iostream>
+#include <typeinfo>
+#include <string>
 #include "SceneManager.h"
 
 namespace raytracer {
@@ -35,6 +37,7 @@ namespace scene {
 				cout << "intersection:(" << pos.x << "," << pos.y << ")\n";
 				is.pos = pos;
 				is.o = g.type;
+				is.g = g;
 				return is;
 			}
 		}

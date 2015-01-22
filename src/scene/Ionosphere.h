@@ -21,7 +21,10 @@ namespace scene {
 			Ionosphere();
 			Ionosphere(Line2f mesh);
 			Ionosphere(Vector2f begin, Vector2f end);
-			Ray interact(Ray &r);
+			Ray interact(Ray &r, Vector2f &hitpos);
+
+		private:
+			float plasmaFrequency;
 	};
 
 } /* namespace scene */

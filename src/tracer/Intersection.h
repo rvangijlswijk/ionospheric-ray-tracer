@@ -23,6 +23,7 @@ namespace tracer {
 			Intersection();
 			Ray r;
 			Geometry::object_type o;
+			Geometry g;
 			Vector2f pos;
 
 	};

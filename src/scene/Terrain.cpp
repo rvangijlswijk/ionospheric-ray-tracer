@@ -25,7 +25,7 @@ namespace scene {
 		type = Geometry::terrain;
 	}
 
-	Ray Terrain::interact(Ray &r) {
+	Ray Terrain::interact(Ray &r, Vector2f &hitpos) {
 
 		Ray r2;
 		return r2;
