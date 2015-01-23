@@ -11,11 +11,13 @@
 #include <iostream>
 #include "Ionosphere.h"
 #include "../math/Constants.h"
+#include "../exporter/Data.h"
 
 namespace raytracer {
 namespace scene {
 
 	using namespace std;
+	using namespace exporter;
 
 	Ionosphere::Ionosphere() {
 
@@ -39,7 +41,8 @@ namespace scene {
 
 		Ray r2;
 		r2.o = hitpos;
-		float complexRefractiveIndex = (1 - pow(getPlasmaFrequency(r), 2) / pow(r.frequency, 2));
+		float rayAngularFrequency = 2 * Constants::PI * r.frequency;
+		float complexRefractiveIndex = (1 - pow(getPlasmaFrequency(r), 2) / pow(rayAngularFrequency, 2));
 		float errorMargin = 0.1;
 
 		cout << "ionosphere: omega_p=" << getPlasmaFrequency(r) << ", n_e=" << getElectronNumberDensity(r) << ", h=" << getAltitude() << "\n";
@@ -61,6 +64,13 @@ namespace scene {
 			r2.d = r.d;
 			cout << "refract this ray!\n";
 		}
+
+		Data d;
+		d.x = r.o.x;
+		d.y = r.o.y;
+		d.mu_r_sqrt = complexRefractiveIndex;
+		d.n_e = getElectronNumberDensity(r);
+		d.omega_p = getPlasmaFrequency(r);
 
 		return r2;
 	}

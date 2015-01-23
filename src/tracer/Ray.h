@@ -20,7 +20,7 @@ namespace tracer {
 
 		public:
 			Ray();
-			int trace(list<Vector2f> &path);
+			int trace();
 			Vector2f o;	// origin
 			Vector2f d;	// direction
 			float frequency;

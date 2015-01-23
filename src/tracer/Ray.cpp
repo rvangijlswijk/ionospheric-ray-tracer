@@ -11,6 +11,7 @@
 #include "Intersection.h"
 #include "../core/Application.h"
 #include "../scene/Ionosphere.h"
+#include "../exporter/Data.h"
 
 namespace raytracer {
 namespace tracer {
@@ -18,10 +19,11 @@ namespace tracer {
 	using namespace std;
 	using namespace scene;
 	using namespace core;
+	using namespace exporter;
 
 	Ray::Ray() {
 		// TODO Auto-generated constructor stub
-		frequency = 2.5e6f;
+		frequency = 5.0e6;
 		behaviour = Ray::none;
 	}
 
@@ -29,7 +31,7 @@ namespace tracer {
 	 * Trace a ray recursively using the whitted-style raytracing algorithm.
 	 * Raytracing stops once a ray hits the ground
 	 */
-	int Ray::trace(list<Vector2f> &path) {
+	int Ray::trace() {
 
 		// extrapolate a line from the ray start and its direction
 		Line2f rayLine;
@@ -44,11 +46,14 @@ namespace tracer {
 
 		// find intersection
 		Intersection hit = Application::getInstance().getSceneManager().intersect(*this, rayLine);
-		path.push_back(o);
 
 		Ray r2;
 
 		cout << "rayline: (" << rayLine.end.x << "," << rayLine.end.y << ") ";
+
+		if (rayLine.begin.y > 150000) {
+			return 0;
+		}
 
 		// determine ray behaviour
 		// intersection with an ionospheric layer
@@ -59,7 +64,7 @@ namespace tracer {
 			if (r2.behaviour == Ray::no_propagation) {
 				return 0;
 			} else {
-				return r2.trace(path);
+				return r2.trace();
 			}
 		} else if (hit.g.type == Geometry::terrain) {
 			cout << "result: terrain\n";
@@ -68,7 +73,11 @@ namespace tracer {
 			cout << "result: none\n";
 			r2.o = rayLine.end;
 			r2.d = d;
-			return r2.trace(path);
+			Data dataset;
+			dataset.x = o.x;
+			dataset.y = o.y;
+			Application::getInstance().dataSet.push_back(dataset);
+			return r2.trace();
 		}
 
 		return 1;
