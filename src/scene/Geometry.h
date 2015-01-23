@@ -25,9 +25,9 @@ namespace scene {
 			Ray interact(Ray &r);
 			Line2f getMesh();
 			enum object_type {
-				ionosphere,
-				terrain,
-				none
+				none = 0,
+				ionosphere = 1,
+				terrain = 2
 			};
 			object_type type;
 

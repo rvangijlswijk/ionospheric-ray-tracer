@@ -9,6 +9,7 @@
 #include "Application.h"
 #include "../tracer/Ray.h"
 #include "../exporter/CsvExporter.h"
+#include "../exporter/MatlabExporter.h"
 #include "../scene/Ionosphere.h"
 #include "../scene/Terrain.h"
 
@@ -37,17 +38,17 @@ namespace core {
 
 		// trace a ray
 		Ray r;
-		r.o = Vector2f(0,0);
-		r.d = Vector2f(1,1.94);
+		r.o = Vector2f(1,1);
+		r.d = Vector2f(1,1.7320);
 
-		while (r.trace(rayPath) != 0) {
-			// continue tracking this ray
-		}
+		r.trace(rayPath);
 
 		stop();
 
-		CsvExporter ce;
-		ce.dump("Debug/data.csv", rayPath);
+		//CsvExporter ce;
+		//ce.dump("Debug/data.csv", rayPath);
+		MatlabExporter me;
+		me.dump("Debug/data.dat", rayPath);
 	}
 
 	void Application::stop() {
@@ -60,10 +61,12 @@ namespace core {
 	 */
 	void Application::createScene() {
 
-		Ionosphere io = Ionosphere(Vector2f(0, 100), Vector2f(150, 100));
-		Terrain tr = Terrain(Vector2f(0, 1), Vector2f(150, 1));
+		Terrain tr = Terrain(Vector2f(0, 1), Vector2f(150000, 1));
 
-		scm.addToScene(io);
+		for (int h=90000; h<140000; h+= 1000) {
+			scm.addToScene(Ionosphere(Vector2f(0, h), Vector2f(150000, h)));
+		}
+
 		scm.addToScene(tr);
 	}
 

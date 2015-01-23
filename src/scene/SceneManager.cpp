@@ -8,6 +8,7 @@
 #include <typeinfo>
 #include <string>
 #include "SceneManager.h"
+#include "Geometry.h"
 
 namespace raytracer {
 namespace scene {
@@ -23,26 +24,40 @@ namespace scene {
 	 */
 	Intersection SceneManager::intersect(Ray &r, Line2f &rayLine) {
 
-		Vector2f pos;
-		Intersection is;
-		Vector2f rayOrigin;
+		Vector2f pos,
+				 rayOrigin;
+		Intersection hit;
+		hit.g.type = Geometry::none;
 		rayOrigin.x = r.o.x;
 		rayOrigin.y = r.o.y;
 
 		for(Geometry g : sceneObjects) {
 
 			pos = rayLine.intersect(g.getMesh());
-			// is it within the scene?
-			if (pos.y > 0 && pos.y <= 150 && pos.x > 0 && pos.x < 300 && pos.distance(rayOrigin) > 1) {
+			float smallestY = rayLine.begin.y;
+			float biggestY = rayLine.end.y;
+			if (rayLine.end.y < rayLine.begin.y) {
+				smallestY = rayLine.end.y;
+				biggestY = rayLine.begin.y;
+			}
+			float smallestX = rayLine.begin.x;
+			float biggestX = rayLine.end.x;
+			if (rayLine.end.x < rayLine.begin.x) {
+				smallestX = rayLine.end.x;
+				biggestX = rayLine.begin.x;
+			}
+
+			// is it within the scene and within the limits of the ray itself?
+			if (smallestY < pos.y && pos.y < biggestY && smallestX < pos.x && pos.x < biggestX) {
 				cout << "intersection:(" << pos.x << "," << pos.y << ")\n";
-				is.pos = pos;
-				is.o = g.type;
-				is.g = g;
-				return is;
+				hit.pos = pos;
+				hit.o = g.type;
+				hit.g = g;
+				return hit;
 			}
 		}
 
-		return is;
+		return hit;
 	}
 
 	/**

@@ -22,9 +22,13 @@ namespace scene {
 			Ionosphere(Line2f mesh);
 			Ionosphere(Vector2f begin, Vector2f end);
 			Ray interact(Ray &r, Vector2f &hitpos);
+			float getPlasmaFrequency(Ray &r);
+			float getElectronNumberDensity(Ray &r);
+			static constexpr float peakProductionAltitude = 125000.0;	// m
+			static constexpr float maximumProductionRate = 2.0e11;		// m^-3
 
 		private:
-			float plasmaFrequency;
+			float getAltitude();
 	};
 
 } /* namespace scene */

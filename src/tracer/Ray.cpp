@@ -22,6 +22,7 @@ namespace tracer {
 	Ray::Ray() {
 		// TODO Auto-generated constructor stub
 		frequency = 2.5e6f;
+		behaviour = Ray::none;
 	}
 
 	/**
@@ -30,32 +31,44 @@ namespace tracer {
 	 */
 	int Ray::trace(list<Vector2f> &path) {
 
-		// cout << "Tracing ray " << o.x << "," << o.y << " (" << d.x << "," << d.y << ")" << "\n";
-
 		// extrapolate a line from the ray start and its direction
 		Line2f rayLine;
 		Vector2f rayEnd;
 		float angle = atan2(d.y, d.x);
 		rayLine.begin = o;
-		rayEnd.x = o.x + 150.0 * cos(angle);
-		rayEnd.y = o.y + 150.0 * sin(angle);
+		rayEnd.x = o.x + Ray::magnitude * cos(angle);
+		rayEnd.y = o.y + Ray::magnitude * sin(angle);
 		rayLine.end = rayEnd;
 
-		// cout << "rayline: (" << rayLine.end.x << "," << rayLine.end.y << ")\n";
+		cout << "Tracing ray " << o.x << "," << o.y << " (" << d.x << "," << d.y << ") theta=" << (angle*180.0f/3.1415) << "\n";
 
 		// find intersection
 		Intersection hit = Application::getInstance().getSceneManager().intersect(*this, rayLine);
-		path.push_back(hit.pos);
+		path.push_back(o);
 
-		Ray r2;// = hit.g.interact(*this);
+		Ray r2;
+
+		cout << "rayline: (" << rayLine.end.x << "," << rayLine.end.y << ") ";
 
 		// determine ray behaviour
+		// intersection with an ionospheric layer
 		if (hit.g.type == Geometry::ionosphere) {
+			cout << "result: ionosphere\n";
 			Ionosphere& gd = (Ionosphere&) hit.g;
 			r2 = gd.interact(*this, hit.pos);
-			return r2.trace(path);
+			if (r2.behaviour == Ray::no_propagation) {
+				return 0;
+			} else {
+				return r2.trace(path);
+			}
 		} else if (hit.g.type == Geometry::terrain) {
+			cout << "result: terrain\n";
 			return 0;
+		} else if (hit.g.type == Geometry::none) {
+			cout << "result: none\n";
+			r2.o = rayLine.end;
+			r2.d = d;
+			return r2.trace(path);
 		}
 
 		return 1;

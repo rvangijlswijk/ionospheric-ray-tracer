@@ -24,13 +24,16 @@ namespace tracer {
 			Vector2f o;	// origin
 			Vector2f d;	// direction
 			float frequency;
-			enum wave_behavior {
+			enum waveBehaviour {
 				reflection,
 				refraction,
 				transmission,
 				absorption,
+				no_propagation,
 				none
 			};
+			waveBehaviour behaviour;
+			static constexpr float magnitude = 1000.0f;
 	};
 
 } /* namespace tracer */
