@@ -1,5 +1,5 @@
-/*
- * DatExporter.cpp
+/**
+ * MatlabExporter.cpp
  *
  *  Created on: 22 Jan 2015
  *      Author: rian
@@ -13,18 +13,21 @@ namespace raytracer {
 namespace exporter {
 
 	using namespace std;
-	using namespace math;
 
 	MatlabExporter::MatlabExporter() {
 		// TODO Auto-generated constructor stub
 	}
 
-	void MatlabExporter::dump(const char *filepath, list<Vector2f> dataset) {
+	void MatlabExporter::dump(const char *filepath, list<Data> dataset) {
 
 		ofstream data;
 		data.open(filepath);
 		while (!dataset.empty()) {
-			data << dataset.front().x << "," << dataset.front().y << "\n";
+			data << dataset.front().x << ","
+				<< dataset.front().y << ","
+				<< dataset.front().omega_p << ","
+				<< dataset.front().n_e << ","
+				<< dataset.front().mu_r_sqrt << "\n";
 			dataset.pop_front();
 		}
 		data.close();

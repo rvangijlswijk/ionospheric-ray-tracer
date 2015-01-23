@@ -8,12 +8,15 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
+#include <list>
+#include "../exporter/Data.h"
 #include "../scene/SceneManager.h"
 
 namespace raytracer {
 namespace core {
 
 	using namespace scene;
+	using namespace exporter;
 
 	class Application {
 
@@ -27,6 +30,7 @@ namespace core {
 			void run();
 			void stop();
 			SceneManager getSceneManager();
+			list<Data> dataSet;
 
 		private:
 			Application() {

@@ -5,7 +5,6 @@
 //============================================================================
 
 #include <iostream>
-#include <list>
 #include "Application.h"
 #include "../tracer/Ray.h"
 #include "../exporter/CsvExporter.h"
@@ -19,8 +18,6 @@ namespace core {
 	using namespace std;
 	using namespace tracer;
 	using namespace exporter;
-
-	list<Vector2f> rayPath;
 
 	void Application::init() {
 
@@ -41,14 +38,14 @@ namespace core {
 		r.o = Vector2f(1,1);
 		r.d = Vector2f(1,1.7320);
 
-		r.trace(rayPath);
+		r.trace();
 
 		stop();
 
 		//CsvExporter ce;
 		//ce.dump("Debug/data.csv", rayPath);
 		MatlabExporter me;
-		me.dump("Debug/data.dat", rayPath);
+		me.dump("Debug/data.dat", dataSet);
 	}
 
 	void Application::stop() {

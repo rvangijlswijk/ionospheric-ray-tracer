@@ -12,14 +12,13 @@
 namespace raytracer {
 namespace exporter {
 
-using namespace math;
 
 class CsvExporter : public IExporter {
 
 	public:
 		CsvExporter();
 		~CsvExporter() {}
-		void dump(const char *filepath, list<Vector2f> dataset);
+		void dump(const char *filepath, list<Data> dataset);
 
 };
 

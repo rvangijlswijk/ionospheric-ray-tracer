@@ -12,14 +12,12 @@
 namespace raytracer {
 namespace exporter {
 
-using namespace math;
-
 class MatlabExporter : public IExporter {
 
 	public:
 		MatlabExporter();
 		~MatlabExporter() {}
-		void dump(const char *filepath, list<Vector2f> dataset);
+		void dump(const char *filepath, list<Data> dataset);
 
 };
 

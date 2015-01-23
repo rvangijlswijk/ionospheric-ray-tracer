@@ -8,20 +8,19 @@
 #define IEXPORTER_H_
 
 #include <list>
-#include "../math/Vector2f.h"
+#include "Data.h"
 
 namespace raytracer {
 namespace exporter {
 
 	using namespace std;
-	using namespace math;
 
 	class IExporter {
 
 		public:
 			IExporter() {}
 			virtual ~IExporter() {}
-			virtual void dump(const char *filepath, list<Vector2f> dataset) = 0;
+			virtual void dump(const char *filepath, list<Data> dataset) = 0;
 
 	};
 
