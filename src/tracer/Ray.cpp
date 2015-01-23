@@ -23,7 +23,7 @@ namespace tracer {
 
 	Ray::Ray() {
 		// TODO Auto-generated constructor stub
-		frequency = 5.0e6;
+		frequency = 4.0e6;
 		behaviour = Ray::none;
 	}
 

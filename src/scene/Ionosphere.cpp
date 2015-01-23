@@ -12,12 +12,14 @@
 #include "Ionosphere.h"
 #include "../math/Constants.h"
 #include "../exporter/Data.h"
+#include "../core/Application.h"
 
 namespace raytracer {
 namespace scene {
 
 	using namespace std;
 	using namespace exporter;
+	using namespace core;
 
 	Ionosphere::Ionosphere() {
 
@@ -43,7 +45,7 @@ namespace scene {
 		r2.o = hitpos;
 		float rayAngularFrequency = 2 * Constants::PI * r.frequency;
 		float complexRefractiveIndex = (1 - pow(getPlasmaFrequency(r), 2) / pow(rayAngularFrequency, 2));
-		float errorMargin = 0.1;
+		float errorMargin = 0.05;
 
 		cout << "ionosphere: omega_p=" << getPlasmaFrequency(r) << ", n_e=" << getElectronNumberDensity(r) << ", h=" << getAltitude() << "\n";
 		cout << "mu_r_sqrt: " << complexRefractiveIndex << "\n";
@@ -71,6 +73,7 @@ namespace scene {
 		d.mu_r_sqrt = complexRefractiveIndex;
 		d.n_e = getElectronNumberDensity(r);
 		d.omega_p = getPlasmaFrequency(r);
+		Application::getInstance().dataSet.push_back(d);
 
 		return r2;
 	}
@@ -94,7 +97,7 @@ namespace scene {
 
 		cout << "SZA=" << (SZA * 180 / Constants::PI) << "\n";
 
-		return Ionosphere::maximumProductionRate * exp(0.5f * (1.0f - normalizedHeight - exp(-normalizedHeight) * 1.0f/cos(SZA) ));
+		return Ionosphere::maximumProductionRate * exp(0.5f * (1.0f - normalizedHeight - exp(-normalizedHeight* 1.0f/cos(SZA)) ));
 	}
 
 	/**

@@ -33,7 +33,7 @@ namespace tracer {
 				none
 			};
 			waveBehaviour behaviour;
-			static constexpr float magnitude = 1000.0f;
+			static constexpr float magnitude = 2000.0f;
 	};
 
 } /* namespace tracer */
