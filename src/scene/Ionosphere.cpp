@@ -100,6 +100,11 @@ namespace scene {
 		return Ionosphere::maximumProductionRate * exp(0.5f * (1.0f - normalizedHeight - exp(-normalizedHeight* 1.0f/cos(SZA)) ));
 	}
 
+	float Ionosphere::getRefractiveIndex(Ray &r) {
+
+		return 1;
+	}
+
 	/**
 	 * Interpolate the altitude of this ionospheric layer. Throw an exception
 	 * if the difference between the y-components of the edges of the mesh is

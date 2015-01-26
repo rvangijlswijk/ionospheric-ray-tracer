@@ -60,7 +60,7 @@ namespace core {
 
 		Terrain tr = Terrain(Vector2f(0, 1), Vector2f(150000, 1));
 
-		for (int h=90000; h<140000; h+= 1000) {
+		for (int h=80000; h<140000; h+= 1000) {
 			scm.addToScene(Ionosphere(Vector2f(0, h), Vector2f(150000, h)));
 		}
 
@@ -74,10 +74,3 @@ namespace core {
 
 } /* namespace core */
 } /* namespace raytracer */
-
-
-int main() {
-
-	raytracer::core::Application::getInstance().init();
-
-}

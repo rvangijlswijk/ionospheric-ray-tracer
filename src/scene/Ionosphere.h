@@ -24,6 +24,7 @@ namespace scene {
 			Ray interact(Ray &r, Vector2f &hitpos);
 			float getPlasmaFrequency(Ray &r);
 			float getElectronNumberDensity(Ray &r);
+			float getRefractiveIndex(Ray &r);
 			static constexpr float peakProductionAltitude = 125000.0;	// m
 			static constexpr float maximumProductionRate = 2.0e11;		// m^-3
 
