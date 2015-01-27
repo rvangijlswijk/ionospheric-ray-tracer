@@ -21,10 +21,14 @@ namespace scene {
 			Ionosphere();
 			Ionosphere(Line2f mesh);
 			Ionosphere(Vector2f begin, Vector2f end);
+			enum refractiveMethod {
+				SIMPLE,
+				AHDR
+			};
 			Ray interact(Ray &r, Vector2f &hitpos);
 			float getPlasmaFrequency(Ray &r);
 			float getElectronNumberDensity(Ray &r);
-			float getRefractiveIndex(Ray &r);
+			float getRefractiveIndex(Ray &r, refractiveMethod m);
 			static constexpr float peakProductionAltitude = 125000.0;	// m
 			static constexpr float maximumProductionRate = 2.0e11;		// m^-3
 

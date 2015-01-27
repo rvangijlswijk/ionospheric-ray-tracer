@@ -100,9 +100,27 @@ namespace scene {
 		return Ionosphere::maximumProductionRate * exp(0.5f * (1.0f - normalizedHeight - exp(-normalizedHeight* 1.0f/cos(SZA)) ));
 	}
 
-	float Ionosphere::getRefractiveIndex(Ray &r) {
+	/**
+	 * Compute the plasma refractive index according to the Appleton-Hartree
+	 * dispersion relation
+	 */
+	float Ionosphere::getRefractiveIndex(Ray &r, refractiveMethod m) {
 
-		return 1;
+		float n = 1.0;
+
+		if (m == SIMPLE) {
+
+			n = sqrt(1 - getPlasmaFrequency(r) / (2 * Constants::PI * r.frequency));
+		} else if (m == AHDR) {
+
+			float SZA = Constants::PI/2.0f - abs(atan2(r.d.y, r.d.x));
+			float X = 1;
+			float Y = 0;
+
+			n = 1 - X / (1);
+		}
+
+		return n;
 	}
 
 	/**

@@ -27,5 +27,10 @@ namespace scene {
 		return mesh2d;
 	}
 
+	void Geometry::setMesh(Line2f mesh) {
+
+		mesh2d = mesh;
+	}
+
 }
 }

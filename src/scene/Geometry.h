@@ -24,6 +24,7 @@ namespace scene {
 			Geometry(Vector2f begin, Vector2f end);
 			Ray interact(Ray &r);
 			Line2f getMesh();
+			void setMesh(Line2f mesh);
 			enum object_type {
 				none = 0,
 				ionosphere = 1,
