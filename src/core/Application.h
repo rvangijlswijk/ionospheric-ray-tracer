@@ -31,10 +31,12 @@ namespace core {
 			void stop();
 			SceneManager getSceneManager();
 			list<Data> dataSet;
+			float originalAngle;
 
 		private:
 			Application() {
 				isRunning = false;
+				originalAngle = 0;
 			}
 			Application(Application const&);      // Don't Implement.
 			void operator = (Application const&); // Don't implement

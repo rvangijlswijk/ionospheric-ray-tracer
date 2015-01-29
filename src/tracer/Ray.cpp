@@ -12,6 +12,7 @@
 #include "../core/Application.h"
 #include "../scene/Ionosphere.h"
 #include "../exporter/Data.h"
+#include "../math/Constants.h"
 
 namespace raytracer {
 namespace tracer {
@@ -20,10 +21,11 @@ namespace tracer {
 	using namespace scene;
 	using namespace core;
 	using namespace exporter;
+	using namespace math;
 
 	Ray::Ray() {
 		// TODO Auto-generated constructor stub
-		frequency = 4.0e6;
+		frequency = 6e6;
 		behaviour = Ray::none;
 	}
 
@@ -32,6 +34,10 @@ namespace tracer {
 	 * Raytracing stops once a ray hits the ground
 	 */
 	int Ray::trace() {
+
+		if (isnan(o.x) || isnan(o.y)) {
+			return 0;
+		}
 
 		// extrapolate a line from the ray start and its direction
 		Line2f rayLine;
@@ -50,8 +56,9 @@ namespace tracer {
 		Ray r2;
 
 		cout << "rayline: (" << rayLine.end.x << "," << rayLine.end.y << ") ";
+		cout << "previndex: " << previousRefractiveIndex << "\n";
 
-		if (rayLine.begin.y > 150000) {
+		if (rayLine.begin.y > 400000) {
 			return 0;
 		}
 
@@ -73,6 +80,7 @@ namespace tracer {
 			cout << "result: none\n";
 			r2.o = rayLine.end;
 			r2.d = d;
+			r2.previousRefractiveIndex = previousRefractiveIndex;
 			Data dataset;
 			dataset.x = o.x;
 			dataset.y = o.y;
@@ -81,6 +89,26 @@ namespace tracer {
 		}
 
 		return 1;
+	}
+
+	/**
+	 * Return the direction of the ray in radians. The direction is measured
+	 * with respect to zenith, i.e. a direction of 0 rad is pointing toward
+	 * the sun. pi rad is pointing nadir
+	 */
+	float Ray::getSolarZenithAngle() {
+
+		return Constants::PI/2.0 - atan2(d.y, d.x);
+	}
+
+	/**
+	 * Set the direction of the ray in radians
+	 */
+	void Ray::setSolarZenithAngle(float angleRad) {
+
+		float terrainAngle = Constants::PI/2.0 - angleRad;
+		d.x = cos(terrainAngle);
+		d.y = sin(terrainAngle);
 	}
 
 } /* namespace tracer */

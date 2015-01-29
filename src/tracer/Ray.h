@@ -21,9 +21,12 @@ namespace tracer {
 		public:
 			Ray();
 			int trace();
+			float getSolarZenithAngle();
+			void setSolarZenithAngle(float angleRad);
 			Vector2f o;	// origin
 			Vector2f d;	// direction
-			float frequency;
+			float frequency = 0.0;
+			float previousRefractiveIndex = 0.0;
 			enum waveBehaviour {
 				reflection,
 				refraction,

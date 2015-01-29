@@ -43,34 +43,45 @@ namespace scene {
 
 		Ray r2;
 		r2.o = hitpos;
-		float rayAngularFrequency = 2 * Constants::PI * r.frequency;
-		float complexRefractiveIndex = (1 - pow(getPlasmaFrequency(r), 2) / pow(rayAngularFrequency, 2));
-		float errorMargin = 0.05;
+		float errorMargin = 0.01;
+		float refractiveIndex = getRefractiveIndex(r, Ionosphere::KELSO);
 
 		cout << "ionosphere: omega_p=" << getPlasmaFrequency(r) << ", n_e=" << getElectronNumberDensity(r) << ", h=" << getAltitude() << "\n";
-		cout << "mu_r_sqrt: " << complexRefractiveIndex << "\n";
+		cout << "mu_r: " << refractiveIndex << "\n";
 
 		// no propagation
-		if (complexRefractiveIndex <= -errorMargin) {
+		if (refractiveIndex <= -errorMargin) {
 			r2.behaviour = Ray::no_propagation;
 			cout << "no propagation for this ray!\n";
 		// reflection
-		} else if (-errorMargin < complexRefractiveIndex && complexRefractiveIndex < errorMargin) {
+		/*} else if (-errorMargin < refractiveIndex && refractiveIndex < errorMargin) {
 			r2.behaviour = Ray::reflection;
 			r2.d.x = r.d.x;
 			r2.d.y = -r.d.y;
-			cout << "reflect this ray!\n";
+			cout << "reflect this ray!\n";*/
 		// refraction ??
 		} else {
+			cout << "previndex2: " << r.previousRefractiveIndex << "\n";
 			r2.behaviour = Ray::refraction;
-			r2.d = r.d;
-			cout << "refract this ray!\n";
+			if (r.previousRefractiveIndex > 0) {
+				float groundAngle = Constants::PI/2 - atan2(r.d.y, r.d.x);
+				float newAngle = asin((r.previousRefractiveIndex/refractiveIndex * sin(groundAngle)));
+				r2.setSolarZenithAngle(newAngle);
+				cout << "Bend this ray! refraction: theta_i:" << groundAngle * 180 / Constants::PI << ", theta_r:" << newAngle * 180 / Constants::PI << " \n";
+				r2.previousRefractiveIndex = refractiveIndex;
+				// r2.d.x = cos(newAngle);
+				// r2.d.y = sin(newAngle);
+			} else {
+				r2.d = r.d;
+				r2.previousRefractiveIndex = r.previousRefractiveIndex;
+				cout << "Ray goes straight!\n";
+			}
 		}
 
 		Data d;
 		d.x = r.o.x;
 		d.y = r.o.y;
-		d.mu_r_sqrt = complexRefractiveIndex;
+		d.mu_r_sqrt = pow(refractiveIndex, 2);
 		d.n_e = getElectronNumberDensity(r);
 		d.omega_p = getPlasmaFrequency(r);
 		Application::getInstance().dataSet.push_back(d);
@@ -84,7 +95,7 @@ namespace scene {
 	 */
 	float Ionosphere::getPlasmaFrequency(Ray &r) {
 
-		return sqrt(getElectronNumberDensity(r) * pow(Constants::ELEMENTARY_CHARGE, 2) / (Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM));
+		return sqrt(Ionosphere::maximumProductionRate * pow(Constants::ELEMENTARY_CHARGE, 2) / (Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM));
 	}
 
 	/**
@@ -92,12 +103,10 @@ namespace scene {
 	 */
 	float Ionosphere::getElectronNumberDensity(Ray &r) {
 
-		float SZA = Constants::PI/2.0f - abs(atan2(r.d.y, r.d.x));
+		float angle = abs(atan2(r.d.y, r.d.x));
 		float normalizedHeight = (getAltitude() - Ionosphere::peakProductionAltitude) / Constants::NEUTRAL_SCALE_HEIGHT;
 
-		cout << "SZA=" << (SZA * 180 / Constants::PI) << "\n";
-
-		return Ionosphere::maximumProductionRate * exp(0.5f * (1.0f - normalizedHeight - exp(-normalizedHeight* 1.0f/cos(SZA)) ));
+		return Ionosphere::maximumProductionRate * exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(Application::getInstance().originalAngle)) * exp(-normalizedHeight) ));
 	}
 
 	/**
@@ -111,13 +120,13 @@ namespace scene {
 		if (m == SIMPLE) {
 
 			n = sqrt(1 - getPlasmaFrequency(r) / (2 * Constants::PI * r.frequency));
+		} else if (m == KELSO) {
+
+			n = sqrt(1 - getElectronNumberDensity(r) * pow(Constants::ELEMENTARY_CHARGE, 2) /
+								(Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM * pow(2 * Constants::PI * r.frequency,2)));
 		} else if (m == AHDR) {
 
-			float SZA = Constants::PI/2.0f - abs(atan2(r.d.y, r.d.x));
-			float X = 1;
-			float Y = 0;
-
-			n = 1 - X / (1);
+			//n = 1 - X / (1);
 		}
 
 		return n;

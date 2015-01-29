@@ -11,6 +11,7 @@
 #include "../exporter/MatlabExporter.h"
 #include "../scene/Ionosphere.h"
 #include "../scene/Terrain.h"
+#include "../math/Constants.h"
 
 namespace raytracer {
 namespace core {
@@ -18,6 +19,7 @@ namespace core {
 	using namespace std;
 	using namespace tracer;
 	using namespace exporter;
+	using namespace math;
 
 	void Application::init() {
 
@@ -35,8 +37,10 @@ namespace core {
 
 		// trace a ray
 		Ray r;
-		r.o = Vector2f(1,1);
-		r.d = Vector2f(1,1.7320);
+		r.o.y = 2;
+		originalAngle = 60.0 * Constants::PI / 180.0;
+		r.setSolarZenithAngle(originalAngle);
+		r.previousRefractiveIndex = 1.0; //75.0 * Constants::PI / 180.0;
 
 		r.trace();
 
@@ -58,10 +62,10 @@ namespace core {
 	 */
 	void Application::createScene() {
 
-		Terrain tr = Terrain(Vector2f(0, 1), Vector2f(150000, 1));
+		Terrain tr = Terrain(Vector2f(0, 1), Vector2f(3e5, 1));
 
-		for (int h=80000; h<140000; h+= 1000) {
-			scm.addToScene(Ionosphere(Vector2f(0, h), Vector2f(150000, h)));
+		for (int h=100000; h<250000; h+= 100) {
+			scm.addToScene(Ionosphere(Vector2f(0, h), Vector2f(3e5, h)));
 		}
 
 		scm.addToScene(tr);
