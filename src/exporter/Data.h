@@ -15,11 +15,11 @@ namespace exporter {
 
 		public:
 			Data();
-			float x;
-			float y;
-			float omega_p;
-			float n_e;
-			float mu_r_sqrt;
+			float x = 0;
+			float y = 0;
+			float omega_p = 0;
+			float n_e = 0;
+			float mu_r_sqrt = 0;
 	};
 
 } /* namespace exporter */
