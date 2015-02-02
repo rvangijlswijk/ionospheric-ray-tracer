@@ -50,7 +50,7 @@ namespace scene {
 		cout << "mu_r: " << refractiveIndex << ", prev mu_r:" << r.previousRefractiveIndex << "\n";
 
 		float groundAngle = Constants::PI/2 - atan2(r.d.y, r.d.x);
-		if (refractiveIndex - errorMargin < sin(Constants::PI * 60 / 180)/*Constants::PI/2 - groundAngle < errorMargin*/) {
+		if (refractiveIndex - errorMargin < sin(r.originalAngle)/*Constants::PI/2 - groundAngle < errorMargin*/) {
 			r2.behaviour = Ray::reflection;
 			float newAngle = Constants::PI - r.getSolarZenithAngle();
 			r2.setSolarZenithAngle(newAngle);

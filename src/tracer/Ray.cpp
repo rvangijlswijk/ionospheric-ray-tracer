@@ -58,7 +58,7 @@ namespace tracer {
 		cout << "rayline: (" << rayLine.end.x << "," << rayLine.end.y << ") ";
 		cout << "previndex: " << previousRefractiveIndex << "\n";
 
-		if (rayLine.begin.y > 210000) {
+		if (rayLine.begin.y > 200000) {
 			return 0;
 		}
 
