@@ -43,39 +43,36 @@ namespace scene {
 
 		Ray r2;
 		r2.o = hitpos;
-		float errorMargin = 0.01;
+		float errorMargin = 1e-2;
 		float refractiveIndex = getRefractiveIndex(r, Ionosphere::KELSO);
 
 		cout << "ionosphere: omega_p=" << getPlasmaFrequency(r) << ", n_e=" << getElectronNumberDensity(r) << ", h=" << getAltitude() << "\n";
-		cout << "mu_r: " << refractiveIndex << "\n";
+		cout << "mu_r: " << refractiveIndex << ", prev mu_r:" << r.previousRefractiveIndex << "\n";
 
-		// no propagation
-		if (refractiveIndex <= -errorMargin) {
-			r2.behaviour = Ray::no_propagation;
-			cout << "no propagation for this ray!\n";
-		// reflection
-		/*} else if (-errorMargin < refractiveIndex && refractiveIndex < errorMargin) {
+		float groundAngle = Constants::PI/2 - atan2(r.d.y, r.d.x);
+		if (refractiveIndex - errorMargin < sin(Constants::PI * 60 / 180)/*Constants::PI/2 - groundAngle < errorMargin*/) {
 			r2.behaviour = Ray::reflection;
-			r2.d.x = r.d.x;
-			r2.d.y = -r.d.y;
-			cout << "reflect this ray!\n";*/
-		// refraction ??
-		} else {
-			cout << "previndex2: " << r.previousRefractiveIndex << "\n";
+			float newAngle = Constants::PI - r.getSolarZenithAngle();
+			r2.setSolarZenithAngle(newAngle);
+			r2.previousRefractiveIndex = r.previousRefractiveIndex;
+			cout << "Reflect this ray! theta_r:" << newAngle * 180 / Constants::PI << " d.x,d.y:" << r2.d.x << "," << r2.d.y << "\n";
+		} else if (r.previousRefractiveIndex > 0) {
 			r2.behaviour = Ray::refraction;
-			if (r.previousRefractiveIndex > 0) {
-				float groundAngle = Constants::PI/2 - atan2(r.d.y, r.d.x);
-				float newAngle = asin((r.previousRefractiveIndex/refractiveIndex * sin(groundAngle)));
-				r2.setSolarZenithAngle(newAngle);
-				cout << "Bend this ray! refraction: theta_i:" << groundAngle * 180 / Constants::PI << ", theta_r:" << newAngle * 180 / Constants::PI << " \n";
-				r2.previousRefractiveIndex = refractiveIndex;
-				// r2.d.x = cos(newAngle);
-				// r2.d.y = sin(newAngle);
-			} else {
-				r2.d = r.d;
-				r2.previousRefractiveIndex = r.previousRefractiveIndex;
-				cout << "Ray goes straight!\n";
+			float newAngle = asin((r.previousRefractiveIndex/refractiveIndex * sin(groundAngle)));
+			if (r.d.y < 0) {
+				newAngle = Constants::PI - newAngle;
 			}
+			r2.setSolarZenithAngle(newAngle);
+			cout << "Bend this ray! refraction: theta_i:" << groundAngle * 180 / Constants::PI << ", theta_r:" << newAngle * 180 / Constants::PI << " \n";
+			r2.previousRefractiveIndex = refractiveIndex;
+			// r2.d.x = cos(newAngle);
+			// r2.d.y = sin(newAngle);
+
+		} else {
+			r2.behaviour = Ray::refraction;
+			r2.d = r.d;
+			r2.previousRefractiveIndex = r.previousRefractiveIndex;
+			cout << "Ray goes straight!\n";
 		}
 
 		Data d;

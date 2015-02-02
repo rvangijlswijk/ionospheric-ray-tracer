@@ -25,7 +25,7 @@ namespace tracer {
 
 	Ray::Ray() {
 		// TODO Auto-generated constructor stub
-		frequency = 6e6;
+		frequency = 5e6;
 		behaviour = Ray::none;
 	}
 
@@ -58,7 +58,7 @@ namespace tracer {
 		cout << "rayline: (" << rayLine.end.x << "," << rayLine.end.y << ") ";
 		cout << "previndex: " << previousRefractiveIndex << "\n";
 
-		if (rayLine.begin.y > 400000) {
+		if (rayLine.begin.y > 210000) {
 			return 0;
 		}
 

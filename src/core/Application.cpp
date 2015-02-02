@@ -64,7 +64,7 @@ namespace core {
 
 		Terrain tr = Terrain(Vector2f(0, 1), Vector2f(3e5, 1));
 
-		for (int h=100000; h<250000; h+= 100) {
+		for (int h=80000; h<250000; h+= 10) {
 			scm.addToScene(Ionosphere(Vector2f(0, h), Vector2f(3e5, h)));
 		}
 
