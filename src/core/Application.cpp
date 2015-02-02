@@ -36,15 +36,22 @@ namespace core {
 	void Application::run() {
 
 		// trace a ray
-		Ray r;
-		r.o.y = 2;
-		r.originalAngle = 60.0 * Constants::PI / 180.0;
-		r.setSolarZenithAngle(r.originalAngle);
-		r.previousRefractiveIndex = 1.0; //75.0 * Constants::PI / 180.0;
+		for (float theta = 15; theta < 90; theta += 15) {
+			Ray r;
+			r.o.y = 2;
+			r.originalAngle = theta * Constants::PI / 180.0;
+			r.setSolarZenithAngle(r.originalAngle);
+			r.previousRefractiveIndex = 1.0; //75.0 * Constants::PI / 180.0;
 
-		rays.push_back(r);
+			rays.push_back(r);
+		}
 
-		r.trace();
+		while (rays.size() > 0) {
+			Ray r = rays.front();
+			cout << "Simulating for theta:" << r.originalAngle << "\n";
+			r.trace();
+			rays.pop_front();
+		}
 
 		stop();
 

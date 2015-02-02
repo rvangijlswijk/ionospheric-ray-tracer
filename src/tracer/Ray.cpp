@@ -81,9 +81,11 @@ namespace tracer {
 			r2.o = rayLine.end;
 			r2.d = d;
 			r2.previousRefractiveIndex = previousRefractiveIndex;
+			r2.originalAngle = originalAngle;
 			Data dataset;
 			dataset.x = o.x;
 			dataset.y = o.y;
+			dataset.theta_0 = originalAngle;
 			Application::getInstance().dataSet.push_back(dataset);
 			return r2.trace();
 		}

@@ -74,6 +74,7 @@ namespace scene {
 			r2.previousRefractiveIndex = r.previousRefractiveIndex;
 			cout << "Ray goes straight!\n";
 		}
+		r2.originalAngle = r.originalAngle;
 
 		Data d;
 		d.x = r.o.x;
@@ -81,6 +82,7 @@ namespace scene {
 		d.mu_r_sqrt = pow(refractiveIndex, 2);
 		d.n_e = getElectronNumberDensity(r);
 		d.omega_p = getPlasmaFrequency(r);
+		d.theta_0 = r.originalAngle;
 		Application::getInstance().dataSet.push_back(d);
 
 		return r2;

@@ -27,7 +27,8 @@ namespace exporter {
 				<< dataset.front().y << ","
 				<< dataset.front().omega_p << ","
 				<< dataset.front().n_e << ","
-				<< dataset.front().mu_r_sqrt << "\n";
+				<< dataset.front().mu_r_sqrt << ","
+				<< dataset.front().theta_0 << "\n";
 			dataset.pop_front();
 		}
 		data.close();
