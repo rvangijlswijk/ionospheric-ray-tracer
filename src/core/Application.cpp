@@ -12,7 +12,8 @@
 #include "../scene/Ionosphere.h"
 #include "../scene/Terrain.h"
 #include "../math/Constants.h"
-#include "Timer.cpp";
+#include "../threading/Worker.h"
+#include "Timer.cpp"
 
 namespace raytracer {
 namespace core {
@@ -21,6 +22,9 @@ namespace core {
 	using namespace tracer;
 	using namespace exporter;
 	using namespace math;
+	using namespace threading;
+
+	boost::thread_group threadGroup;
 
 	void Application::init() {
 
@@ -52,9 +56,12 @@ namespace core {
 		while (rays.size() > 0) {
 			Ray r = rays.front();
 			cout << "Simulating for theta:" << r.originalAngle << "\n";
-			r.trace();
+			Worker w;
+			threadGroup.add_thread(w.start(r));
 			rays.pop_front();
 		}
+
+		threadGroup.join_all();
 
 		stop();
 

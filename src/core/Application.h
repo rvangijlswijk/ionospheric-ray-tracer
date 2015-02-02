@@ -9,6 +9,7 @@
 #define APPLICATION_H_
 
 #include <list>
+#include <boost/thread.hpp>
 #include "../exporter/Data.h"
 #include "../scene/SceneManager.h"
 #include "../tracer/Ray.h"

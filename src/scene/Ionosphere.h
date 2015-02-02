@@ -1,9 +1,9 @@
-/*
- * Ionosphere.h
- *
- *  Created on: 22 Jan 2015
- *      Author: rian
- */
+//============================================================================
+// Name        : Ionosphere.h
+// Author      : Rian van Gijlswijk
+// Description : Perform interaction between a ray and an ionospheric layer
+//				 based on the ionospheric properties
+//============================================================================
 
 #ifndef IONOSPHERE_H_
 #define IONOSPHERE_H_
