@@ -103,7 +103,7 @@ namespace scene {
 		float angle = abs(atan2(r.d.y, r.d.x));
 		float normalizedHeight = (getAltitude() - Ionosphere::peakProductionAltitude) / Constants::NEUTRAL_SCALE_HEIGHT;
 
-		return Ionosphere::maximumProductionRate * exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(Application::getInstance().originalAngle)) * exp(-normalizedHeight) ));
+		return Ionosphere::maximumProductionRate * exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(r.originalAngle)) * exp(-normalizedHeight) ));
 	}
 
 	/**

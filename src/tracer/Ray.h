@@ -27,6 +27,7 @@ namespace tracer {
 			Vector2f d;	// direction
 			float frequency = 0.0;
 			float previousRefractiveIndex = 0.0;
+			float originalAngle = 0.0;
 			enum waveBehaviour {
 				reflection,
 				refraction,

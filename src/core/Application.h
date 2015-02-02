@@ -11,12 +11,14 @@
 #include <list>
 #include "../exporter/Data.h"
 #include "../scene/SceneManager.h"
+#include "../tracer/Ray.h"
 
 namespace raytracer {
 namespace core {
 
 	using namespace scene;
 	using namespace exporter;
+	using namespace tracer;
 
 	class Application {
 
@@ -31,12 +33,11 @@ namespace core {
 			void stop();
 			SceneManager getSceneManager();
 			list<Data> dataSet;
-			float originalAngle;
+			list<Ray> rays;
 
 		private:
 			Application() {
 				isRunning = false;
-				originalAngle = 0;
 			}
 			Application(Application const&);      // Don't Implement.
 			void operator = (Application const&); // Don't implement

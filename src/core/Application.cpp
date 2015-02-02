@@ -38,9 +38,11 @@ namespace core {
 		// trace a ray
 		Ray r;
 		r.o.y = 2;
-		originalAngle = 60.0 * Constants::PI / 180.0;
-		r.setSolarZenithAngle(originalAngle);
+		r.originalAngle = 60.0 * Constants::PI / 180.0;
+		r.setSolarZenithAngle(r.originalAngle);
 		r.previousRefractiveIndex = 1.0; //75.0 * Constants::PI / 180.0;
+
+		rays.push_back(r);
 
 		r.trace();
 
