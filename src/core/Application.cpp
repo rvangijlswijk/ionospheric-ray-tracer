@@ -50,15 +50,8 @@ namespace core {
 			r.setSolarZenithAngle(r.originalAngle);
 			r.previousRefractiveIndex = 1.0; //75.0 * Constants::PI / 180.0;
 
-			rays.push_back(r);
-		}
-
-		while (rays.size() > 0) {
-			Ray r = rays.front();
-			cout << "Simulating for theta:" << r.originalAngle << "\n";
 			Worker w;
 			threadGroup.add_thread(w.start(r));
-			rays.pop_front();
 		}
 
 		threadGroup.join_all();
