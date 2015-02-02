@@ -32,6 +32,7 @@ namespace core {
 			void start();
 			void run();
 			void stop();
+			void addToDataset(Data dat);
 			SceneManager getSceneManager();
 			list<Data> dataSet;
 			list<Ray> rays;

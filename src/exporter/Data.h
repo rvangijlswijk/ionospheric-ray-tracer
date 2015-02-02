@@ -21,6 +21,7 @@ namespace exporter {
 			float n_e = 0;
 			float mu_r_sqrt = 0;
 			float theta_0 = 0;
+			float frequency = 0;
 	};
 
 } /* namespace exporter */

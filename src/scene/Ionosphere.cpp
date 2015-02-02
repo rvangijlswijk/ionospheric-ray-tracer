@@ -46,8 +46,8 @@ namespace scene {
 		float errorMargin = 1e-2;
 		float refractiveIndex = getRefractiveIndex(r, Ionosphere::KELSO);
 
-		cout << "ionosphere: omega_p=" << getPlasmaFrequency(r) << ", n_e=" << getElectronNumberDensity(r) << ", h=" << getAltitude() << "\n";
-		cout << "mu_r: " << refractiveIndex << ", prev mu_r:" << r.previousRefractiveIndex << "\n";
+		cout << "ionosphere: omega_p=" << getPlasmaFrequency(r) << ", n_e=" << getElectronNumberDensity(r) << ", h=" << getAltitude();
+		cout << ", mu_r: " << refractiveIndex << ", prev mu_r:" << r.previousRefractiveIndex << endl;
 
 		float groundAngle = Constants::PI/2 - atan2(r.d.y, r.d.x);
 		if (refractiveIndex - errorMargin < sin(r.originalAngle)/*Constants::PI/2 - groundAngle < errorMargin*/) {
@@ -75,6 +75,7 @@ namespace scene {
 			cout << "Ray goes straight!\n";
 		}
 		r2.originalAngle = r.originalAngle;
+		r2.frequency = r.frequency;
 
 		Data d;
 		d.x = r.o.x;
@@ -83,7 +84,8 @@ namespace scene {
 		d.n_e = getElectronNumberDensity(r);
 		d.omega_p = getPlasmaFrequency(r);
 		d.theta_0 = r.originalAngle;
-		Application::getInstance().dataSet.push_back(d);
+		d.frequency = r.frequency;
+		Application::getInstance().addToDataset(d);
 
 		return r2;
 	}
@@ -102,7 +104,6 @@ namespace scene {
 	 */
 	float Ionosphere::getElectronNumberDensity(Ray &r) {
 
-		float angle = abs(atan2(r.d.y, r.d.x));
 		float normalizedHeight = (getAltitude() - Ionosphere::peakProductionAltitude) / Constants::NEUTRAL_SCALE_HEIGHT;
 
 		return Ionosphere::maximumProductionRate * exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(r.originalAngle)) * exp(-normalizedHeight) ));

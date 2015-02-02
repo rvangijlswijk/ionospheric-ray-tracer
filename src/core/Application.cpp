@@ -25,6 +25,7 @@ namespace core {
 	using namespace threading;
 
 	boost::thread_group threadGroup;
+	boost::mutex datasetMutex;
 
 	void Application::init() {
 
@@ -43,15 +44,18 @@ namespace core {
 		Timer tmr;
 
 		// trace a ray
-		for (float theta = 15; theta < 90; theta += 15) {
-			Ray r;
-			r.o.y = 2;
-			r.originalAngle = theta * Constants::PI / 180.0;
-			r.setSolarZenithAngle(r.originalAngle);
-			r.previousRefractiveIndex = 1.0; //75.0 * Constants::PI / 180.0;
+		for (float freq = 4e6; freq <= 25e6; freq += 1e6) {
+			for (float theta = 10; theta <= 80; theta += 10) {
+				Ray r;
+				r.frequency = freq;
+				r.o.y = 2;
+				r.originalAngle = theta * Constants::PI / 180.0;
+				r.setSolarZenithAngle(r.originalAngle);
+				r.previousRefractiveIndex = 1.0; //75.0 * Constants::PI / 180.0;
 
-			Worker w;
-			threadGroup.add_thread(w.start(r));
+				Worker w;
+				threadGroup.add_thread(w.start(r));
+			}
 		}
 
 		threadGroup.join_all();
@@ -79,11 +83,18 @@ namespace core {
 
 		Terrain tr = Terrain(Vector2f(0, 1), Vector2f(3e5, 1));
 
-		for (int h=80000; h<250000; h+= 10) {
+		for (int h=80000; h<200000; h+= 500) {
 			scm.addToScene(Ionosphere(Vector2f(0, h), Vector2f(3e5, h)));
 		}
 
 		scm.addToScene(tr);
+	}
+
+	void Application::addToDataset(Data dat) {
+
+		datasetMutex.lock();
+		dataSet.push_back(dat);
+		datasetMutex.unlock();
 	}
 
 	SceneManager Application::getSceneManager() {

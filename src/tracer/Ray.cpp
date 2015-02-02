@@ -25,7 +25,6 @@ namespace tracer {
 
 	Ray::Ray() {
 		// TODO Auto-generated constructor stub
-		frequency = 5e6;
 		behaviour = Ray::none;
 	}
 
@@ -55,17 +54,18 @@ namespace tracer {
 
 		Ray r2;
 
-		cout << "rayline: (" << rayLine.end.x << "," << rayLine.end.y << ") ";
-		cout << "previndex: " << previousRefractiveIndex << "\n";
+		//cout << "rayline: (" << rayLine.end.x << "," << rayLine.end.y << ") ";
+		//cout << "previndex: " << previousRefractiveIndex << "\n";
 
-		if (rayLine.begin.y > 200000) {
+		// limit the simulation to avoid unnecessary calculations
+		if (rayLine.begin.y > 200e3 || rayLine.begin.x > 2e6) {
 			return 0;
 		}
 
 		// determine ray behaviour
 		// intersection with an ionospheric layer
 		if (hit.g.type == Geometry::ionosphere) {
-			cout << "result: ionosphere\n";
+			//cout << "result: ionosphere\n";
 			Ionosphere& gd = (Ionosphere&) hit.g;
 			r2 = gd.interact(*this, hit.pos);
 			if (r2.behaviour == Ray::no_propagation) {
@@ -77,16 +77,18 @@ namespace tracer {
 			cout << "result: terrain\n";
 			return 0;
 		} else if (hit.g.type == Geometry::none) {
-			cout << "result: none\n";
+			//cout << "result: none\n";
 			r2.o = rayLine.end;
 			r2.d = d;
 			r2.previousRefractiveIndex = previousRefractiveIndex;
 			r2.originalAngle = originalAngle;
+			r2.frequency = frequency;
 			Data dataset;
 			dataset.x = o.x;
 			dataset.y = o.y;
 			dataset.theta_0 = originalAngle;
-			Application::getInstance().dataSet.push_back(dataset);
+			dataset.frequency = frequency;
+			Application::getInstance().addToDataset(dataset);
 			return r2.trace();
 		}
 
