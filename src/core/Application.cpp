@@ -12,6 +12,7 @@
 #include "../scene/Ionosphere.h"
 #include "../scene/Terrain.h"
 #include "../math/Constants.h"
+#include "Timer.cpp";
 
 namespace raytracer {
 namespace core {
@@ -35,6 +36,8 @@ namespace core {
 
 	void Application::run() {
 
+		Timer tmr;
+
 		// trace a ray
 		for (float theta = 15; theta < 90; theta += 15) {
 			Ray r;
@@ -54,6 +57,9 @@ namespace core {
 		}
 
 		stop();
+
+		double t = tmr.elapsed();
+	    cout << "Elapsed:" << t << endl;
 
 		//CsvExporter ce;
 		//ce.dump("Debug/data.csv", rayPath);
