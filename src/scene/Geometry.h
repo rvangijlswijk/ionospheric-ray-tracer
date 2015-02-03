@@ -25,12 +25,13 @@ namespace scene {
 			Ray interact(Ray &r);
 			Line2f getMesh();
 			void setMesh(Line2f mesh);
+			float getSolarZenithAngle2f();
 			enum object_type {
 				none = 0,
 				ionosphere = 1,
 				terrain = 2
 			};
-			object_type type;
+			object_type type = none;
 
 		protected:
 			Line2f mesh2d;

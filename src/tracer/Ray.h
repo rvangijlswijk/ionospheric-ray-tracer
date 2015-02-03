@@ -21,8 +21,10 @@ namespace tracer {
 		public:
 			Ray();
 			int trace();
-			float getSolarZenithAngle();
-			void setSolarZenithAngle(float angleRad);
+			float getNormalAngle();
+			void setNormalAngle(float angleRad);
+			float getAngle();
+			void setAngle(float angleRad);
 			Vector2f o;	// origin
 			Vector2f d;	// direction
 			float frequency = 0.0;

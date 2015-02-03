@@ -46,24 +46,24 @@ namespace scene {
 		float errorMargin = 1e-2;
 		float refractiveIndex = getRefractiveIndex(r, Ionosphere::KELSO);
 
-		cout << "ionosphere: omega_p=" << getPlasmaFrequency(r) << ", n_e=" << getElectronNumberDensity(r) << ", h=" << getAltitude();
+		cout << "ionosphere: omega_p=" << getPlasmaFrequency() << ", n_e=" << getElectronNumberDensity() << ", h=" << getAltitude();
 		cout << ", mu_r: " << refractiveIndex << ", prev mu_r:" << r.previousRefractiveIndex << endl;
 
-		float groundAngle = Constants::PI/2 - atan2(r.d.y, r.d.x);
+		float normalAngle = Constants::PI/2 - atan2(r.d.y, r.d.x);
 		if (refractiveIndex - errorMargin < sin(r.originalAngle)/*Constants::PI/2 - groundAngle < errorMargin*/) {
 			r2.behaviour = Ray::reflection;
-			float newAngle = Constants::PI - r.getSolarZenithAngle();
-			r2.setSolarZenithAngle(newAngle);
+			float newAngle = Constants::PI/2- r.getNormalAngle();
+			r2.setNormalAngle(newAngle);
 			r2.previousRefractiveIndex = r.previousRefractiveIndex;
 			cout << "Reflect this ray! theta_r:" << newAngle * 180 / Constants::PI << " d.x,d.y:" << r2.d.x << "," << r2.d.y << "\n";
 		} else if (r.previousRefractiveIndex > 0) {
 			r2.behaviour = Ray::refraction;
-			float newAngle = asin((r.previousRefractiveIndex/refractiveIndex * sin(groundAngle)));
+			float newAngle = asin((r.previousRefractiveIndex/refractiveIndex * sin(normalAngle)));
 			if (r.d.y < 0) {
 				newAngle = Constants::PI - newAngle;
 			}
-			r2.setSolarZenithAngle(newAngle);
-			cout << "Bend this ray! refraction: theta_i:" << groundAngle * 180 / Constants::PI << ", theta_r:" << newAngle * 180 / Constants::PI << " \n";
+			r2.setNormalAngle(newAngle);
+			cout << "Bend this ray! refraction: theta_i:" << normalAngle * 180 / Constants::PI << ", theta_r:" << newAngle * 180 / Constants::PI << " \n";
 			r2.previousRefractiveIndex = refractiveIndex;
 			// r2.d.x = cos(newAngle);
 			// r2.d.y = sin(newAngle);
@@ -81,8 +81,8 @@ namespace scene {
 		d.x = r.o.x;
 		d.y = r.o.y;
 		d.mu_r_sqrt = pow(refractiveIndex, 2);
-		d.n_e = getElectronNumberDensity(r);
-		d.omega_p = getPlasmaFrequency(r);
+		d.n_e = getElectronNumberDensity();
+		d.omega_p = getPlasmaFrequency();
 		d.theta_0 = r.originalAngle;
 		d.frequency = r.frequency;
 		Application::getInstance().addToDataset(d);
@@ -94,7 +94,7 @@ namespace scene {
 	 * Calculate the plasma frequency which depends on the electron number density
 	 * which depends on the altitude (y). Use a chapman profile.
 	 */
-	float Ionosphere::getPlasmaFrequency(Ray &r) {
+	float Ionosphere::getPlasmaFrequency() {
 
 		return sqrt(Ionosphere::maximumProductionRate * pow(Constants::ELEMENTARY_CHARGE, 2) / (Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM));
 	}
@@ -102,11 +102,12 @@ namespace scene {
 	/**
 	 * Use a chapmanProfile to calculate the electron number density
 	 */
-	float Ionosphere::getElectronNumberDensity(Ray &r) {
+	float Ionosphere::getElectronNumberDensity() {
 
 		float normalizedHeight = (getAltitude() - Ionosphere::peakProductionAltitude) / Constants::NEUTRAL_SCALE_HEIGHT;
 
-		return Ionosphere::maximumProductionRate * exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(r.originalAngle)) * exp(-normalizedHeight) ));
+		return Ionosphere::maximumProductionRate *
+				exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(getSolarZenithAngle2f())) * exp(-normalizedHeight) ));
 	}
 
 	/**
@@ -119,10 +120,10 @@ namespace scene {
 
 		if (m == SIMPLE) {
 
-			n = sqrt(1 - getPlasmaFrequency(r) / (2 * Constants::PI * r.frequency));
+			n = sqrt(1 - getPlasmaFrequency() / (2 * Constants::PI * r.frequency));
 		} else if (m == KELSO) {
 
-			n = sqrt(1 - getElectronNumberDensity(r) * pow(Constants::ELEMENTARY_CHARGE, 2) /
+			n = sqrt(1 - getElectronNumberDensity() * pow(Constants::ELEMENTARY_CHARGE, 2) /
 								(Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM * pow(2 * Constants::PI * r.frequency,2)));
 		} else if (m == AHDR) {
 
@@ -140,7 +141,10 @@ namespace scene {
 	 */
 	float Ionosphere::getAltitude() {
 
-		return (mesh2d.begin.y + mesh2d.end.y) / 2.0f;
+		float xAvg = (mesh2d.begin.x + mesh2d.end.x)/2;
+		float yAvg = (mesh2d.begin.y + mesh2d.end.y)/2;
+
+		return sqrt(pow(xAvg, 2) + pow(yAvg, 2)) - 3390e3; // todo: move hardcoded radius to config value
 	}
 
 } /* namespace scene */

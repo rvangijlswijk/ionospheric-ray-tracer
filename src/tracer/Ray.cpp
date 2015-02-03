@@ -97,22 +97,35 @@ namespace tracer {
 
 	/**
 	 * Return the direction of the ray in radians. The direction is measured
-	 * with respect to zenith, i.e. a direction of 0 rad is pointing toward
-	 * the sun. pi rad is pointing nadir
+	 * with respect to the normal of the ray
 	 */
-	float Ray::getSolarZenithAngle() {
+	float Ray::getNormalAngle() {
 
 		return Constants::PI/2.0 - atan2(d.y, d.x);
 	}
 
 	/**
-	 * Set the direction of the ray in radians
+	 * Set the direction of the normal in radians
 	 */
-	void Ray::setSolarZenithAngle(float angleRad) {
+	void Ray::setNormalAngle(float angleRad) {
 
 		float terrainAngle = Constants::PI/2.0 - angleRad;
 		d.x = cos(terrainAngle);
 		d.y = sin(terrainAngle);
+	}
+
+	float Ray::getAngle() {
+
+		return atan2(d.y, d.x);
+	}
+
+	/**
+	 * Set the direction of the ray in radians
+	 */
+	void Ray::setAngle(float angleRad) {
+
+		d.x = cos(angleRad);
+		d.y = sin(angleRad);
 	}
 
 } /* namespace tracer */

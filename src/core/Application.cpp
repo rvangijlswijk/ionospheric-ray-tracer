@@ -44,13 +44,13 @@ namespace core {
 		Timer tmr;
 
 		// trace a ray
-		for (float freq = 4e6; freq <= 25e6; freq += 1e6) {
-			for (float theta = 10; theta <= 80; theta += 10) {
+		for (float freq = 5e6; freq <= 5e6; freq += 1e6) {
+			for (float theta = 60; theta <= 60; theta += 10) {
 				Ray r;
 				r.frequency = freq;
 				r.o.y = 2;
 				r.originalAngle = theta * Constants::PI / 180.0;
-				r.setSolarZenithAngle(r.originalAngle);
+				r.setNormalAngle(r.originalAngle);
 				r.previousRefractiveIndex = 1.0; //75.0 * Constants::PI / 180.0;
 
 				Worker w;
@@ -81,13 +81,23 @@ namespace core {
 	 */
 	void Application::createScene() {
 
-		Terrain tr = Terrain(Vector2f(0, 1), Vector2f(3e5, 1));
+		float R = 3390e3; // Mars radius. Todo: move to config files
 
-		for (int h=80000; h<200000; h+= 500) {
-			scm.addToScene(Ionosphere(Vector2f(0, h), Vector2f(3e5, h)));
+		for (float theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
+			float nextTheta = theta + Constants::PI/180;
+
+			for (int h=80000; h<200000; h+= 1000) {
+				Ionosphere io = Ionosphere(Vector2f((R + h) * cos(theta), (R + h) * sin(theta)),
+						Vector2f((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
+
+				scm.addToScene(io);
+			}
+
+			Terrain tr = Terrain(Vector2f(R*cos(theta), R*sin(theta)),
+					Vector2f(R*cos(nextTheta), R*sin(nextTheta)));
+
+			scm.addToScene(tr);
 		}
-
-		scm.addToScene(tr);
 	}
 
 	void Application::addToDataset(Data dat) {
