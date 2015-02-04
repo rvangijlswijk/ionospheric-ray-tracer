@@ -54,11 +54,11 @@ namespace tracer {
 
 		Ray r2;
 
-		//cout << "rayline: (" << rayLine.end.x << "," << rayLine.end.y << ") ";
+		cout << "rayline: (" << rayLine.end.x << "," << rayLine.end.y << ") ";
 		//cout << "previndex: " << previousRefractiveIndex << "\n";
 
 		// limit the simulation to avoid unnecessary calculations
-		if (rayLine.begin.y > 200e3 || rayLine.begin.x > 2e6) {
+		if (abs(rayLine.begin.y) > 200e3 + 3390e3 || abs(rayLine.begin.x) > 200e3 + 3390e3) {
 			return 0;
 		}
 
@@ -126,6 +126,10 @@ namespace tracer {
 
 		d.x = cos(angleRad);
 		d.y = sin(angleRad);
+	}
+
+	Ray Ray::copy() {
+
 	}
 
 } /* namespace tracer */

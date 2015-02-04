@@ -50,6 +50,11 @@ namespace scene {
 		cout << ", mu_r: " << refractiveIndex << ", prev mu_r:" << r.previousRefractiveIndex << endl;
 
 		float normalAngle = Constants::PI/2 - atan2(r.d.y, r.d.x);
+
+		Line2f rayLine = Line2f(r.o, hitpos);
+		float angleDifference = mesh2d.angularDifference(rayLine);
+		float rayIncomingToIonosphericNormalAngle = Constants::PI/2 - angleDifference;
+
 		if (refractiveIndex - errorMargin < sin(r.originalAngle)/*Constants::PI/2 - groundAngle < errorMargin*/) {
 			r2.behaviour = Ray::reflection;
 			float newAngle = Constants::PI/2- r.getNormalAngle();
@@ -58,7 +63,7 @@ namespace scene {
 			cout << "Reflect this ray! theta_r:" << newAngle * 180 / Constants::PI << " d.x,d.y:" << r2.d.x << "," << r2.d.y << "\n";
 		} else if (r.previousRefractiveIndex > 0) {
 			r2.behaviour = Ray::refraction;
-			float newAngle = asin((r.previousRefractiveIndex/refractiveIndex * sin(normalAngle)));
+			float newAngle = asin((r.previousRefractiveIndex/refractiveIndex * sin(rayIncomingToIonosphericNormalAngle)));
 			if (r.d.y < 0) {
 				newAngle = Constants::PI - newAngle;
 			}

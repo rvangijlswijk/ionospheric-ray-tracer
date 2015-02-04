@@ -5,11 +5,14 @@
  *      Author: rian
  */
 
+#include <cmath>
 #include "Line2f.h"
 #include "Vector2f.h"
 
 namespace raytracer {
 namespace math {
+
+	using namespace std;
 
 	Line2f::Line2f() {
 
@@ -46,6 +49,18 @@ namespace math {
 
 
 		return intersection;
+	}
+
+	/**
+	 *
+	 */
+	float Line2f::angularDifference(Line2f line) {
+
+		float thisSlope = (end.y - begin.y)/(end.x - begin.x);
+		float otherSlope = (line.end.y - line.begin.y)/(line.end.x - line.begin.x);
+		float a = abs((thisSlope - otherSlope)/(1 + thisSlope * otherSlope));
+		return atan(a);
+
 	}
 
 } /* namespace math */

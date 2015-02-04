@@ -25,6 +25,7 @@ namespace tracer {
 			void setNormalAngle(float angleRad);
 			float getAngle();
 			void setAngle(float angleRad);
+			Ray copy();
 			Vector2f o;	// origin
 			Vector2f d;	// direction
 			float frequency = 0.0;

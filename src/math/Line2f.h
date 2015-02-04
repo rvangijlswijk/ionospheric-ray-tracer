@@ -21,6 +21,7 @@ class Line2f {
 		Vector2f end;
 		Vector2f getVector();
 		Vector2f intersect(Line2f line);
+		float angularDifference(Line2f line);
 };
 
 } /* namespace math */

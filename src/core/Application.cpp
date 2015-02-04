@@ -48,7 +48,7 @@ namespace core {
 			for (float theta = 60; theta <= 60; theta += 10) {
 				Ray r;
 				r.frequency = freq;
-				r.o.y = 2;
+				r.o.y = 2 + 3390e3;
 				r.originalAngle = theta * Constants::PI / 180.0;
 				r.setNormalAngle(r.originalAngle);
 				r.previousRefractiveIndex = 1.0; //75.0 * Constants::PI / 180.0;
@@ -86,7 +86,7 @@ namespace core {
 		for (float theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
 			float nextTheta = theta + Constants::PI/180;
 
-			for (int h=80000; h<200000; h+= 1000) {
+			for (int h = 80000; h <= 200000; h += 1000) {
 				Ionosphere io = Ionosphere(Vector2f((R + h) * cos(theta), (R + h) * sin(theta)),
 						Vector2f((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
 
@@ -95,6 +95,8 @@ namespace core {
 
 			Terrain tr = Terrain(Vector2f(R*cos(theta), R*sin(theta)),
 					Vector2f(R*cos(nextTheta), R*sin(nextTheta)));
+
+			//cout <<  tr.getMesh().begin.x << "," << tr.getMesh().begin.y << "," << tr.getMesh().end.x << "," << tr.getMesh().end.y << endl;
 
 			scm.addToScene(tr);
 		}
