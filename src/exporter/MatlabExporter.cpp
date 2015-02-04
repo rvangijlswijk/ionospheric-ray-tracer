@@ -6,6 +6,7 @@
  */
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include "MatlabExporter.h"
 
@@ -23,7 +24,7 @@ namespace exporter {
 		ofstream data;
 		data.open(filepath);
 		while (!dataset.empty()) {
-			data << dataset.front().x << ","
+			data << std::fixed << std::setprecision(4) << dataset.front().x << ","
 				<< dataset.front().y << ","
 				<< dataset.front().omega_p << ","
 				<< dataset.front().n_e << ","

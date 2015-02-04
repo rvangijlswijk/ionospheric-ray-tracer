@@ -15,13 +15,13 @@ namespace exporter {
 
 		public:
 			Data();
-			float x = 0;
-			float y = 0;
-			float omega_p = 0;
-			float n_e = 0;
-			float mu_r_sqrt = 0;
-			float theta_0 = 0;
-			float frequency = 0;
+			double x = 0;
+			double y = 0;
+			double omega_p = 0;
+			double n_e = 0;
+			double mu_r_sqrt = 0;
+			double theta_0 = 0;
+			double frequency = 0;
 	};
 
 } /* namespace exporter */

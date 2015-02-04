@@ -10,18 +10,18 @@
 namespace raytracer {
 namespace math {
 
-class Vector2f {
+class Vector2d {
 
 	public:
-		Vector2f();
-		Vector2f(float xPos, float yPos);
+		Vector2d();
+		Vector2d(double xPos, double yPos);
 
-		float x;
-		float y;
+		double x;
+		double y;
 
-		float magnitude();
-		float dotProduct(Vector2f v2);
-		float distance(Vector2f v2);
+		double magnitude();
+		double dotProduct(Vector2d v2);
+		double distance(Vector2d v2);
 };
 
 } /* namespace math */

@@ -15,17 +15,17 @@ namespace scene {
 		type = Geometry::terrain;
 	}
 
-	Terrain::Terrain(Line2f mesh) : Geometry(mesh) {
+	Terrain::Terrain(Line2d mesh) : Geometry(mesh) {
 
 		type = Geometry::terrain;
 	}
 
-	Terrain::Terrain(Vector2f begin, Vector2f end) : Geometry(begin, end) {
+	Terrain::Terrain(Vector2d begin, Vector2d end) : Geometry(begin, end) {
 
 		type = Geometry::terrain;
 	}
 
-	Ray Terrain::interact(Ray &r, Vector2f &hitpos) {
+	Ray Terrain::interact(Ray &r, Vector2d &hitpos) {
 
 		Ray r2;
 		return r2;

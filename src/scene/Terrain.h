@@ -19,9 +19,9 @@ namespace scene {
 
 		public:
 			Terrain();
-			Terrain(Line2f mesh);
-			Terrain(Vector2f begin, Vector2f end);
-			Ray interact(Ray &r, Vector2f &hitpos);
+			Terrain(Line2d mesh);
+			Terrain(Vector2d begin, Vector2d end);
+			Ray interact(Ray &r, Vector2d &hitpos);
 	};
 
 } /* namespace scene */

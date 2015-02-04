@@ -44,21 +44,22 @@ namespace core {
 		Timer tmr;
 
 		// trace a ray
-		for (float freq = 5e6; freq <= 5e6; freq += 1e6) {
-			for (float theta = 60; theta <= 60; theta += 10) {
+		for (double freq = 5e6; freq <= 6e6; freq += 1e6) {
+			for (double theta = 60; theta <= 60; theta += 10) {
 				Ray r;
 				r.frequency = freq;
-				r.o.y = 2 + 3390e3;
+				r.o.y = 2 + 3.39e6;
 				r.originalAngle = theta * Constants::PI / 180.0;
 				r.setNormalAngle(r.originalAngle);
 				r.previousRefractiveIndex = 1.0; //75.0 * Constants::PI / 180.0;
 
-				Worker w;
-				threadGroup.add_thread(w.start(r));
+				r.trace();
+				//Worker w;
+				//threadGroup.add_thread(w.start(r));
 			}
 		}
 
-		threadGroup.join_all();
+		//threadGroup.join_all();
 
 		stop();
 
@@ -81,20 +82,20 @@ namespace core {
 	 */
 	void Application::createScene() {
 
-		float R = 3390e3; // Mars radius. Todo: move to config files
+		double R = 3.39e6; // Mars radius. Todo: move to config files
 
-		for (float theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
-			float nextTheta = theta + Constants::PI/180;
+		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
+			double nextTheta = theta + Constants::PI/180;
 
 			for (int h = 80000; h <= 200000; h += 1000) {
-				Ionosphere io = Ionosphere(Vector2f((R + h) * cos(theta), (R + h) * sin(theta)),
-						Vector2f((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
+				Ionosphere io = Ionosphere(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
+						Vector2d((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
 
 				scm.addToScene(io);
 			}
 
-			Terrain tr = Terrain(Vector2f(R*cos(theta), R*sin(theta)),
-					Vector2f(R*cos(nextTheta), R*sin(nextTheta)));
+			Terrain tr = Terrain(Vector2d(R*cos(theta), R*sin(theta)),
+					Vector2d(R*cos(nextTheta), R*sin(nextTheta)));
 
 			//cout <<  tr.getMesh().begin.x << "," << tr.getMesh().begin.y << "," << tr.getMesh().end.x << "," << tr.getMesh().end.y << endl;
 

@@ -6,35 +6,35 @@
  */
 
 #include <cmath>
-#include "Vector2f.h"
+#include "Vector2d.h"
 
 namespace raytracer {
 namespace math {
 
-	Vector2f::Vector2f() {
+	Vector2d::Vector2d() {
 
 		x = 0.0;
 		y = 0.0;
 
 	}
 
-	Vector2f::Vector2f(float xPos, float yPos) {
+	Vector2d::Vector2d(double xPos, double yPos) {
 
 		x = xPos;
 		y = yPos;
 	}
 
-	float Vector2f::magnitude() {
+	double Vector2d::magnitude() {
 
 		return sqrt(pow(x, 2) + pow(y, 2));
 	}
 
-	float Vector2f::distance(Vector2f v2) {
+	double Vector2d::distance(Vector2d v2) {
 
 		return sqrt(pow(x - v2.x, 2) + pow(y - v2.y, 2));
 	}
 
-	float Vector2f::dotProduct(Vector2f v2) {
+	double Vector2d::dotProduct(Vector2d v2) {
 
 		return x*v2.x + y*v2.y;
 	}

@@ -15,11 +15,11 @@ namespace {
 
 		protected:
 			void SetUp() {
-				Line2f mesh = Line2f(Vector2f(-100e3, 3390e3 + 100e3), Vector2f(100e3, 3390e3 + 100e3));
+				Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + 100e3), Vector2d(100e3, 3390e3 + 100e3));
 				io.setMesh(mesh);
-				Line2f mesh2 = Line2f(Vector2f(0, 3515e3), Vector2f(98408.25, 3513.6e3));
+				Line2d mesh2 = Line2d(Vector2d(0, 3515e3), Vector2d(98408.25, 3513.6e3));
 				io2.setMesh(mesh2);
-				Line2f mesh3 = Line2f(Vector2f(3390e3 + 100e3, 100e3), Vector2f(3390e3 + 100e3, -100e3));
+				Line2d mesh3 = Line2d(Vector2d(3390e3 + 100e3, 100e3), Vector2d(3390e3 + 100e3, -100e3));
 				io3.setMesh(mesh3);
 
 				r.setNormalAngle(0.524);
@@ -76,7 +76,7 @@ namespace {
 		for (int h = 50000; h<500000; h+=100) {
 			Data d;
 			d.y = h;
-			Line2f mesh = Line2f(Vector2f(0, h), Vector2f(100000, h));
+			Line2d mesh = Line2d(Vector2d(0, h), Vector2d(100000, h));
 			io.setMesh(mesh);
 			d.n_e = io.getElectronNumberDensity();
 			d.omega_p = io.getPlasmaFrequency();

@@ -8,8 +8,8 @@
 #define GEOMETRY_H_
 
 #include "../tracer/Ray.h"
-#include "../math/Line2f.h"
-#include "../math/Vector2f.h"
+#include "../math/Line2d.h"
+#include "../math/Vector2d.h"
 
 namespace raytracer {
 namespace scene {
@@ -20,12 +20,12 @@ namespace scene {
 
 		public:
 			Geometry();
-			Geometry(Line2f mesh);
-			Geometry(Vector2f begin, Vector2f end);
+			Geometry(Line2d mesh);
+			Geometry(Vector2d begin, Vector2d end);
 			Ray interact(Ray &r);
-			Line2f getMesh();
-			void setMesh(Line2f mesh);
-			float getSolarZenithAngle2f();
+			Line2d getMesh();
+			void setMesh(Line2d mesh);
+			double getSolarZenithAngle2f();
 			enum object_type {
 				none = 0,
 				ionosphere = 1,
@@ -34,7 +34,7 @@ namespace scene {
 			object_type type = none;
 
 		protected:
-			Line2f mesh2d;
+			Line2d mesh2d;
 	};
 
 } /* namespace scene */

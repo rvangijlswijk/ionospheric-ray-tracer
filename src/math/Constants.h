@@ -14,11 +14,11 @@ namespace math {
 	class Constants {
 
 		public:
-			static constexpr float ELECTRON_MASS = 9.1094e-31;
-			static constexpr float ELEMENTARY_CHARGE = 1.602e-19;
-			static constexpr float NEUTRAL_SCALE_HEIGHT = 11100.0;
-			static constexpr float PERMITTIVITY_VACUUM = 8.8542e-12;
-			static constexpr float PI = 3.1415;
+			static constexpr double ELECTRON_MASS = 9.1094e-31;
+			static constexpr double ELEMENTARY_CHARGE = 1.602e-19;
+			static constexpr double NEUTRAL_SCALE_HEIGHT = 11100.0;
+			static constexpr double PERMITTIVITY_VACUUM = 8.8542e-12;
+			static constexpr double PI = 3.1415;
 
 	};
 

@@ -9,7 +9,7 @@
 #define SCENEMANAGER_H_
 
 #include <list>
-#include "../math/Line2f.h"
+#include "../math/Line2d.h"
 #include "../tracer/Ray.h"
 #include "../tracer/Intersection.h"
 #include "Geometry.h"
@@ -24,7 +24,7 @@ namespace scene {
 
 		public:
 			SceneManager();
-			Intersection intersect(Ray &r, Line2f &rayLine);
+			Intersection intersect(Ray &r, Line2d &rayLine);
 			void addToScene(Geometry obj);
 			list<Geometry> getScene();
 

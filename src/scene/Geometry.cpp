@@ -16,14 +16,14 @@ namespace scene {
 
 	}
 
-	Geometry::Geometry(Line2f mesh) {
+	Geometry::Geometry(Line2d mesh) {
 
 		mesh2d = mesh;
 	}
 
-	Geometry::Geometry(Vector2f begin, Vector2f end) {
+	Geometry::Geometry(Vector2d begin, Vector2d end) {
 
-		mesh2d = Line2f(begin, end);
+		mesh2d = Line2d(begin, end);
 	}
 
 	/**
@@ -31,20 +31,20 @@ namespace scene {
 	 * This angle depends on the spherical radius of the celestial body
 	 * and the heights of the endpoints of the mesh as well as its length.
 	 */
-	float Geometry::getSolarZenithAngle2f() {
+	double Geometry::getSolarZenithAngle2f() {
 
-		float xAvg = (mesh2d.begin.x + mesh2d.end.x)/2;
-		float yAvg = (mesh2d.begin.y + mesh2d.end.y)/2;
+		double xAvg = (mesh2d.begin.x + mesh2d.end.x)/2;
+		double yAvg = (mesh2d.begin.y + mesh2d.end.y)/2;
 
 		return Constants::PI/2 - atan2(yAvg, xAvg);
 	}
 
-	Line2f Geometry::getMesh() {
+	Line2d Geometry::getMesh() {
 
 		return mesh2d;
 	}
 
-	void Geometry::setMesh(Line2f mesh) {
+	void Geometry::setMesh(Line2d mesh) {
 
 		mesh2d = mesh;
 	}

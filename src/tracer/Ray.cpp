@@ -5,7 +5,8 @@
 //============================================================================
 
 #include <iostream>
-#include <cmath>
+#include <stdio.h>
+#include <math.h>
 #include "Ray.h"
 #include "../scene/SceneManager.h"
 #include "Intersection.h"
@@ -17,7 +18,6 @@
 namespace raytracer {
 namespace tracer {
 
-	using namespace std;
 	using namespace scene;
 	using namespace core;
 	using namespace exporter;
@@ -34,20 +34,21 @@ namespace tracer {
 	 */
 	int Ray::trace() {
 
-		if (isnan(o.x) || isnan(o.y)) {
-			return 0;
-		}
+		float x = (float) o.x;
+//		if (std::isnan(x) || std::isnan((float) o.y)) {
+//			return 0;
+//		}
 
 		// extrapolate a line from the ray start and its direction
-		Line2f rayLine;
-		Vector2f rayEnd;
-		float angle = atan2(d.y, d.x);
+		Line2d rayLine;
+		Vector2d rayEnd;
+		double angle = atan2(d.y, d.x);
 		rayLine.begin = o;
 		rayEnd.x = o.x + Ray::magnitude * cos(angle);
 		rayEnd.y = o.y + Ray::magnitude * sin(angle);
 		rayLine.end = rayEnd;
 
-		cout << "Tracing ray " << o.x << "," << o.y << " (" << d.x << "," << d.y << ") theta=" << (angle*180.0f/3.1415) << "\n";
+		printf("Tracing ray: %8.4f %8.4f %8.4f %8.4f theta: %8.8f\n", o.x, o.y, d.x, d.y, angle * 57.296);
 
 		// find intersection
 		Intersection hit = Application::getInstance().getSceneManager().intersect(*this, rayLine);
@@ -58,13 +59,14 @@ namespace tracer {
 		//cout << "previndex: " << previousRefractiveIndex << "\n";
 
 		// limit the simulation to avoid unnecessary calculations
-		if (abs(rayLine.begin.y) > 200e3 + 3390e3 || abs(rayLine.begin.x) > 200e3 + 3390e3) {
+		if (rayLine.begin.distance(Vector2d(0,0)) > 5.2e6) {
 			return 0;
 		}
 
 		// determine ray behaviour
 		// intersection with an ionospheric layer
 		if (hit.g.type == Geometry::ionosphere) {
+			return 0;
 			//cout << "result: ionosphere\n";
 			Ionosphere& gd = (Ionosphere&) hit.g;
 			r2 = gd.interact(*this, hit.pos);
@@ -75,6 +77,7 @@ namespace tracer {
 			}
 		} else if (hit.g.type == Geometry::terrain) {
 			cout << "result: terrain\n";
+			printf("Geometry coords: %8.4f %8.4f %8.4f %8.4f\n", hit.g.getMesh().begin.x, hit.g.getMesh().begin.y, hit.g.getMesh().end.x, hit.g.getMesh().end.y);
 			return 0;
 		} else if (hit.g.type == Geometry::none) {
 			//cout << "result: none\n";
@@ -99,7 +102,7 @@ namespace tracer {
 	 * Return the direction of the ray in radians. The direction is measured
 	 * with respect to the normal of the ray
 	 */
-	float Ray::getNormalAngle() {
+	double Ray::getNormalAngle() {
 
 		return Constants::PI/2.0 - atan2(d.y, d.x);
 	}
@@ -107,14 +110,14 @@ namespace tracer {
 	/**
 	 * Set the direction of the normal in radians
 	 */
-	void Ray::setNormalAngle(float angleRad) {
+	void Ray::setNormalAngle(double angleRad) {
 
-		float terrainAngle = Constants::PI/2.0 - angleRad;
+		double terrainAngle = Constants::PI/2.0 - angleRad;
 		d.x = cos(terrainAngle);
 		d.y = sin(terrainAngle);
 	}
 
-	float Ray::getAngle() {
+	double Ray::getAngle() {
 
 		return atan2(d.y, d.x);
 	}
@@ -122,7 +125,7 @@ namespace tracer {
 	/**
 	 * Set the direction of the ray in radians
 	 */
-	void Ray::setAngle(float angleRad) {
+	void Ray::setAngle(double angleRad) {
 
 		d.x = cos(angleRad);
 		d.y = sin(angleRad);

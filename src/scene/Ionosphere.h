@@ -19,20 +19,20 @@ namespace scene {
 
 		public:
 			Ionosphere();
-			Ionosphere(Line2f mesh);
-			Ionosphere(Vector2f begin, Vector2f end);
+			Ionosphere(Line2d mesh);
+			Ionosphere(Vector2d begin, Vector2d end);
 			enum refractiveMethod {
 				SIMPLE,
 				KELSO,		// According to Kelso, 1964
 				AHDR		// Appleton-Hartree Dispersion Relation
 			};
-			Ray interact(Ray &r, Vector2f &hitpos);
-			float getPlasmaFrequency();
-			float getElectronNumberDensity();
-			float getRefractiveIndex(Ray &r, refractiveMethod m);
-			static constexpr float peakProductionAltitude = 125000.0;	// m
-			static constexpr float maximumProductionRate = 2.5e11;		// m^-3
-			float getAltitude();
+			Ray interact(Ray &r, Vector2d &hitpos);
+			double getPlasmaFrequency();
+			double getElectronNumberDensity();
+			double getRefractiveIndex(Ray &r, refractiveMethod m);
+			static constexpr double peakProductionAltitude = 125000.0;	// m
+			static constexpr double maximumProductionRate = 2.5e11;		// m^-3
+			double getAltitude();
 	};
 
 } /* namespace scene */

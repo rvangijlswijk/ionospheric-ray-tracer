@@ -2,8 +2,8 @@ clc;
 clear all;
 close all;
 
-angles = 10:10:90;
-frequencies = 4e6:1e6:25e6;
+angles = 60:10:60;
+frequencies = 4e6:1e6:6e6;
 
 load ../Debug/data.dat;
 %data = data_IonosphereTest;
@@ -31,18 +31,18 @@ grid on
 xlabel('distance [km]')
 ylabel('altitude [km]')
 xlim([0 1000]);
-ylim([-100 250]);
+ylim([3390 - 100 3390 + 250]);
 
 % Plot mars
 hold on;
 ang=0:0.01:2*pi;
-plot(0 + 3390*cos(ang),-3390 + 3390 * sin(ang), 'r')
+plot(0 + 3390*cos(ang), 3390 * sin(ang), 'r')
 
 plasmaFreq = data(data(:,3) ~= 0, 3);
 plasmaFreq = plasmaFreq(1);
 f_f0 = frequencies / (plasmaFreq / (2*pi));
 
-figure;
+%figure;
 hold on;
 max_x2 = zeros(length(angles),1);
 for a=1:length(angles)
@@ -55,6 +55,6 @@ for a=1:length(angles)
             x2(n, 1) = nan;
         end
     end
-    plot(x2(:,1), f_f0);
+    %plot(x2(:,1), f_f0);
     max_x2(a,1) = max(x2);
 end

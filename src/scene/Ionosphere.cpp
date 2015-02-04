@@ -26,12 +26,12 @@ namespace scene {
 		type = Geometry::ionosphere;
 	}
 
-	Ionosphere::Ionosphere(Line2f mesh) : Geometry(mesh) {
+	Ionosphere::Ionosphere(Line2d mesh) : Geometry(mesh) {
 
 		type = Geometry::ionosphere;
 	}
 
-	Ionosphere::Ionosphere(Vector2f begin, Vector2f end) : Geometry(begin, end) {
+	Ionosphere::Ionosphere(Vector2d begin, Vector2d end) : Geometry(begin, end) {
 
 		type = Geometry::ionosphere;
 	}
@@ -39,31 +39,31 @@ namespace scene {
 	/**
 	 * Interaction between ray and ionospheric layer
 	 */
-	Ray Ionosphere::interact(Ray &r, Vector2f &hitpos) {
+	Ray Ionosphere::interact(Ray &r, Vector2d &hitpos) {
 
 		Ray r2;
 		r2.o = hitpos;
-		float errorMargin = 1e-2;
-		float refractiveIndex = getRefractiveIndex(r, Ionosphere::KELSO);
+		double errorMargin = 1e-2;
+		double refractiveIndex = getRefractiveIndex(r, Ionosphere::KELSO);
 
 		cout << "ionosphere: omega_p=" << getPlasmaFrequency() << ", n_e=" << getElectronNumberDensity() << ", h=" << getAltitude();
 		cout << ", mu_r: " << refractiveIndex << ", prev mu_r:" << r.previousRefractiveIndex << endl;
 
-		float normalAngle = Constants::PI/2 - atan2(r.d.y, r.d.x);
+		double normalAngle = Constants::PI/2 - atan2(r.d.y, r.d.x);
 
-		Line2f rayLine = Line2f(r.o, hitpos);
-		float angleDifference = mesh2d.angularDifference(rayLine);
-		float rayIncomingToIonosphericNormalAngle = Constants::PI/2 - angleDifference;
+		Line2d rayLine = Line2d(r.o, hitpos);
+		double angleDifference = mesh2d.angularDifference(rayLine);
+		double rayIncomingToIonosphericNormalAngle = Constants::PI/2 - angleDifference;
 
 		if (refractiveIndex - errorMargin < sin(r.originalAngle)/*Constants::PI/2 - groundAngle < errorMargin*/) {
 			r2.behaviour = Ray::reflection;
-			float newAngle = Constants::PI/2- r.getNormalAngle();
+			double newAngle = Constants::PI/2- r.getNormalAngle();
 			r2.setNormalAngle(newAngle);
 			r2.previousRefractiveIndex = r.previousRefractiveIndex;
 			cout << "Reflect this ray! theta_r:" << newAngle * 180 / Constants::PI << " d.x,d.y:" << r2.d.x << "," << r2.d.y << "\n";
 		} else if (r.previousRefractiveIndex > 0) {
 			r2.behaviour = Ray::refraction;
-			float newAngle = asin((r.previousRefractiveIndex/refractiveIndex * sin(rayIncomingToIonosphericNormalAngle)));
+			double newAngle = asin((r.previousRefractiveIndex/refractiveIndex * sin(rayIncomingToIonosphericNormalAngle)));
 			if (r.d.y < 0) {
 				newAngle = Constants::PI - newAngle;
 			}
@@ -99,7 +99,7 @@ namespace scene {
 	 * Calculate the plasma frequency which depends on the electron number density
 	 * which depends on the altitude (y). Use a chapman profile.
 	 */
-	float Ionosphere::getPlasmaFrequency() {
+	double Ionosphere::getPlasmaFrequency() {
 
 		return sqrt(Ionosphere::maximumProductionRate * pow(Constants::ELEMENTARY_CHARGE, 2) / (Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM));
 	}
@@ -107,9 +107,9 @@ namespace scene {
 	/**
 	 * Use a chapmanProfile to calculate the electron number density
 	 */
-	float Ionosphere::getElectronNumberDensity() {
+	double Ionosphere::getElectronNumberDensity() {
 
-		float normalizedHeight = (getAltitude() - Ionosphere::peakProductionAltitude) / Constants::NEUTRAL_SCALE_HEIGHT;
+		double normalizedHeight = (getAltitude() - Ionosphere::peakProductionAltitude) / Constants::NEUTRAL_SCALE_HEIGHT;
 
 		return Ionosphere::maximumProductionRate *
 				exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(getSolarZenithAngle2f())) * exp(-normalizedHeight) ));
@@ -119,9 +119,9 @@ namespace scene {
 	 * Compute the plasma refractive index according to the Appleton-Hartree
 	 * dispersion relation
 	 */
-	float Ionosphere::getRefractiveIndex(Ray &r, refractiveMethod m) {
+	double Ionosphere::getRefractiveIndex(Ray &r, refractiveMethod m) {
 
-		float n = 1.0;
+		double n = 1.0;
 
 		if (m == SIMPLE) {
 
@@ -144,10 +144,10 @@ namespace scene {
 	 * too large, for this would imply the ionospheric layer is under an angle
 	 * which does not make sense.
 	 */
-	float Ionosphere::getAltitude() {
+	double Ionosphere::getAltitude() {
 
-		float xAvg = (mesh2d.begin.x + mesh2d.end.x)/2;
-		float yAvg = (mesh2d.begin.y + mesh2d.end.y)/2;
+		double xAvg = (mesh2d.begin.x + mesh2d.end.x)/2;
+		double yAvg = (mesh2d.begin.y + mesh2d.end.y)/2;
 
 		return sqrt(pow(xAvg, 2) + pow(yAvg, 2)) - 3390e3; // todo: move hardcoded radius to config value
 	}

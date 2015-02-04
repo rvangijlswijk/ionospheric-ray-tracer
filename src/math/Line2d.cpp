@@ -7,27 +7,27 @@
 
 #include <iostream>
 #include <cmath>
-#include "Line2f.h"
-#include "Vector2f.h"
+#include "Line2d.h"
+#include "Vector2d.h"
 
 namespace raytracer {
 namespace math {
 
 	using namespace std;
 
-	Line2f::Line2f() {
+	Line2d::Line2d() {
 
 	}
 
-	Line2f::Line2f(Vector2f bg, Vector2f e) {
+	Line2d::Line2d(Vector2d bg, Vector2d e) {
 
 		begin = bg;
 		end = e;
 	}
 
-	Vector2f Line2f::getVector() {
+	Vector2d Line2d::getVector() {
 
-		Vector2f v;
+		Vector2d v;
 		v.x = end.x - begin.x;
 		v.y = end.y - begin.y;
 
@@ -37,9 +37,9 @@ namespace math {
 	/**
 	 * Find intersection point of this line with another line
 	 */
-	Vector2f Line2f::intersect(Line2f line) {
+	Vector2d Line2d::intersect(Line2d line) {
 
-		Vector2f intersection;
+		Vector2d intersection;
 
 		// Store the values for fast access and easy
 		// equations-to-code conversion
@@ -80,7 +80,7 @@ namespace math {
 	/**
 	 *
 	 */
-	double Line2f::angularDifference(Line2f line) {
+	double Line2d::angularDifference(Line2d line) {
 
 		double thisSlope = (end.y - begin.y)/(end.x - begin.x);
 		double otherSlope = (line.end.y - line.begin.y)/(line.end.x - line.begin.x);

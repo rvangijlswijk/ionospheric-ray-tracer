@@ -22,9 +22,9 @@ namespace scene {
 	/**
 	 * Find which object in the scene intersects with a ray
 	 */
-	Intersection SceneManager::intersect(Ray &r, Line2f &rayLine) {
+	Intersection SceneManager::intersect(Ray &r, Line2d &rayLine) {
 
-		Vector2f pos,
+		Vector2d pos,
 				 rayOrigin;
 		Intersection hit;
 		hit.g.type = Geometry::none;
@@ -34,14 +34,14 @@ namespace scene {
 		for(Geometry g : sceneObjects) {
 
 			pos = rayLine.intersect(g.getMesh());
-			float smallestY = rayLine.begin.y;
-			float biggestY = rayLine.end.y;
+			double smallestY = rayLine.begin.y;
+			double biggestY = rayLine.end.y;
 			if (rayLine.end.y < rayLine.begin.y) {
 				smallestY = rayLine.end.y;
 				biggestY = rayLine.begin.y;
 			}
-			float smallestX = rayLine.begin.x;
-			float biggestX = rayLine.end.x;
+			double smallestX = rayLine.begin.x;
+			double biggestX = rayLine.end.x;
 			if (rayLine.end.x < rayLine.begin.x) {
 				smallestX = rayLine.end.x;
 				biggestX = rayLine.begin.x;
@@ -49,7 +49,8 @@ namespace scene {
 
 			// is it within the scene and within the limits of the ray itself?
 			if (smallestY < pos.y && pos.y < biggestY && smallestX < pos.x && pos.x < biggestX) {
-				cout << "intersection:(" << pos.x << "," << pos.y << ")\n";
+				printf("boundaries: %8.4f %8.4f %8.4f %8.4f \n", smallestX, biggestX, smallestY, biggestY);
+				printf("intersection: %8.4f %8.4f \n", pos.x, pos.y);
 				hit.pos = pos;
 				hit.o = g.type;
 				hit.g = g;

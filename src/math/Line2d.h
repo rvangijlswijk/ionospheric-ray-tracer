@@ -7,21 +7,21 @@
 #ifndef LINE2F_H_
 #define LINE2F_H_
 
-#include "Vector2f.h"
+#include "Vector2d.h"
 
 namespace raytracer {
 namespace math {
 
-class Line2f {
+class Line2d {
 
 	public:
-		Line2f();
-		Line2f(Vector2f bg, Vector2f e);
-		Vector2f begin;
-		Vector2f end;
-		Vector2f getVector();
-		Vector2f intersect(Line2f line);
-		double angularDifference(Line2f line);
+		Line2d();
+		Line2d(Vector2d bg, Vector2d e);
+		Vector2d begin;
+		Vector2d end;
+		Vector2d getVector();
+		Vector2d intersect(Line2d line);
+		double angularDifference(Line2d line);
 };
 
 } /* namespace math */

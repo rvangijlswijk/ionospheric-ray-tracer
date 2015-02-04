@@ -8,7 +8,7 @@
 #define INTERSECTION_H_
 
 #include "Ray.h"
-#include "../math/Vector2f.h"
+#include "../math/Vector2d.h"
 #include "../scene/Geometry.h"
 
 namespace raytracer {
@@ -24,7 +24,7 @@ namespace tracer {
 			Ray r;
 			Geometry::object_type o;
 			Geometry g;
-			Vector2f pos;
+			Vector2d pos;
 
 	};
 

@@ -8,7 +8,7 @@
 #define RAY_H_
 
 #include <list>
-#include "../math/Vector2f.h"
+#include "../math/Vector2d.h"
 
 namespace raytracer {
 namespace tracer {
@@ -16,21 +16,21 @@ namespace tracer {
 	using namespace std;
 	using namespace math;
 
-	class Ray : public Vector2f {
+	class Ray : public Vector2d {
 
 		public:
 			Ray();
 			int trace();
-			float getNormalAngle();
-			void setNormalAngle(float angleRad);
-			float getAngle();
-			void setAngle(float angleRad);
+			double getNormalAngle();
+			void setNormalAngle(double angleRad);
+			double getAngle();
+			void setAngle(double angleRad);
 			Ray copy();
-			Vector2f o;	// origin
-			Vector2f d;	// direction
-			float frequency = 0.0;
-			float previousRefractiveIndex = 0.0;
-			float originalAngle = 0.0;
+			Vector2d o;	// origin
+			Vector2d d;	// direction
+			double frequency = 0.0;
+			double previousRefractiveIndex = 0.0;
+			double originalAngle = 0.0;
 			enum waveBehaviour {
 				reflection,
 				refraction,
@@ -40,7 +40,7 @@ namespace tracer {
 				none
 			};
 			waveBehaviour behaviour;
-			static constexpr float magnitude = 2000.0f;
+			static constexpr double magnitude = 2000.0f;
 	};
 
 } /* namespace tracer */
