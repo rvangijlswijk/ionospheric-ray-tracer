@@ -48,7 +48,7 @@ namespace scene {
 //		cout << ", mu_r: " << refractiveIndex << ", prev mu_r:" << r.previousRefractiveIndex << endl;
 
 		double SZA = getSolarZenithAngle2d();
-		double beta = atan2(r.d.y, r.d.x);
+		double beta = atan(r.d.y/r.d.x);
 		double theta_i = getIncidentAngle(r);
 
 		int waveBehaviour = determineWaveBehaviour(r);
@@ -57,36 +57,34 @@ namespace scene {
 			r2.behaviour = Ray::wave_reflection;
 			double beta_r = - beta - 2*SZA;
 			r2.setAngle(beta_r);
-			r2.previousRefractiveIndex = refractiveIndex;
 //			cout << "Reflect this ray! beta_r:" << beta_r * 180 / Constants::PI << " d.x,d.y:" << r2.d.x << "," << r2.d.y << "\n";
 		} else if (waveBehaviour == Ray::wave_refraction) {
+			if (r.d.y < 0) {
+				theta_i = Constants::PI - theta_i;
+			}
 			r2.behaviour = Ray::wave_refraction;
 			double theta_r = asin((r.previousRefractiveIndex/refractiveIndex * sin(theta_i)));
 			if (theta_r > 0.9 * Constants::PI/2) {
-				cerr << "Bend this ray! refraction: theta_i:" << theta_i * 180 / Constants::PI << ", theta_r:" << theta_r * 180 / Constants::PI << endl;
+//				cerr << "Bend this ray! refraction: theta_i:" << theta_i * 180 / Constants::PI << ", theta_r:" << theta_r * 180 / Constants::PI << endl;
 			}
 			double beta_2 = Constants::PI/2 - theta_r - SZA;
 			if (r.d.y < 0) {
-//				cerr << "Ray going down! r.d.y:" << r.d.y << ", beta_2:" << beta_2
-				beta_2 = Constants::PI/2 - theta_r + SZA;
+//				cerr << "Ray going down! r.d.y:" << r.d.y << ", beta_2:" << beta_2;
+				beta_2 = -Constants::PI/2 + theta_r - SZA;
 				r2.setAngle(beta_2);
 //				cerr << " changed to r.d.y:" << r.d.y << ",beta_2:" << beta_2 << endl;
 			}
 			r2.setAngle(beta_2);
 //			cout << "Bend this ray! refraction: theta_i:" << theta_i * 180 / Constants::PI << ", theta_r:" << theta_r * 180 / Constants::PI << " \n";
-			r2.previousRefractiveIndex = refractiveIndex;
-			// r2.d.x = cos(newAngle);
-			// r2.d.y = sin(newAngle);
-
 		} else if (waveBehaviour == Ray::wave_none) {
 			r2.behaviour = Ray::wave_none;
 			r2.d = r.d;
-			r2.previousRefractiveIndex = r.previousRefractiveIndex;
 //			cout << "Ray goes straight!\n";
 		} else {
 			cerr << "No idea what to do with this ray!";
 		}
 		r2.o = hitpos;
+		r2.previousRefractiveIndex = refractiveIndex;
 		r2.originalAngle = r.originalAngle;
 		r2.frequency = r.frequency;
 		r2.tracings = r.tracings;
@@ -168,8 +166,12 @@ namespace scene {
 	double Ionosphere::getIncidentAngle(Ray &r) {
 
 		double SZA = getSolarZenithAngle2d();
-		double beta = atan2(r.d.y, r.d.x);
+		double beta = atan(r.d.y/r.d.x);
 		double theta_i = Constants::PI/2 - beta - SZA;
+
+//		if (theta_i > Constants::PI/2) {
+//			theta_i -= Constants::PI/2;
+//		}
 		return theta_i;
 	}
 

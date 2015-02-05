@@ -46,7 +46,7 @@ namespace core {
 
 		// trace a ray
 		for (double freq = 2e6; freq <= 6e6; freq += 1e6) {
-			for (double theta = 50; theta <= 80; theta += 5) {
+			for (double theta = 30; theta <= 80; theta += 10) {
 				Ray r;
 				r.frequency = freq;
 				r.o.y = 2 + 3.39e6;
@@ -88,7 +88,7 @@ namespace core {
 		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
 			double nextTheta = theta + Constants::PI/180;
 
-			for (int h = 80000; h <= 200000; h += 1000) {
+			for (int h = 80000; h <= 200000; h += 500) {
 				Ionosphere io = Ionosphere(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
 						Vector2d((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
 
