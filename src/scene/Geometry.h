@@ -25,7 +25,7 @@ namespace scene {
 			Ray interact(Ray &r);
 			Line2d getMesh();
 			void setMesh(Line2d mesh);
-			double getSolarZenithAngle2f();
+			double getSolarZenithAngle2d();
 			enum object_type {
 				none = 0,
 				ionosphere = 1,

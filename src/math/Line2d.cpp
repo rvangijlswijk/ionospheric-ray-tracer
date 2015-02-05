@@ -78,7 +78,7 @@ namespace math {
 	}
 
 	/**
-	 *
+	 * The angular difference (in rad) between two lines
 	 */
 	double Line2d::angularDifference(Line2d line) {
 
@@ -87,6 +87,17 @@ namespace math {
 		double a = abs((thisSlope - otherSlope)/(1 + thisSlope * otherSlope));
 		return atan(a);
 
+	}
+
+	/**
+	 * The center point of this line
+	 */
+	Vector2d Line2d::getCenterPoint() {
+
+		Vector2d v;
+		v.x = (begin.x + end.x)/2;
+		v.y = (begin.y + end.y)/2;
+		return v;
 	}
 
 } /* namespace math */

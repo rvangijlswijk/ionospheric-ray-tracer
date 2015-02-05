@@ -33,6 +33,7 @@ namespace core {
 			void run();
 			void stop();
 			void addToDataset(Data dat);
+			void incrementTracing();
 			SceneManager getSceneManager();
 			list<Data> dataSet;
 			list<Ray> rays;
@@ -40,12 +41,14 @@ namespace core {
 		private:
 			Application() {
 				isRunning = false;
+				numTracings = 0;
 			}
 			Application(Application const&);      // Don't Implement.
 			void operator = (Application const&); // Don't implement
 			void createScene();
 			bool isRunning;
 			SceneManager scm;
+			int numTracings;
 
 	};
 

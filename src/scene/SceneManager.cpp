@@ -49,8 +49,6 @@ namespace scene {
 
 			// is it within the scene and within the limits of the ray itself?
 			if (smallestY < pos.y && pos.y < biggestY && smallestX < pos.x && pos.x < biggestX) {
-				printf("boundaries: %8.4f %8.4f %8.4f %8.4f \n", smallestX, biggestX, smallestY, biggestY);
-				printf("intersection: %8.4f %8.4f \n", pos.x, pos.y);
 				hit.pos = pos;
 				hit.o = g.type;
 				hit.g = g;

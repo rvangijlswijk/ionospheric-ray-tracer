@@ -31,12 +31,9 @@ namespace scene {
 	 * This angle depends on the spherical radius of the celestial body
 	 * and the heights of the endpoints of the mesh as well as its length.
 	 */
-	double Geometry::getSolarZenithAngle2f() {
+	double Geometry::getSolarZenithAngle2d() {
 
-		double xAvg = (mesh2d.begin.x + mesh2d.end.x)/2;
-		double yAvg = (mesh2d.begin.y + mesh2d.end.y)/2;
-
-		return Constants::PI/2 - atan2(yAvg, xAvg);
+		return atan2(mesh2d.getCenterPoint().x, mesh2d.getCenterPoint().y);
 	}
 
 	Line2d Geometry::getMesh() {

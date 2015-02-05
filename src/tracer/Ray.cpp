@@ -25,7 +25,7 @@ namespace tracer {
 
 	Ray::Ray() {
 		// TODO Auto-generated constructor stub
-		behaviour = Ray::none;
+		behaviour = Ray::wave_none;
 	}
 
 	/**
@@ -35,9 +35,10 @@ namespace tracer {
 	int Ray::trace() {
 
 		float x = (float) o.x;
-//		if (std::isnan(x) || std::isnan((float) o.y)) {
-//			return 0;
-//		}
+		if (std::isnan(x) || std::isnan((float) o.y)) {
+			cerr << "NaN exception!" << endl;
+			return 0;
+		}
 
 		// extrapolate a line from the ray start and its direction
 		Line2d rayLine;
@@ -48,44 +49,53 @@ namespace tracer {
 		rayEnd.y = o.y + Ray::magnitude * sin(angle);
 		rayLine.end = rayEnd;
 
-		printf("Tracing ray: %8.4f %8.4f %8.4f %8.4f theta: %8.8f\n", o.x, o.y, d.x, d.y, angle * 57.296);
+//		printf("Tracing ray: %8.4f %8.4f %8.4f %8.4f theta: %8.8f\n", o.x, o.y, d.x, d.y, angle * 57.296);
 
 		// find intersection
 		Intersection hit = Application::getInstance().getSceneManager().intersect(*this, rayLine);
 
 		Ray r2;
 
-		cout << "rayline: (" << rayLine.end.x << "," << rayLine.end.y << ") ";
-		//cout << "previndex: " << previousRefractiveIndex << "\n";
+//		cout << "rayline: (" << rayLine.end.x << "," << rayLine.end.y << ") ";
+//		cout << "previndex: " << previousRefractiveIndex << "\n";
 
 		// limit the simulation to avoid unnecessary calculations
 		if (rayLine.begin.distance(Vector2d(0,0)) > 5.2e6) {
+			cerr << "Out of scene bounds!" << endl;
+			return 0;
+		}
+		if (tracings >= TRACING_LIMIT) {
+			cerr << "Tracing limit exceeded!" << endl;
 			return 0;
 		}
 
 		// determine ray behaviour
 		// intersection with an ionospheric layer
 		if (hit.g.type == Geometry::ionosphere) {
-			return 0;
+			Application::getInstance().incrementTracing();
+			tracings++;
 			//cout << "result: ionosphere\n";
 			Ionosphere& gd = (Ionosphere&) hit.g;
 			r2 = gd.interact(*this, hit.pos);
-			if (r2.behaviour == Ray::no_propagation) {
+			if (r2.behaviour == Ray::wave_no_propagation) {
 				return 0;
 			} else {
 				return r2.trace();
 			}
 		} else if (hit.g.type == Geometry::terrain) {
+			Application::getInstance().incrementTracing();
+			tracings++;
 			cout << "result: terrain\n";
-			printf("Geometry coords: %8.4f %8.4f %8.4f %8.4f\n", hit.g.getMesh().begin.x, hit.g.getMesh().begin.y, hit.g.getMesh().end.x, hit.g.getMesh().end.y);
+//			printf("Geometry coords: %8.4f %8.4f %8.4f %8.4f\n", hit.g.getMesh().begin.x, hit.g.getMesh().begin.y, hit.g.getMesh().end.x, hit.g.getMesh().end.y);
 			return 0;
 		} else if (hit.g.type == Geometry::none) {
-			//cout << "result: none\n";
+//			cout << "result: none\n";
 			r2.o = rayLine.end;
 			r2.d = d;
 			r2.previousRefractiveIndex = previousRefractiveIndex;
 			r2.originalAngle = originalAngle;
 			r2.frequency = frequency;
+			r2.tracings = tracings;
 			Data dataset;
 			dataset.x = o.x;
 			dataset.y = o.y;
@@ -131,8 +141,18 @@ namespace tracer {
 		d.y = sin(angleRad);
 	}
 
+	/**
+	 * Perform an instance copy of this ray
+	 */
 	Ray Ray::copy() {
 
+		Ray r2;
+		r2.previousRefractiveIndex = previousRefractiveIndex;
+		r2.originalAngle = originalAngle;
+		r2.frequency = frequency;
+		r2.tracings = tracings;
+
+		return r2;
 	}
 
 } /* namespace tracer */

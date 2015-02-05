@@ -26,6 +26,7 @@ namespace core {
 
 	boost::thread_group threadGroup;
 	boost::mutex datasetMutex;
+	boost::mutex tracingIncMutex;
 
 	void Application::init() {
 
@@ -44,27 +45,27 @@ namespace core {
 		Timer tmr;
 
 		// trace a ray
-		for (double freq = 5e6; freq <= 6e6; freq += 1e6) {
-			for (double theta = 60; theta <= 60; theta += 10) {
+		for (double freq = 2e6; freq <= 6e6; freq += 1e6) {
+			for (double theta = 50; theta <= 80; theta += 5) {
 				Ray r;
 				r.frequency = freq;
 				r.o.y = 2 + 3.39e6;
 				r.originalAngle = theta * Constants::PI / 180.0;
 				r.setNormalAngle(r.originalAngle);
-				r.previousRefractiveIndex = 1.0; //75.0 * Constants::PI / 180.0;
 
-				r.trace();
-				//Worker w;
-				//threadGroup.add_thread(w.start(r));
+				//r.trace();
+				Worker w;
+				threadGroup.add_thread(w.start(r));
 			}
 		}
 
-		//threadGroup.join_all();
+		threadGroup.join_all();
 
 		stop();
 
 		double t = tmr.elapsed();
-	    cout << "Elapsed:" << t << endl;
+		double tracingsPerSec = numTracings / t;
+	    printf("Elapsed: %5.2f sec. %d tracings done. %5.2f tracings/sec", t, numTracings, tracingsPerSec);
 
 		//CsvExporter ce;
 		//ce.dump("Debug/data.csv", rayPath);
@@ -108,6 +109,13 @@ namespace core {
 		datasetMutex.lock();
 		dataSet.push_back(dat);
 		datasetMutex.unlock();
+	}
+
+	void Application::incrementTracing() {
+
+		tracingIncMutex.lock();
+		numTracings++;
+		tracingIncMutex.unlock();
 	}
 
 	SceneManager Application::getSceneManager() {

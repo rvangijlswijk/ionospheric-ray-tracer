@@ -28,6 +28,8 @@ namespace threading {
 
 	void Worker::process(Ray r) {
 
+		cout << "Worker started" << endl;
+
 		r.trace();
 
 		cout << "Worker done" << endl;

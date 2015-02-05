@@ -21,6 +21,7 @@ class Line2d {
 		Vector2d end;
 		Vector2d getVector();
 		Vector2d intersect(Line2d line);
+		Vector2d getCenterPoint();
 		double angularDifference(Line2d line);
 };
 

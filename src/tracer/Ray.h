@@ -29,18 +29,21 @@ namespace tracer {
 			Vector2d o;	// origin
 			Vector2d d;	// direction
 			double frequency = 0.0;
-			double previousRefractiveIndex = 0.0;
+			double previousRefractiveIndex = 1.0;
 			double originalAngle = 0.0;
+			int tracings = 0;
 			enum waveBehaviour {
-				reflection,
-				refraction,
-				transmission,
-				absorption,
-				no_propagation,
-				none
+				wave_reflection,
+				wave_refraction,
+				wave_transmission,
+				wave_absorption,
+				wave_no_propagation,
+				wave_none,
+				wave_tracing_limit_exceeded
 			};
 			waveBehaviour behaviour;
-			static constexpr double magnitude = 2000.0f;
+			static constexpr double magnitude = 900;
+			static constexpr int TRACING_LIMIT = 1000;
 	};
 
 } /* namespace tracer */
