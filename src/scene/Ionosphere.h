@@ -9,6 +9,7 @@
 #define IONOSPHERE_H_
 
 #include "Geometry.h"
+#include "../math/NDouble.h"
 
 namespace raytracer {
 namespace scene {
@@ -35,6 +36,11 @@ namespace scene {
 			int determineWaveBehaviour(Ray &r);
 			static constexpr double peakProductionAltitude = 125000.0;	// m
 			static constexpr double maximumProductionRate = 2.5e11;		// m^-3
+
+		private:
+			math::NDouble _plasmaFrequency;
+			math::NDouble _electronNumberDensity;
+			math::NDouble _altitude;
 	};
 
 } /* namespace scene */

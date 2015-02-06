@@ -44,9 +44,6 @@ namespace scene {
 		Ray r2;
 		double refractiveIndex = getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
 
-//		cout << "ionosphere: omega_p=" << getPlasmaFrequency() << ", n_e=" << getElectronNumberDensity() << ", h=" << getAltitude() << ", SZA=" << getSolarZenithAngle2d() << endl;
-//		cout << ", mu_r: " << refractiveIndex << ", prev mu_r:" << r.previousRefractiveIndex << endl;
-
 		double SZA = getSolarZenithAngle2d();
 		double beta = atan(r.d.y/r.d.x);
 		double theta_i = getIncidentAngle(r);
@@ -108,7 +105,12 @@ namespace scene {
 	 */
 	double Ionosphere::getPlasmaFrequency() {
 
-		return sqrt(Ionosphere::maximumProductionRate * pow(Constants::ELEMENTARY_CHARGE, 2) / (Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM));
+		if (!_plasmaFrequency.isset()) {
+			_plasmaFrequency.set(
+				sqrt(Ionosphere::maximumProductionRate * pow(Constants::ELEMENTARY_CHARGE, 2) / (Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM)));
+		}
+
+		return _plasmaFrequency.get();
 	}
 
 	/**
@@ -123,7 +125,10 @@ namespace scene {
 	}
 
 	/**
-	 * Compute the plasma refractive index according to the Appleton-Hartree
+	 * Compute the plasma refractive index. Three refractive methods are supplied:
+	 * - SIMPLE:
+	 * - KELSO: The simplified method as described in Kelso, 1964, p.208
+	 * - AHDR: Refractive index according to the Appleton-Hartree
 	 * dispersion relation
 	 */
 	double Ionosphere::getRefractiveIndex(Ray &r, refractiveMethod m) {
@@ -156,7 +161,7 @@ namespace scene {
 		double xAvg = (mesh2d.begin.x + mesh2d.end.x)/2;
 		double yAvg = (mesh2d.begin.y + mesh2d.end.y)/2;
 
-		return sqrt(pow(xAvg, 2) + pow(yAvg, 2)) - 3390e3; // todo: move hardcoded radius to config value
+		return sqrt(pow(xAvg, 2) + pow(yAvg, 2)) - 3390e3;
 	}
 
 	/**
@@ -169,9 +174,6 @@ namespace scene {
 		double beta = atan(r.d.y/r.d.x);
 		double theta_i = Constants::PI/2 - beta - SZA;
 
-//		if (theta_i > Constants::PI/2) {
-//			theta_i -= Constants::PI/2;
-//		}
 		return theta_i;
 	}
 
@@ -195,9 +197,6 @@ namespace scene {
 		} else {
 			criticalAngle = asin(r.previousRefractiveIndex / refractiveIndex);
 		}
-
-//		cout << "mu_2:" << refractiveIndex << ", mu1:" << r.previousRefractiveIndex << endl;
-//		cout << "theta_i:" << getIncidentAngle(r) * 180 / Constants::PI << " theta_c:" << criticalAngle * 180 / Constants::PI  << endl;
 
 		if (incidentAngle >= criticalAngle) {
 			return Ray::wave_reflection;

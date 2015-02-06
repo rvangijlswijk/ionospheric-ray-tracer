@@ -45,8 +45,8 @@ namespace core {
 		Timer tmr;
 
 		// trace a ray
-		for (double freq = 2e6; freq <= 6e6; freq += 1e6) {
-			for (double theta = 30; theta <= 80; theta += 10) {
+		for (double freq = 5e6; freq <= 5e6; freq += 1e6) {
+			for (double theta = 20; theta <= 60; theta += 20) {
 				Ray r;
 				r.frequency = freq;
 				r.o.y = 2 + 3.39e6;

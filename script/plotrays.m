@@ -2,7 +2,7 @@ clc;
 clear all;
 close all;
 
-angles = 30:10:80;
+angles = 20:20:60;
 frequencies = 2e6:1e6:6e6;
 ang=0:0.01:2*pi;
 
@@ -35,7 +35,7 @@ for f=1:length(frequencies)
      p(4) = p(4) + 0.02;
      set(hs, 'pos', p);
     hold on
-    plot(x'/1000,h'/1000)
+    plot(x'/1000,h'/1000, 'Color', [0.5 0.5 0.5])
     plot(0 + 3390*cos(ang), 3390 * sin(ang), 'r', 'LineWidth', 2)
     plot(0 + (3390+80)*cos(ang), (3390+80) * sin(ang), 'LineStyle', '--', 'Color', 'black')
     plot(0 + (3390+200)*cos(ang), (3390+200) * sin(ang), 'LineStyle', '--', 'Color', 'black')
