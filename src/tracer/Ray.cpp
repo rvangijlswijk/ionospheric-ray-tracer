@@ -54,8 +54,6 @@ namespace tracer {
 		// find intersection
 		Intersection hit = Application::getInstance().getSceneManager().intersect(*this, rayLine);
 
-		Ray r2;
-
 //		cout << "rayline: (" << rayLine.end.x << "," << rayLine.end.y << ") ";
 //		cout << "previndex: " << previousRefractiveIndex << "\n";
 
@@ -76,11 +74,11 @@ namespace tracer {
 			tracings++;
 			//cout << "result: ionosphere\n";
 			Ionosphere& gd = (Ionosphere&) hit.g;
-			r2 = gd.interact(*this, hit.pos);
-			if (r2.behaviour == Ray::wave_no_propagation) {
+			gd.interact(this, hit.pos);
+			if (behaviour == Ray::wave_no_propagation) {
 				return 0;
 			} else {
-				return r2.trace();
+				return trace();
 			}
 		} else if (hit.g.type == Geometry::terrain) {
 			Application::getInstance().incrementTracing();
@@ -90,19 +88,14 @@ namespace tracer {
 			return 0;
 		} else if (hit.g.type == Geometry::none) {
 //			cout << "result: none\n";
-			r2.o = rayLine.end;
-			r2.d = d;
-			r2.previousRefractiveIndex = previousRefractiveIndex;
-			r2.originalAngle = originalAngle;
-			r2.frequency = frequency;
-			r2.tracings = tracings;
+			o = rayLine.end;
 			Data dataset;
 			dataset.x = o.x;
 			dataset.y = o.y;
 			dataset.theta_0 = originalAngle;
 			dataset.frequency = frequency;
 			Application::getInstance().addToDataset(dataset);
-			return r2.trace();
+			return trace();
 		}
 
 		return 1;

@@ -39,64 +39,64 @@ namespace scene {
 	/**
 	 * Interaction between ray and ionospheric layer
 	 */
-	Ray Ionosphere::interact(Ray &r, Vector2d &hitpos) {
+	void Ionosphere::interact(Ray *r, Vector2d &hitpos) {
 
-		Ray r2;
 		double refractiveIndex = getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
 
 		double SZA = getSolarZenithAngle2d();
-		double beta = atan(r.d.y/r.d.x);
+		double beta = atan(r->d.y/r->d.x);
 		double theta_i = getIncidentAngle(r);
 
 		int waveBehaviour = determineWaveBehaviour(r);
 
 		if (waveBehaviour == Ray::wave_reflection) {
-			r2.behaviour = Ray::wave_reflection;
+			r->behaviour = Ray::wave_reflection;
 			double beta_r = - beta - 2*SZA;
-			r2.setAngle(beta_r);
-//			cout << "Reflect this ray! beta_r:" << beta_r * 180 / Constants::PI << " d.x,d.y:" << r2.d.x << "," << r2.d.y << "\n";
+			r->setAngle(beta_r);
+//			cout << "Reflect this ray! beta_r:" << beta_r * 180 / Constants::PI << " d.x,d.y:" << r->d.x << "," << r->d.y << "\n";
 		} else if (waveBehaviour == Ray::wave_refraction) {
-			if (r.d.y < 0) {
+			if (r->d.y < 0) {
 				theta_i = Constants::PI - theta_i;
 			}
-			r2.behaviour = Ray::wave_refraction;
-			double theta_r = asin((r.previousRefractiveIndex/refractiveIndex * sin(theta_i)));
+			r->behaviour = Ray::wave_refraction;
+			double theta_r = asin((r->previousRefractiveIndex/refractiveIndex * sin(theta_i)));
 			if (theta_r > 0.9 * Constants::PI/2) {
 //				cerr << "Bend this ray! refraction: theta_i:" << theta_i * 180 / Constants::PI << ", theta_r:" << theta_r * 180 / Constants::PI << endl;
 			}
 			double beta_2 = Constants::PI/2 - theta_r - SZA;
-			if (r.d.y < 0) {
-//				cerr << "Ray going down! r.d.y:" << r.d.y << ", beta_2:" << beta_2;
+			if (r->d.y < 0) {
+//				cerr << "Ray going down! r->d.y:" << r->d.y << ", beta_2:" << beta_2;
 				beta_2 = -Constants::PI/2 + theta_r - SZA;
-				r2.setAngle(beta_2);
-//				cerr << " changed to r.d.y:" << r.d.y << ",beta_2:" << beta_2 << endl;
+				r->setAngle(beta_2);
+//				cerr << " changed to r->d.y:" << r->d.y << ",beta_2:" << beta_2 << endl;
 			}
-			r2.setAngle(beta_2);
+			r->setAngle(beta_2);
 //			cout << "Bend this ray! refraction: theta_i:" << theta_i * 180 / Constants::PI << ", theta_r:" << theta_r * 180 / Constants::PI << " \n";
 		} else if (waveBehaviour == Ray::wave_none) {
-			r2.behaviour = Ray::wave_none;
-			r2.d = r.d;
+			r->behaviour = Ray::wave_none;
 //			cout << "Ray goes straight!\n";
 		} else {
 			cerr << "No idea what to do with this ray!";
 		}
-		r2.o = hitpos;
-		r2.previousRefractiveIndex = refractiveIndex;
-		r2.originalAngle = r.originalAngle;
-		r2.frequency = r.frequency;
-		r2.tracings = r.tracings;
+		r->o = hitpos;
+		r->previousRefractiveIndex = refractiveIndex;
 
 		Data d;
-		d.x = r.o.x;
-		d.y = r.o.y;
+		d.x = r->o.x;
+		d.y = r->o.y;
 		d.mu_r_sqrt = pow(refractiveIndex, 2);
 		d.n_e = getElectronNumberDensity();
 		d.omega_p = getPlasmaFrequency();
-		d.theta_0 = r.originalAngle;
-		d.frequency = r.frequency;
+		d.theta_0 = r->originalAngle;
+		d.frequency = r->frequency;
 		Application::getInstance().addToDataset(d);
+	}
 
-		return r2;
+	/**
+	 * Attenuate
+	 */
+	void Ionosphere::attenuate(Ray *r) {
+
 	}
 
 	/**
@@ -131,17 +131,17 @@ namespace scene {
 	 * - AHDR: Refractive index according to the Appleton-Hartree
 	 * dispersion relation
 	 */
-	double Ionosphere::getRefractiveIndex(Ray &r, refractiveMethod m) {
+	double Ionosphere::getRefractiveIndex(Ray *r, refractiveMethod m) {
 
 		double n = 1.0;
 
 		if (m == REFRACTION_SIMPLE) {
 
-			n = sqrt(1 - getPlasmaFrequency() / (2 * Constants::PI * r.frequency));
+			n = sqrt(1 - getPlasmaFrequency() / (2 * Constants::PI * r->frequency));
 		} else if (m == REFRACTION_KELSO) {
 
 			n = sqrt(1 - getElectronNumberDensity() * pow(Constants::ELEMENTARY_CHARGE, 2) /
-								(Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM * pow(2 * Constants::PI * r.frequency,2)));
+								(Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM * pow(2 * Constants::PI * r->frequency,2)));
 		} else if (m == REFRACTION_AHDR) {
 
 			//n = 1 - X / (1);
@@ -168,10 +168,10 @@ namespace scene {
 	 * The incident angle of a ray with respect to the ionospheric layer. This angle depends
 	 * on the propagation angle of the ray and the angle of the layer w.r.t. the sun (SZA)
 	 */
-	double Ionosphere::getIncidentAngle(Ray &r) {
+	double Ionosphere::getIncidentAngle(Ray *r) {
 
 		double SZA = getSolarZenithAngle2d();
-		double beta = atan(r.d.y/r.d.x);
+		double beta = atan(r->d.y/r->d.x);
 		double theta_i = Constants::PI/2 - beta - SZA;
 
 		return theta_i;
@@ -182,7 +182,7 @@ namespace scene {
 	 * Snells' law, a critical angle exists for which the reflected angle is 90 deg. Incident
 	 * angles above this critical angle are reflected, not refracted.
 	 */
-	int Ionosphere::determineWaveBehaviour(Ray &r) {
+	int Ionosphere::determineWaveBehaviour(Ray *r) {
 
 		double refractiveIndex = getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
 		double criticalAngle;
@@ -192,10 +192,10 @@ namespace scene {
 			incidentAngle -= Constants::PI/2;
 		}
 
-		if (refractiveIndex <= r.previousRefractiveIndex) {
-			criticalAngle = asin(refractiveIndex / r.previousRefractiveIndex);
+		if (refractiveIndex <= r->previousRefractiveIndex) {
+			criticalAngle = asin(refractiveIndex / r->previousRefractiveIndex);
 		} else {
-			criticalAngle = asin(r.previousRefractiveIndex / refractiveIndex);
+			criticalAngle = asin(r->previousRefractiveIndex / refractiveIndex);
 		}
 
 		if (incidentAngle >= criticalAngle) {

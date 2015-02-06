@@ -32,6 +32,7 @@ namespace tracer {
 			double previousRefractiveIndex = 1.0;
 			double originalAngle = 0.0;
 			int tracings = 0;
+			double pathLoss = 0.0;
 			enum waveBehaviour {
 				wave_reflection,
 				wave_refraction,
@@ -44,6 +45,7 @@ namespace tracer {
 			waveBehaviour behaviour;
 			static constexpr double magnitude = 900;
 			static constexpr int TRACING_LIMIT = 1000;
+			static constexpr double powerTransmitted = 10.0; 	// [W]
 	};
 
 } /* namespace tracer */

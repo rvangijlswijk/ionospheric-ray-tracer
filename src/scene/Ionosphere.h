@@ -27,13 +27,14 @@ namespace scene {
 				REFRACTION_KELSO,		// According to Kelso, 1964
 				REFRACTION_AHDR			// Appleton-Hartree Dispersion Relation
 			};
-			Ray interact(Ray &r, Vector2d &hitpos);
+			void interact(Ray *r, Vector2d &hitpos);
+			void attenuate(Ray *r);
 			double getPlasmaFrequency();
 			double getElectronNumberDensity();
-			double getRefractiveIndex(Ray &r, refractiveMethod m);
+			double getRefractiveIndex(Ray *r, refractiveMethod m);
 			double getAltitude();
-			double getIncidentAngle(Ray &r);
-			int determineWaveBehaviour(Ray &r);
+			double getIncidentAngle(Ray *r);
+			int determineWaveBehaviour(Ray *r);
 			static constexpr double peakProductionAltitude = 125000.0;	// m
 			static constexpr double maximumProductionRate = 2.5e11;		// m^-3
 
