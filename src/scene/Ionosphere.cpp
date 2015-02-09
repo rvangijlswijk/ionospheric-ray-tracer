@@ -81,6 +81,8 @@ namespace scene {
 		r->o = hitpos;
 		r->previousRefractiveIndex = refractiveIndex;
 
+		attenuate(r);
+
 		Data d;
 		d.x = r->o.x;
 		d.y = r->o.y;
@@ -89,25 +91,76 @@ namespace scene {
 		d.omega_p = getPlasmaFrequency();
 		d.theta_0 = r->originalAngle;
 		d.frequency = r->frequency;
+		d.signalPower = r->signalPower;
 		Application::getInstance().addToDataset(d);
 	}
 
 	/**
-	 * Attenuate
+	 * A radio wave is attenuated by its propagation through the ionosphere.
+	 * The attenuation calculation is based on Nielsen, 2007. Attenuation depends
+	 * on the electron-neutral collision frequenc, the altitude w.r.t the peak
+	 * production altitude and the radio wave frequency. The result is in db/m
+	 * and thus is internally converted to a dimensionless attenuation factor,
+	 * taking the layer height and the ray angle into account.
+	 * A ray with a higher SZA will travel a longher path through the layer and
+	 * thus face more attenuation.
 	 */
 	void Ionosphere::attenuate(Ray *r) {
 
+		double collisionFrequency = 1e6 * exp(-(getAltitude() - 90000) / Constants::NEUTRAL_SCALE_HEIGHT);
+
+		double attenuationDb = 4.61e-5 * getElectronNumberDensity() * (collisionFrequency
+				/(pow(2 * Constants::PI * r->frequency, 2) + pow(collisionFrequency, 2)))
+				* layerHeight / sin(r->getAngle()); // attenuation in [db/m]
+
+		printf("colfreq: %4.2e, freq: %2.1e, att.: %4.2e, ", collisionFrequency, r->frequency, attenuationDb);
+
+		r->signalPower /= pow(10, attenuationDb/10);
+	}
+
+	/**
+	 * A radio wave is attenuated by its propagation through the ionosphere.
+	 * The attenuation calculation is based on Withers, 2011. The ray frequencies
+	 * are considered intermediate frequencies with neither rayFreq << plasmaFreq and
+	 * plasmaFreq << rayFreq. Thus, the altitude w.r.t scale height depends what
+	 * attenuation factor (A) needs to be used.
+	 * Possible cases:
+	 *  A = P_lo if (z0 - zl)/H < -1
+	 *  A = minimum[P_lo, P_hi] if (z0 - zl)/H > -1
+	 * Subsequently: P = P_t / A where P is the resulting power
+	 */
+	void Ionosphere::attenuateWithers(Ray *r) {
+
+		double zL = Constants::NEUTRAL_SCALE_HEIGHT * log(Ionosphere::surfaceCollisionFrequency
+				/ (2 * Constants::PI * r->frequency));
+
+		double pLow = 8.69 * (1/cos(getSolarZenithAngle2d())) * ((Constants::NEUTRAL_SCALE_HEIGHT * Ionosphere::maximumProductionRate)
+				/(2 * Constants::ELECTRON_MASS * Constants::C * Constants::PERMITTIVITY_VACUUM * r->frequency * 2 *Constants::PI));
+		printf("pLow: %4.2e, ", pLow);
+
+		if (Ionosphere::peakProductionAltitude < zL - Constants::NEUTRAL_SCALE_HEIGHT) {
+			r->signalPower /= pLow;
+		} else {
+			double pHigh = 8.69 * (1/cos(getSolarZenithAngle2d())) * ((Constants::NEUTRAL_SCALE_HEIGHT *
+					Ionosphere::peakProductionAltitude * pow(Constants::ELEMENTARY_CHARGE, 2) * Ionosphere::surfaceCollisionFrequency)
+					/(2 * Constants::ELECTRON_MASS * Constants::C * pow(2 * Constants::PI * r->frequency,2)));
+			printf("pHigh: %4.2e, ", pHigh);
+			if (pLow < pHigh) r->signalPower /= pLow;
+			else r->signalPower /= pHigh;
+		}
 	}
 
 	/**
 	 * Calculate the plasma frequency which depends on the electron number density
 	 * which depends on the altitude (y). Use a chapman profile.
+	 * @unit: rad s^-1
 	 */
 	double Ionosphere::getPlasmaFrequency() {
 
 		if (!_plasmaFrequency.isset()) {
 			_plasmaFrequency.set(
-				sqrt(Ionosphere::maximumProductionRate * pow(Constants::ELEMENTARY_CHARGE, 2) / (Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM)));
+				sqrt(Ionosphere::maximumProductionRate * pow(Constants::ELEMENTARY_CHARGE, 2)
+				/ (Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM)));
 		}
 
 		return _plasmaFrequency.get();
@@ -115,6 +168,7 @@ namespace scene {
 
 	/**
 	 * Use a chapmanProfile to calculate the electron number density
+	 * @unit: particles m^-3
 	 */
 	double Ionosphere::getElectronNumberDensity() {
 
@@ -188,21 +242,19 @@ namespace scene {
 		double criticalAngle;
 		double incidentAngle = getIncidentAngle(r);
 
-		if (incidentAngle > Constants::PI/2) {
+		if (incidentAngle > Constants::PI/2)
 			incidentAngle -= Constants::PI/2;
-		}
 
-		if (refractiveIndex <= r->previousRefractiveIndex) {
+		if (refractiveIndex <= r->previousRefractiveIndex)
 			criticalAngle = asin(refractiveIndex / r->previousRefractiveIndex);
-		} else {
+		else
 			criticalAngle = asin(r->previousRefractiveIndex / refractiveIndex);
-		}
 
-		if (incidentAngle >= criticalAngle) {
+		if (incidentAngle >= criticalAngle)
 			return Ray::wave_reflection;
-		} else {
+		else
 			return Ray::wave_refraction;
-		}
+
 		return Ray::wave_none;
 	}
 

@@ -30,7 +30,7 @@ namespace {
 				r.frequency = 4e6;
 
 				r2.o = Vector2d(0, 3514.8e3);
-				r2.originalAngle = 30 * Constants::PI / 180.0; // SZA = 30 deg
+				r2.originalAngle = 80 * Constants::PI / 180.0; // SZA = 30 deg
 				r2.previousRefractiveIndex = 1.0;
 				r2.setAngle(10 * Constants::PI / 180.0);
 				r2.frequency = 5e6;
@@ -70,30 +70,58 @@ namespace {
 
 	TEST_F(IonosphereTest, RefractiveIndexSimple) {
 
-		ASSERT_NEAR(0.94, io.getRefractiveIndex(r, Ionosphere::REFRACTION_SIMPLE), 0.01);
-		ASSERT_NEAR(1.0, io2.getRefractiveIndex(r, Ionosphere::REFRACTION_SIMPLE), 0.01);
+		ASSERT_NEAR(0.94, io.getRefractiveIndex(&r, Ionosphere::REFRACTION_SIMPLE), 0.01);
+		ASSERT_NEAR(1.0, io2.getRefractiveIndex(&r, Ionosphere::REFRACTION_SIMPLE), 0.01);
 	}
 
 	TEST_F(IonosphereTest, RefractiveIndexKelso) {
 
-		ASSERT_NEAR(0.98, io.getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO), 0.01);
-		ASSERT_NEAR(0.44, io2.getRefractiveIndex(r2, Ionosphere::REFRACTION_KELSO), 0.01);
+		ASSERT_NEAR(0.98, io.getRefractiveIndex(&r, Ionosphere::REFRACTION_KELSO), 0.01);
+		ASSERT_NEAR(0.44, io2.getRefractiveIndex(&r2, Ionosphere::REFRACTION_KELSO), 0.01);
 	}
 
 	TEST_F(IonosphereTest, IncidentAngle) {
 
-		ASSERT_NEAR(0.524, io.getIncidentAngle(r), 0.001);
-		ASSERT_NEAR(0.510, io2.getIncidentAngle(r), 0.001);
-		ASSERT_NEAR(1.382, io2.getIncidentAngle(r2), 0.001);
+		ASSERT_NEAR(0.524, io.getIncidentAngle(&r), 0.001);
+		ASSERT_NEAR(0.510, io2.getIncidentAngle(&r), 0.001);
+		ASSERT_NEAR(1.382, io2.getIncidentAngle(&r2), 0.001);
 	}
 
 	TEST_F(IonosphereTest, DetermineWaveBehaviour) {
 
-		int behaviour = io.determineWaveBehaviour(r);
-		int behaviour2 = io2.determineWaveBehaviour(r2);
+		int behaviour = io.determineWaveBehaviour(&r);
+		int behaviour2 = io2.determineWaveBehaviour(&r2);
 
 		ASSERT_EQ(Ray::wave_refraction, behaviour);
 		ASSERT_EQ(Ray::wave_reflection, behaviour2);
+	}
+
+	/**
+	 * Test the total attenuation of a radio wave through the ionosphere.
+	 * According to Nielsen, 2007 (fig 5) a 4MHz signal at a SZA of 30 deg
+	 * should have a total attenuation of ~27 dB through the entire ionosphere.
+	 */
+	TEST_F(IonosphereTest, Attenuate) {
+
+		r.signalPower = 10;
+		r2.signalPower = 10;
+		io.layerHeight = 1e3;
+		io2.layerHeight = 1e3;
+
+		io.attenuate(&r);
+		io.attenuate(&r2);
+
+		ASSERT_NEAR(1.530, r.signalPower, 0.01);
+//		ASSERT_NEAR(3.064, r2.signalPower, 0.01);
+
+		r.signalPower = 10;
+		r2.signalPower = 10;
+
+		io2.attenuate(&r);
+		io2.attenuate(&r2);
+
+		ASSERT_NEAR(1.410, r.signalPower, 0.01);
+		ASSERT_NEAR(1.410, r2.signalPower, 0.01);
 	}
 
 	TEST_F(IonosphereTest, ExportDataTest) {
@@ -107,7 +135,7 @@ namespace {
 			io.setMesh(mesh);
 			d.n_e = io.getElectronNumberDensity();
 			d.omega_p = io.getPlasmaFrequency();
-			d.mu_r_sqrt = io.getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
+			d.mu_r_sqrt = io.getRefractiveIndex(&r, Ionosphere::REFRACTION_KELSO);
 			dataSet.push_back(d);
 		}
 		MatlabExporter me;

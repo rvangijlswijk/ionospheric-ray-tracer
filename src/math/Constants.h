@@ -19,6 +19,7 @@ namespace math {
 			static constexpr double NEUTRAL_SCALE_HEIGHT = 11100.0;
 			static constexpr double PERMITTIVITY_VACUUM = 8.8542e-12;
 			static constexpr double PI = 3.1415;
+			static constexpr double C = 2.9979e8;
 
 	};
 

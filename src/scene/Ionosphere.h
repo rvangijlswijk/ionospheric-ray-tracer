@@ -35,10 +35,13 @@ namespace scene {
 			double getAltitude();
 			double getIncidentAngle(Ray *r);
 			int determineWaveBehaviour(Ray *r);
+			double layerHeight;
 			static constexpr double peakProductionAltitude = 125000.0;	// m
 			static constexpr double maximumProductionRate = 2.5e11;		// m^-3
+			static constexpr double surfaceCollisionFrequency = 5e11;	// s^-1
 
 		private:
+			void attenuateWithers(Ray *r);
 			math::NDouble _plasmaFrequency;
 			math::NDouble _electronNumberDensity;
 			math::NDouble _altitude;

@@ -22,6 +22,7 @@ namespace exporter {
 			double mu_r_sqrt = 0;
 			double theta_0 = 0;
 			double frequency = 0;
+			double signalPower = 0;
 	};
 
 } /* namespace exporter */

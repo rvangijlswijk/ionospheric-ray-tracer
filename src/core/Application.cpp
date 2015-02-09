@@ -88,9 +88,11 @@ namespace core {
 		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
 			double nextTheta = theta + Constants::PI/180;
 
-			for (int h = 80000; h <= 200000; h += 500) {
+			int dh = 500;
+			for (int h = 80000; h <= 200000; h += dh) {
 				Ionosphere io = Ionosphere(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
 						Vector2d((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
+				io.layerHeight = dh;
 
 				scm.addToScene(io);
 			}
