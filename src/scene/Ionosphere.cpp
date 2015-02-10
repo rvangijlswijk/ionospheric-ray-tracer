@@ -134,18 +134,23 @@ namespace scene {
 		double zL = Constants::NEUTRAL_SCALE_HEIGHT * log(Ionosphere::surfaceCollisionFrequency
 				/ (2 * Constants::PI * r->frequency));
 
-		double pLow = 8.69 * (1/cos(getSolarZenithAngle2d())) * ((Constants::NEUTRAL_SCALE_HEIGHT * Ionosphere::maximumProductionRate)
+		printf("zL: %4.2e", zL);
+
+		double pLowDb = 8.69 * (1/cos(getSolarZenithAngle2d())) * ((Constants::NEUTRAL_SCALE_HEIGHT * Ionosphere::maximumProductionRate)
 				/(2 * Constants::ELECTRON_MASS * Constants::C * Constants::PERMITTIVITY_VACUUM * r->frequency * 2 *Constants::PI));
-		printf("pLow: %4.2e, ", pLow);
+
+		pLowDb = 7.3e-10 * (1/cos(getSolarZenithAngle2d())) * Constants::NEUTRAL_SCALE_HEIGHT * 1e9 / r->frequency;
+		double pLowW =  pow(10, pLowDb/10);
+		printf("pLowDb: %4.2e, pLowW: %4.2e ", pLowDb, pLowW);
 
 		if (Ionosphere::peakProductionAltitude < zL - Constants::NEUTRAL_SCALE_HEIGHT) {
-			r->signalPower /= pLow;
+			r->signalPower /= pLowDb;
 		} else {
 			double pHigh = 8.69 * (1/cos(getSolarZenithAngle2d())) * ((Constants::NEUTRAL_SCALE_HEIGHT *
 					Ionosphere::peakProductionAltitude * pow(Constants::ELEMENTARY_CHARGE, 2) * Ionosphere::surfaceCollisionFrequency)
 					/(2 * Constants::ELECTRON_MASS * Constants::C * pow(2 * Constants::PI * r->frequency,2)));
 			printf("pHigh: %4.2e, ", pHigh);
-			if (pLow < pHigh) r->signalPower /= pLow;
+			if (pLowDb < pHigh) r->signalPower /= pLowW;
 			else r->signalPower /= pHigh;
 		}
 	}

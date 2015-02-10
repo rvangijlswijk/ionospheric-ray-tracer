@@ -29,6 +29,7 @@ namespace scene {
 			};
 			void interact(Ray *r, Vector2d &hitpos);
 			void attenuate(Ray *r);
+			void attenuateWithers(Ray *r);
 			double getPlasmaFrequency();
 			double getElectronNumberDensity();
 			double getRefractiveIndex(Ray *r, refractiveMethod m);
@@ -41,7 +42,6 @@ namespace scene {
 			static constexpr double surfaceCollisionFrequency = 5e11;	// s^-1
 
 		private:
-			void attenuateWithers(Ray *r);
 			math::NDouble _plasmaFrequency;
 			math::NDouble _electronNumberDensity;
 			math::NDouble _altitude;
