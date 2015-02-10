@@ -41,6 +41,24 @@ namespace scene {
 	 */
 	void Ionosphere::interact(Ray *r, Vector2d &hitpos) {
 
+		refract(r, hitpos);
+
+		attenuate(r);
+
+		Data d;
+		d.x = r->o.x;
+		d.y = r->o.y;
+		d.mu_r_sqrt = pow(r->previousRefractiveIndex, 2);
+		d.n_e = getElectronNumberDensity();
+		d.omega_p = getPlasmaFrequency();
+		d.theta_0 = r->originalAngle;
+		d.frequency = r->frequency;
+		d.signalPower = r->signalPower;
+		Application::getInstance().addToDataset(d);
+	}
+
+	void Ionosphere::refract(Ray *r, Vector2d &hitpos) {
+
 		double refractiveIndex = getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
 
 		double SZA = getSolarZenithAngle2d();
@@ -80,19 +98,6 @@ namespace scene {
 		}
 		r->o = hitpos;
 		r->previousRefractiveIndex = refractiveIndex;
-
-		attenuate(r);
-
-		Data d;
-		d.x = r->o.x;
-		d.y = r->o.y;
-		d.mu_r_sqrt = pow(refractiveIndex, 2);
-		d.n_e = getElectronNumberDensity();
-		d.omega_p = getPlasmaFrequency();
-		d.theta_0 = r->originalAngle;
-		d.frequency = r->frequency;
-		d.signalPower = r->signalPower;
-		Application::getInstance().addToDataset(d);
 	}
 
 	/**

@@ -28,6 +28,7 @@ namespace scene {
 				REFRACTION_AHDR			// Appleton-Hartree Dispersion Relation
 			};
 			void interact(Ray *r, Vector2d &hitpos);
+			void refract(Ray *r, Vector2d &hitpos);
 			void attenuate(Ray *r);
 			void attenuateWithers(Ray *r);
 			double getPlasmaFrequency();
