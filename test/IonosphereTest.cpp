@@ -63,9 +63,9 @@ namespace {
 
 	TEST_F(IonosphereTest, PlasmaFrequency) {
 
-		ASSERT_NEAR(28.2e6, io.getPlasmaFrequency(), 1e4);
+		ASSERT_NEAR(5.9e6, io.getPlasmaFrequency(), 1e4);
 		ASSERT_NEAR(28.2e6, io2.getPlasmaFrequency(), 1e4);
-		ASSERT_NEAR(28.2e6, io3.getPlasmaFrequency(), 1e4);
+		ASSERT_NEAR(0, io3.getPlasmaFrequency(), 1e4);
 	}
 
 	TEST_F(IonosphereTest, RefractiveIndexSimple) {

@@ -169,7 +169,7 @@ namespace scene {
 
 		if (!_plasmaFrequency.isset()) {
 			_plasmaFrequency.set(
-				sqrt(Ionosphere::maximumProductionRate * pow(Constants::ELEMENTARY_CHARGE, 2)
+				sqrt(getElectronNumberDensity() * pow(Constants::ELEMENTARY_CHARGE, 2)
 				/ (Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM)));
 		}
 
