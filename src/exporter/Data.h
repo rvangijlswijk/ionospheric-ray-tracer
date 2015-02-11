@@ -15,6 +15,7 @@ namespace exporter {
 
 		public:
 			Data();
+			int rayNumber = 0;
 			double x = 0;
 			double y = 0;
 			double omega_p = 0;

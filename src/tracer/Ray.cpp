@@ -34,11 +34,11 @@ namespace tracer {
 	 */
 	int Ray::trace() {
 
-		float x = (float) o.x;
-		if (std::isnan(x) || std::isnan((float) o.y)) {
-			cerr << "NaN exception!" << endl;
-			return 0;
-		}
+//		float x = (float) o.x;
+//		if (std::isnan(x) || std::isnan((float) o.y)) {
+//			cerr << "NaN exception!" << endl;
+//			return 0;
+//		}
 
 		// extrapolate a line from the ray start and its direction
 		Line2d rayLine;
@@ -49,7 +49,7 @@ namespace tracer {
 		rayEnd.y = o.y + Ray::magnitude * sin(angle);
 		rayLine.end = rayEnd;
 
-//		printf("Tracing ray: %8.4f %8.4f %8.4f %8.4f theta: %8.8f\n", o.x, o.y, d.x, d.y, angle * 57.296);
+//		printf("Tracing ray: %4.2e %4.2e %4.2f %4.2f theta: %4.2f\n", o.x, o.y, d.x, d.y, angle * 57.296);
 
 		// find intersection
 		Intersection hit = Application::getInstance().getSceneManager().intersect(*this, rayLine);
@@ -58,7 +58,7 @@ namespace tracer {
 //		cout << "previndex: " << previousRefractiveIndex << "\n";
 
 		// limit the simulation to avoid unnecessary calculations
-		if (rayLine.begin.distance(Vector2d(0,0)) > 5.2e6) {
+		if (rayLine.begin.distance(Vector2d(0,0)) > 3390e3 + 250e3) {
 			cerr << "Out of scene bounds!" << endl;
 			return 0;
 		}
@@ -90,10 +90,12 @@ namespace tracer {
 //			cout << "result: none\n";
 			o = rayLine.end;
 			Data dataset;
+			dataset.rayNumber = rayNumber;
 			dataset.x = o.x;
 			dataset.y = o.y;
 			dataset.theta_0 = originalAngle;
 			dataset.frequency = frequency;
+			dataset.signalPower = signalPower;
 			Application::getInstance().addToDataset(dataset);
 			return trace();
 		}

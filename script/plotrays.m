@@ -3,11 +3,13 @@ clear all;
 close all;
 
 angles = 20:20:60;
-frequencies = 2e6:1e6:6e6;
+frequencies = 4e6:1e6:5e6;
 ang=0:0.01:2*pi;
 
 load ../Debug/data.dat;
 %data = data_IonosphereTest;
+
+numRays = max(data(:,1));
 
 figure;
 %plot(Ne,h)
@@ -15,11 +17,13 @@ legend(num2str(angles'));
 
 x = zeros(length(angles), length(data));
 h = zeros(length(angles), length(data));
+s = zeros(numRays, length(data));
+h2 = zeros(numRays, length(data));
 for f=1:length(frequencies)
     for n=1:length(angles)
-        xCur = data(abs(data(:,6) - deg2rad(angles(n))) < 0.01 & data(:,7) == frequencies(f), 1);
+        xCur = data(abs(data(:,7) - deg2rad(angles(n))) < 0.01 & data(:,8) == frequencies(f), 2);
         x(n,1:length(xCur)) = xCur;
-        hCur = data(abs(data(:,6) - deg2rad(angles(n))) < 0.01 & data(:,7) == frequencies(f), 2);
+        hCur = data(abs(data(:,7) - deg2rad(angles(n))) < 0.01 & data(:,8) == frequencies(f), 3);
         h(n,1:length(hCur)) = hCur;
         %omega_p = data(:,3);
         %Ne = data(:,4);
@@ -46,6 +50,7 @@ for f=1:length(frequencies)
     xlim([-50 1000]);
     ylim([3390 - 100 3390 + 250]);
 end
+
 
 % Plot mars
 % plot(0 + 3390*cos(ang), 3390 * sin(ang), 'r')
@@ -75,7 +80,7 @@ f_f0 = frequencies / (plasmaFreq / (2*pi));
 
 %figure;
 hold on
-for f=3e6
+for f=frequencies
     mu = data(abs(data(:,6) - deg2rad(50)) < 0.01 & data(:,7) == f, 5);
     mu2 = mu(mu > 0);
     criticalAngle = zeros(length(mu2), 1);
@@ -88,3 +93,16 @@ for f=3e6
     end
     %plot(criticalAngle*180/pi)
 end
+
+figure;
+hold on;
+for r = 1:numRays   
+    sCur = data(data(:,1) == r, 9);
+    hCur = data(data(:,1) == r, 3);
+    s(r,1:length(sCur)) = sCur;
+    h2(r,1:length(sCur)) = hCur;
+    sCur(sCur == 0) = nan;
+    plot(-sCur, (hCur - 3390e3)/1000);
+end
+xlabel('Cumulative loss [dB]');
+ylabel('Altitude [km]');

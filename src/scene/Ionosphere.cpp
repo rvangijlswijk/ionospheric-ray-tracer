@@ -48,6 +48,7 @@ namespace scene {
 		Data d;
 		d.x = r->o.x;
 		d.y = r->o.y;
+		d.rayNumber = r->rayNumber;
 		d.mu_r_sqrt = pow(r->previousRefractiveIndex, 2);
 		d.n_e = getElectronNumberDensity();
 		d.omega_p = getPlasmaFrequency();
@@ -89,38 +90,42 @@ namespace scene {
 //				cerr << " changed to r->d.y:" << r->d.y << ",beta_2:" << beta_2 << endl;
 			}
 			r->setAngle(beta_2);
-//			cout << "Bend this ray! refraction: theta_i:" << theta_i * 180 / Constants::PI << ", theta_r:" << theta_r * 180 / Constants::PI << " \n";
+//			cout << "Bend this ray! refraction: " << refractiveIndex << " theta_i:" << theta_i * 180 / Constants::PI << ", theta_r:" << theta_r * 180 / Constants::PI << " \n";
 		} else if (waveBehaviour == Ray::wave_none) {
 			r->behaviour = Ray::wave_none;
-//			cout << "Ray goes straight!\n";
+			cout << "Ray goes straight!\n";
 		} else {
 			cerr << "No idea what to do with this ray!";
 		}
-		r->o = hitpos;
+		r->o.x = hitpos.x;
+		r->o.y = hitpos.y;
 		r->previousRefractiveIndex = refractiveIndex;
 	}
 
 	/**
 	 * A radio wave is attenuated by its propagation through the ionosphere.
 	 * The attenuation calculation is based on Nielsen, 2007. Attenuation depends
-	 * on the electron-neutral collision frequenc, the altitude w.r.t the peak
+	 * on the electron-neutral collision frequency, the altitude w.r.t the peak
 	 * production altitude and the radio wave frequency. The result is in db/m
-	 * and thus is internally converted to a dimensionless attenuation factor,
-	 * taking the layer height and the ray angle into account.
-	 * A ray with a higher SZA will travel a longher path through the layer and
+	 * and thus is internally converted to attenuation in db, taking the layer
+	 * height and the ray angle into account.
+	 * A ray with a higher SZA will travel a longer path through the layer and
 	 * thus face more attenuation.
 	 */
 	void Ionosphere::attenuate(Ray *r) {
 
-		double collisionFrequency = 1e6 * exp(-(getAltitude() - 90000) / Constants::NEUTRAL_SCALE_HEIGHT);
+		double mu_r = sqrt(1 - pow(getPlasmaFrequency(), 2) / pow(2 * Constants::PI * r->frequency, 2));
 
-		double attenuationDb = 4.61e-5 * getElectronNumberDensity() * (collisionFrequency
-				/(pow(2 * Constants::PI * r->frequency, 2) + pow(collisionFrequency, 2)))
-				* layerHeight / sin(r->getAngle()); // attenuation in [db/m]
+		double ki = (-pow(getPlasmaFrequency(), 2) / (2 * Constants::C * mu_r))
+				* getCollisionFrequency() / (pow(2 * Constants::PI * r->frequency, 2) + pow(getCollisionFrequency(), 2));
 
-		printf("colfreq: %4.2e, freq: %2.1e, att.: %4.2e, ", collisionFrequency, r->frequency, attenuationDb);
+//		printf("wp: %4.2e, f: %4.2e, mu_r: %4.2e, colFreq: %4.2e, ki: %4.2e ", getPlasmaFrequency(), r->frequency, mu_r, getCollisionFrequency(), ki);
 
-		r->signalPower /= pow(10, attenuationDb/10);
+		double loss = 20 * log10(exp(1)) * ki * layerHeight * abs(1 / cos(getSolarZenithAngle2d()));
+
+//		printf("Loss: %4.2e ", loss);
+
+		r->signalPower += loss;
 	}
 
 	/**
@@ -167,13 +172,8 @@ namespace scene {
 	 */
 	double Ionosphere::getPlasmaFrequency() {
 
-		if (!_plasmaFrequency.isset()) {
-			_plasmaFrequency.set(
-				sqrt(getElectronNumberDensity() * pow(Constants::ELEMENTARY_CHARGE, 2)
-				/ (Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM)));
-		}
-
-		return _plasmaFrequency.get();
+		return sqrt(getElectronNumberDensity() * pow(Constants::ELEMENTARY_CHARGE, 2)
+				/ (Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM));
 	}
 
 	/**
@@ -239,6 +239,19 @@ namespace scene {
 		double theta_i = Constants::PI/2 - beta - SZA;
 
 		return theta_i;
+	}
+
+	/**
+	 * Model the collision frequency according to Nielsen 2007, figure 4. This is an interpolated
+	 * approximation and therefore only valid between 30 and 200km altitude.
+	 */
+	double Ionosphere::getCollisionFrequency() {
+
+		if (getAltitude() < 30e3 || getAltitude() > 200e3) {
+			throw std::invalid_argument("Collision frequency interpolation not valid for this altitude! Altitude must be between 30 and 200km.");
+		}
+
+		return Ionosphere::surfaceCollisionFrequency * exp(-(getAltitude() - 73e3) / 6200);
 	}
 
 	/**

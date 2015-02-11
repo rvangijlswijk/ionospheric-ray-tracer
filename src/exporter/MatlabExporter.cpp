@@ -24,13 +24,15 @@ namespace exporter {
 		ofstream data;
 		data.open(filepath);
 		while (!dataset.empty()) {
-			data << std::fixed << std::setprecision(4) << dataset.front().x << ","
+			data << std::fixed << std::setprecision(4) << dataset.front().rayNumber << ","
+				<< dataset.front().x << ","
 				<< dataset.front().y << ","
 				<< dataset.front().omega_p << ","
 				<< dataset.front().n_e << ","
 				<< dataset.front().mu_r_sqrt << ","
 				<< dataset.front().theta_0 << ","
-				<< dataset.front().frequency << "\n";
+				<< dataset.front().frequency << ","
+				<< dataset.front().signalPower << "\n";
 			dataset.pop_front();
 		}
 		data.close();

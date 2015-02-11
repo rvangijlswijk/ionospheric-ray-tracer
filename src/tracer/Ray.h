@@ -33,6 +33,7 @@ namespace tracer {
 			double originalAngle = 0.0;
 			int tracings = 0;
 			double signalPower = 0.0;
+			int rayNumber = 0;
 			enum waveBehaviour {
 				wave_reflection,
 				wave_refraction,

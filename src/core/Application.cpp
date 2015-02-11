@@ -45,11 +45,14 @@ namespace core {
 		Timer tmr;
 
 		// trace a ray
-		for (double freq = 5e6; freq <= 5e6; freq += 1e6) {
+		int rayCounter = 0;
+		for (double freq = 4e6; freq <= 5e6; freq += 1e6) {
 			for (double theta = 20; theta <= 60; theta += 20) {
 				Ray r;
+				r.rayNumber = ++rayCounter;
 				r.frequency = freq;
-				r.o.y = 2 + 3.39e6;
+				r.signalPower = 0;
+				r.o.y = 2 + 3390e3;
 				r.originalAngle = theta * Constants::PI / 180.0;
 				r.setNormalAngle(r.originalAngle);
 

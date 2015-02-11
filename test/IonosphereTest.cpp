@@ -96,32 +96,57 @@ namespace {
 		ASSERT_EQ(Ray::wave_reflection, behaviour2);
 	}
 
+	TEST_F(IonosphereTest, CollisionFrequency) {
+
+	}
+
 	/**
 	 * Test the total attenuation of a radio wave through the ionosphere.
 	 * According to Nielsen, 2007 (fig 5) a 4MHz signal at a SZA of 30 deg
 	 * should have a total attenuation of ~27 dB through the entire ionosphere.
+	 * Losses according to Withers, 2011, section 5.2:
+	 * Loss due to M2: ~1.5 dB
+	 * Loss due to M1: ~9.0 dB
+	 * Loss due to Meteoric layer: ~12.8dB
+	 * Loss due to EP: ~0.9 dB
+	 * Assuming: SZA = 0 deg
 	 */
 	TEST_F(IonosphereTest, Attenuate) {
 
-		r.signalPower = 10;
-		r2.signalPower = 10;
-		io.layerHeight = 1e3;
-		io2.layerHeight = 1e3;
+		Ray rA;
+		rA.frequency = 5e6;
+		rA.previousRefractiveIndex = 1.0;
+		rA.setAngle(90 * Constants::PI / 180); // SZA = 0 deg
 
-		io.attenuate(&r);
-		io.attenuate(&r2);
+		// M2 layer
+		rA.signalPower = 0;
+		for (int h = 80e3; h <= 200e3; h += 1000) {
+			Ionosphere ion;
+			Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + h), Vector2d(100e3, 3390e3 + h));
+			ion.setMesh(mesh);
+			ion.layerHeight = 1000;
+			ion.attenuate(&rA);
 
-		ASSERT_NEAR(1.530, r.signalPower, 0.01);
-//		ASSERT_NEAR(3.064, r2.signalPower, 0.01);
+			ASSERT_NEAR(h, ion.getAltitude(), 1);
+		}
 
-		r.signalPower = 10;
-		r2.signalPower = 10;
+		ASSERT_NEAR(-1.5, rA.signalPower, 0.1);
 
-		io2.attenuate(&r);
-		io2.attenuate(&r2);
-
-		ASSERT_NEAR(1.410, r.signalPower, 0.01);
-		ASSERT_NEAR(1.410, r2.signalPower, 0.01);
+		// M1 layer
+//		r.signalPower = 0;
+//		for (int h = 80e3; h <= 200e3; h += 1000) {
+//			Ionosphere ion;
+//			ion.peakProductionAltitude = 100e3;
+//			ion.maximumProductionRate = 1e11;
+//			Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + h), Vector2d(100e3, 3390e3 + h));
+//			ion.setMesh(mesh);
+//			ion.layerHeight = 1000;
+//			ion.attenuate(&rA);
+//
+//			ASSERT_NEAR(h, ion.getAltitude(), 1);
+//		}
+//
+//		ASSERT_NEAR(-9, r.signalPower, 0.1);
 	}
 
 	TEST_F(IonosphereTest, ExportDataTest) {
