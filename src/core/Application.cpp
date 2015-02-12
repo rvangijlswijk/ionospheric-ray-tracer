@@ -46,7 +46,7 @@ namespace core {
 
 		// trace a ray
 		int rayCounter = 0;
-		for (double freq = 4e6; freq <= 5e6; freq += 1e6) {
+		for (double freq = 5e6; freq <= 5e6; freq += 1e6) {
 			for (double theta = 20; theta <= 60; theta += 20) {
 				Ray r;
 				r.rayNumber = ++rayCounter;

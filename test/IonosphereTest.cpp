@@ -125,7 +125,7 @@ namespace {
 			Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + h), Vector2d(100e3, 3390e3 + h));
 			ion.setMesh(mesh);
 			ion.layerHeight = 1000;
-			ion.attenuate(&rA);
+			ion.attenuate(&rA, ion.layerHeight);
 
 			ASSERT_NEAR(h, ion.getAltitude(), 1);
 		}

@@ -29,7 +29,7 @@ namespace scene {
 			};
 			void interact(Ray *r, Vector2d &hitpos);
 			void refract(Ray *r, Vector2d &hitpos);
-			void attenuate(Ray *r);
+			void attenuate(Ray *r, double magnitude);
 			void attenuateWithers(Ray *r);
 			double getPlasmaFrequency();
 			double getElectronNumberDensity();

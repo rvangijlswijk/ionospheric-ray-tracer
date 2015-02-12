@@ -41,9 +41,11 @@ namespace scene {
 	 */
 	void Ionosphere::interact(Ray *r, Vector2d &hitpos) {
 
+		double magnitude = r->o.distance(hitpos);
+
 		refract(r, hitpos);
 
-		attenuate(r);
+		attenuate(r, magnitude);
 
 		Data d;
 		d.x = r->o.x;
@@ -61,11 +63,9 @@ namespace scene {
 	void Ionosphere::refract(Ray *r, Vector2d &hitpos) {
 
 		double refractiveIndex = getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
-
 		double SZA = getSolarZenithAngle2d();
 		double beta = atan(r->d.y/r->d.x);
 		double theta_i = getIncidentAngle(r);
-
 		int waveBehaviour = determineWaveBehaviour(r);
 
 		if (waveBehaviour == Ray::wave_reflection) {
@@ -112,7 +112,7 @@ namespace scene {
 	 * A ray with a higher SZA will travel a longer path through the layer and
 	 * thus face more attenuation.
 	 */
-	void Ionosphere::attenuate(Ray *r) {
+	void Ionosphere::attenuate(Ray *r, double magnitude) {
 
 		double mu_r = sqrt(1 - pow(getPlasmaFrequency(), 2) / pow(2 * Constants::PI * r->frequency, 2));
 
@@ -121,7 +121,9 @@ namespace scene {
 
 //		printf("wp: %4.2e, f: %4.2e, mu_r: %4.2e, colFreq: %4.2e, ki: %4.2e ", getPlasmaFrequency(), r->frequency, mu_r, getCollisionFrequency(), ki);
 
-		double loss = 20 * log10(exp(1)) * ki * layerHeight * abs(1 / cos(getSolarZenithAngle2d()));
+		double loss = 20 * log10(exp(1)) * ki * magnitude * abs(1 / cos(getSolarZenithAngle2d())) * abs(sin(r->getAngle()));
+
+//		printf("Loss: %4x.2e, theta: %4.2f, alt: %4.0f \n", loss, abs(sin(r->getAngle())), getAltitude());
 
 //		printf("Loss: %4.2e ", loss);
 
