@@ -13,6 +13,7 @@
 #include "../math/Constants.h"
 #include "../exporter/Data.h"
 #include "../core/Application.h"
+#include "../core/Config.h"
 
 namespace raytracer {
 namespace scene {
@@ -227,7 +228,7 @@ namespace scene {
 		double xAvg = (mesh2d.begin.x + mesh2d.end.x)/2;
 		double yAvg = (mesh2d.begin.y + mesh2d.end.y)/2;
 
-		return sqrt(pow(xAvg, 2) + pow(yAvg, 2)) - 3390e3;
+		return sqrt(pow(xAvg, 2) + pow(yAvg, 2)) - Config::getInstance().getInt("radius");
 	}
 
 	/**

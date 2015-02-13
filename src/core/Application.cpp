@@ -14,6 +14,7 @@
 #include "../math/Constants.h"
 #include "../threading/Worker.h"
 #include "Timer.cpp"
+#include "Config.h"
 
 namespace raytracer {
 namespace core {
@@ -38,6 +39,7 @@ namespace core {
 	void Application::start() {
 
 		isRunning = true;
+		Config::getInstance().loadFromFile("config/mars.json");
 	}
 
 	void Application::run() {
@@ -52,7 +54,7 @@ namespace core {
 				r.rayNumber = ++rayCounter;
 				r.frequency = freq;
 				r.signalPower = 0;
-				r.o.y = 2 + 3390e3;
+				r.o.y = 2 + Config::getInstance().getInt("radius");
 				r.originalAngle = theta * Constants::PI / 180.0;
 				r.setNormalAngle(r.originalAngle);
 

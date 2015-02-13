@@ -14,6 +14,7 @@
 #include "../scene/Ionosphere.h"
 #include "../exporter/Data.h"
 #include "../math/Constants.h"
+#include "../core/Config.h"
 
 namespace raytracer {
 namespace tracer {
@@ -58,7 +59,7 @@ namespace tracer {
 //		cout << "previndex: " << previousRefractiveIndex << "\n";
 
 		// limit the simulation to avoid unnecessary calculations
-		if (rayLine.begin.distance(Vector2d(0,0)) > 3390e3 + 250e3) {
+		if (rayLine.begin.distance(Vector2d(0,0)) > Config::getInstance().getInt("radius") + 250e3) {
 			cerr << "Out of scene bounds!" << endl;
 			return 0;
 		}
