@@ -13,6 +13,7 @@
 #include "../scene/Terrain.h"
 #include "../math/Constants.h"
 #include "../threading/Worker.h"
+#include "../../contrib/threadpool/threadpool.hpp"
 #include "Timer.cpp"
 #include "Config.h"
 
@@ -25,9 +26,10 @@ namespace core {
 	using namespace math;
 	using namespace threading;
 
-	boost::thread_group threadGroup;
 	boost::mutex datasetMutex;
 	boost::mutex tracingIncMutex;
+
+	boost::threadpool::pool tp(4);
 
 	void Application::init() {
 
@@ -48,8 +50,8 @@ namespace core {
 
 		// trace a ray
 		int rayCounter = 0;
-		for (double freq = 5e6; freq <= 5e6; freq += 1e6) {
-			for (double theta = 20; theta <= 60; theta += 20) {
+		for (double freq = 3e6; freq <= 7e6; freq += 1e6) {
+			for (double theta = 10; theta <= 80; theta += 5) {
 				Ray r;
 				r.rayNumber = ++rayCounter;
 				r.frequency = freq;
@@ -58,13 +60,12 @@ namespace core {
 				r.originalAngle = theta * Constants::PI / 180.0;
 				r.setNormalAngle(r.originalAngle);
 
-				//r.trace();
 				Worker w;
-				threadGroup.add_thread(w.start(r));
+				w.schedule(&tp, r);
 			}
 		}
 
-		threadGroup.join_all();
+		tp.wait();
 
 		stop();
 

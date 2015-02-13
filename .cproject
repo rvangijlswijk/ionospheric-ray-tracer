@@ -45,9 +45,9 @@
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.linker.1299123525" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
 								<option id="gnu.cpp.link.option.paths.582873542" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths"/>
 								<option id="gnu.cpp.link.option.libs.692856208" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="pthread"/>
 									<listOptionValue builtIn="false" value="boost_system"/>
 									<listOptionValue builtIn="false" value="boost_thread"/>
+									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.172877396" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -156,6 +156,7 @@
 								<option id="gnu.cpp.link.option.libs.1730416906" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="boost_system"/>
 									<listOptionValue builtIn="false" value="boost_thread"/>
+									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.74531271" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>

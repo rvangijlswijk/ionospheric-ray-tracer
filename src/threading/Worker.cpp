@@ -35,5 +35,10 @@ namespace threading {
 		cout << "Worker done" << endl;
 	}
 
+	void Worker::schedule(boost::threadpool::pool *tp, Ray r) {
+
+		tp->schedule(boost::bind(&Worker::process, this, r));
+	}
+
 } /* namespace threading */
 } /* namespace raytracer */

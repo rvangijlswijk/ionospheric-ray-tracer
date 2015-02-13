@@ -10,6 +10,7 @@
 
 #include <boost/thread.hpp>
 #include "../tracer/Ray.h"
+#include "../../contrib/threadpool/threadpool.hpp"
 
 namespace raytracer {
 namespace threading {
@@ -23,6 +24,7 @@ namespace threading {
 			boost::thread* start(Ray r);
 			void join();
 			void process(Ray r);
+			void schedule(boost::threadpool::pool *tp, Ray r);
 
 		private:
 			boost::thread thread;
