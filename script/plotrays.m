@@ -2,8 +2,8 @@ clc;
 clear all;
 close all;
 
-angles = 10:2:80;
-frequencies = 3e6:1e6:8e6;
+angles = 15:15:75;
+frequencies = 4e6:1e6:6e6;
 ang=0:0.01:2*pi;
 
 load ../Debug/data.dat;

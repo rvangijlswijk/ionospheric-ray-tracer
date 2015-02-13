@@ -9,6 +9,8 @@
 #include "../tracer/Ray.h"
 #include "../core/Application.h"
 #include "../math/Constants.h"
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
 
 namespace raytracer {
 namespace threading {
@@ -16,6 +18,7 @@ namespace threading {
 	using namespace core;
 	using namespace math;
 	using namespace tracer;
+	using namespace boost::log;
 
 	Worker::Worker() {
 
@@ -28,11 +31,11 @@ namespace threading {
 
 	void Worker::process(Ray r) {
 
-		cout << "Worker started" << endl;
+		BOOST_LOG_TRIVIAL(info) << "Worker started for ray " << r.rayNumber;
 
 		r.trace();
 
-		cout << "Worker done" << endl;
+		BOOST_LOG_TRIVIAL(info) << "Worker ended for ray " << r.rayNumber;
 	}
 
 	void Worker::schedule(boost::threadpool::pool *tp, Ray r) {

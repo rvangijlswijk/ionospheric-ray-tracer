@@ -5,6 +5,9 @@
 //============================================================================
 
 #include <iostream>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
 #include "Application.h"
 #include "../tracer/Ray.h"
 #include "../exporter/CsvExporter.h"
@@ -42,6 +45,11 @@ namespace core {
 
 		isRunning = true;
 		Config::getInstance().loadFromFile("config/mars.json");
+
+		boost::log::core::get()->set_filter
+		    (
+				boost::log::trivial::severity >= boost::log::trivial::info
+		    );
 	}
 
 	void Application::run() {
@@ -50,8 +58,8 @@ namespace core {
 
 		// trace a ray
 		int rayCounter = 0;
-		for (double freq = 3e6; freq <= 7e6; freq += 1e6) {
-			for (double theta = 10; theta <= 80; theta += 5) {
+		for (double freq = 4e6; freq <= 6e6; freq += 1e6) {
+			for (double theta = 10; theta <= 80; theta += 10) {
 				Ray r;
 				r.rayNumber = ++rayCounter;
 				r.frequency = freq;
@@ -64,6 +72,8 @@ namespace core {
 				w.schedule(&tp, r);
 			}
 		}
+
+		BOOST_LOG_TRIVIAL(info) << (tp.pending() + tp.size()) << " workers generated";
 
 		tp.wait();
 
