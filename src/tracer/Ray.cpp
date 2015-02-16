@@ -35,11 +35,10 @@ namespace tracer {
 	 */
 	int Ray::trace() {
 
-//		float x = (float) o.x;
-//		if (std::isnan(x) || std::isnan((float) o.y)) {
-//			cerr << "NaN exception!" << endl;
-//			return 0;
-//		}
+		if (std::isnan(o.x) || std::isnan((float) o.y)) {
+			cerr << "NaN exception!" << endl;
+			return 0;
+		}
 
 		// extrapolate a line from the ray start and its direction
 		Line2d rayLine;
