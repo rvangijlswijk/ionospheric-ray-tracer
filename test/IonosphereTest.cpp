@@ -5,6 +5,7 @@
 #include "../src/exporter/Data.h"
 #include "../src/exporter/MatlabExporter.h"
 #include "../src/math/Constants.h"
+#include "../src/core/Config.h"
 
 namespace {
 
@@ -12,6 +13,7 @@ namespace {
 	using namespace raytracer::tracer;
 	using namespace raytracer::exporter;
 	using namespace raytracer::math;
+	using namespace raytracer::core;
 
 	class IonosphereTest : public ::testing::Test {
 
@@ -34,6 +36,8 @@ namespace {
 				r2.previousRefractiveIndex = 1.0;
 				r2.setAngle(10 * Constants::PI / 180.0);
 				r2.frequency = 5e6;
+
+				Config::getInstance().loadFromFile("config/mars.json");
 			}
 
 			Ionosphere io, io2, io3;
@@ -117,6 +121,26 @@ namespace {
 		rA.frequency = 5e6;
 		rA.previousRefractiveIndex = 1.0;
 		rA.setAngle(90 * Constants::PI / 180); // SZA = 0 deg
+
+		// M2 layer
+		rA.signalPower = 0;
+		for (int h = 80e3; h <= 200e3; h += 1000) {
+			Ionosphere ion;
+			Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + h), Vector2d(100e3, 3390e3 + h));
+			ion.setMesh(mesh);
+			ion.layerHeight = 1000;
+			ion.attenuate(&rA, ion.layerHeight);
+
+			ASSERT_NEAR(h, ion.getAltitude(), 1);
+		}
+
+		ASSERT_NEAR(-1.5, rA.signalPower, 0.1);
+
+
+		Ray rB;
+		rB.frequency = 5e6;
+		rB.previousRefractiveIndex = 1.0;
+		rB.setAngle(40 * Constants::PI / 180); // SZA = 0 deg
 
 		// M2 layer
 		rA.signalPower = 0;
