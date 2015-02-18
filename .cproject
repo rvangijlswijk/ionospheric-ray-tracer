@@ -29,15 +29,17 @@
 								<option id="gnu.c.compiler.option.debugging.level.645604978" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.958856422" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/contrib}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/include/boost/log"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.879942772" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.287493016" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
 								<option id="gnu.cpp.compiler.option.optimization.level.39367603" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.1614229280" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.other.other.2109446341" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -std=c++11" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.other.2109446341" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -std=c++11 -DBOOST_LOG_DYN_LINK -v" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1185700233" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/contrib}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/include/boost/log"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.337191075" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -48,6 +50,7 @@
 								</option>
 								<option id="gnu.cpp.link.option.libs.692856208" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="boost_system"/>
+									<listOptionValue builtIn="false" value="boost_log"/>
 									<listOptionValue builtIn="false" value="boost_thread"/>
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
@@ -175,7 +178,7 @@
 								<option id="gnu.cpp.compiler.option.include.paths.1771146809" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/include/boost/log"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.other.verbose.165828502" superClass="gnu.cpp.compiler.option.other.verbose" value="true" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.other.verbose.165828502" name="Verbose (-v)" superClass="gnu.cpp.compiler.option.other.verbose" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1694655699" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1473217680" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
