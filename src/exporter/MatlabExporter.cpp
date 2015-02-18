@@ -32,7 +32,8 @@ namespace exporter {
 				<< dataset.front().mu_r_sqrt << ","
 				<< dataset.front().theta_0 << ","
 				<< dataset.front().frequency << ","
-				<< dataset.front().signalPower << "\n";
+				<< dataset.front().signalPower << ","
+				<< dataset.front().collisionType << "\n";
 			dataset.pop_front();
 		}
 		data.close();

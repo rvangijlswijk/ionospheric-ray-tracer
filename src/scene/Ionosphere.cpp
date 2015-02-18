@@ -58,6 +58,7 @@ namespace scene {
 		d.theta_0 = r->originalAngle;
 		d.frequency = r->frequency;
 		d.signalPower = r->signalPower;
+		d.collisionType = Geometry::ionosphere;
 		Application::getInstance().addToDataset(d);
 	}
 

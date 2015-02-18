@@ -8,6 +8,8 @@
 #ifndef DATA_H_
 #define DATA_H_
 
+#include "../scene/Geometry.h"
+
 namespace raytracer {
 namespace exporter {
 
@@ -24,6 +26,7 @@ namespace exporter {
 			double theta_0 = 0;
 			double frequency = 0;
 			double signalPower = 0;
+			scene::Geometry::object_type collisionType = scene::Geometry::none;
 	};
 
 } /* namespace exporter */

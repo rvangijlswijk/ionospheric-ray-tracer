@@ -83,6 +83,16 @@ namespace tracer {
 		} else if (hit.g.type == Geometry::terrain) {
 			Application::getInstance().incrementTracing();
 			tracings++;
+			o = rayLine.end;
+			Data dataset;
+			dataset.rayNumber = rayNumber;
+			dataset.x = o.x;
+			dataset.y = o.y;
+			dataset.theta_0 = originalAngle;
+			dataset.frequency = frequency;
+			dataset.signalPower = signalPower;
+			dataset.collisionType = Geometry::terrain;
+			Application::getInstance().addToDataset(dataset);
 			cout << "result: terrain\n";
 //			printf("Geometry coords: %8.4f %8.4f %8.4f %8.4f\n", hit.g.getMesh().begin.x, hit.g.getMesh().begin.y, hit.g.getMesh().end.x, hit.g.getMesh().end.y);
 			return 0;
@@ -96,6 +106,7 @@ namespace tracer {
 			dataset.theta_0 = originalAngle;
 			dataset.frequency = frequency;
 			dataset.signalPower = signalPower;
+			dataset.collisionType = Geometry::none;
 			Application::getInstance().addToDataset(dataset);
 			return trace();
 		}
