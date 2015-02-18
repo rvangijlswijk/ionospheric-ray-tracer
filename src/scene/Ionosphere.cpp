@@ -116,6 +116,11 @@ namespace scene {
 	 */
 	void Ionosphere::attenuate(Ray *r, double magnitude) {
 
+		double theta_r = r->getAngle() - Constants::PI/2 + getSolarZenithAngle2d();
+		if (r->d.y < 0) {
+			theta_r = - r->getAngle() - Constants::PI/2 + getSolarZenithAngle2d();
+		}
+
 		double mu_r = sqrt(1 - pow(getPlasmaFrequency(), 2) / pow(2 * Constants::PI * r->frequency, 2));
 
 		double ki = (-pow(getPlasmaFrequency(), 2) / (2 * Constants::C * mu_r))
@@ -123,9 +128,9 @@ namespace scene {
 
 //		printf("wp: %4.2e, f: %4.2e, mu_r: %4.2e, colFreq: %4.2e, ki: %4.2e ", getPlasmaFrequency(), r->frequency, mu_r, getCollisionFrequency(), ki);
 
-		double loss = 20 * log10(exp(1)) * ki * magnitude * abs(1 / cos(getSolarZenithAngle2d())) * abs(sin(r->getAngle()));
+		double loss = 20 * log10(exp(1)) * ki * magnitude * abs(1 / cos(getSolarZenithAngle2d())) * cos(abs(theta_r));
 
-//		printf("Loss: %4x.2e, theta: %4.2f, alt: %4.0f \n", loss, abs(sin(r->getAngle())), getAltitude());
+//		printf("magnitude: %4.2f, totalLoss: %4.2e, theta: %4.2f, alt: %4.2f \n", magnitude, r->signalPower, theta_r, getAltitude());
 
 //		printf("Loss: %4.2e ", loss);
 

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <typeinfo>
 #include <string>
+#include <list>
 #include "SceneManager.h"
 #include "Geometry.h"
 
@@ -27,6 +28,7 @@ namespace scene {
 		Vector2d pos,
 				 rayOrigin;
 		Intersection hit;
+		list<Intersection> hits;
 		hit.g.type = Geometry::none;
 		rayOrigin.x = r.o.x;
 		rayOrigin.y = r.o.y;
@@ -52,11 +54,21 @@ namespace scene {
 				hit.pos = pos;
 				hit.o = g.type;
 				hit.g = g;
-				return hit;
+				hits.push_back(hit);
 			}
 		}
 
-		return hit;
+		// evaluate which hit is closest
+		Intersection finalHit;
+		double distance = 1000e6;
+		for (Intersection i : hits) {
+			if (rayOrigin.distance(i.pos) < distance) {
+				finalHit = i;
+				distance = rayOrigin.distance(i.pos);
+			}
+		}
+
+		return finalHit;
 	}
 
 	/**

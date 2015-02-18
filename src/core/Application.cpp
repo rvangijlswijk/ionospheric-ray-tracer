@@ -58,14 +58,14 @@ namespace core {
 
 		// trace a ray
 		int rayCounter = 0;
-		for (double freq = 4e6; freq <= 6e6; freq += 1e6) {
-			for (double theta = 10; theta <= 80; theta += 10) {
+		for (double freq = 4.5e6; freq <= 4.5e6; freq += 0.5e6) {
+			for (double SZA = 0; SZA <= 80; SZA += 0.05) {
 				Ray r;
 				r.rayNumber = ++rayCounter;
 				r.frequency = freq;
 				r.signalPower = 0;
 				r.o.y = 2 + Config::getInstance().getInt("radius");
-				r.originalAngle = theta * Constants::PI / 180.0;
+				r.originalAngle = SZA * Constants::PI / 180.0;
 				r.setNormalAngle(r.originalAngle);
 
 				Worker w;
@@ -73,7 +73,7 @@ namespace core {
 			}
 		}
 
-		BOOST_LOG_TRIVIAL(info) << (tp.pending() + tp.size()) << " workers generated";
+		BOOST_LOG_TRIVIAL(info) << (tp.pending() + tp.size()) << " workers queued";
 
 		tp.wait();
 
@@ -104,7 +104,7 @@ namespace core {
 		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
 			double nextTheta = theta + Constants::PI/180;
 
-			int dh = 500;
+			int dh = 1000;
 			for (int h = 80000; h <= 200000; h += dh) {
 				Ionosphere io = Ionosphere(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
 						Vector2d((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
