@@ -94,7 +94,7 @@ namespace tracer {
 			dataset.collisionType = Geometry::terrain;
 			Application::getInstance().addToDataset(dataset);
 			cout << "result: terrain\n";
-			printf("Intersection with terrain at: %6.2f, %6.2f\n", hit.pos.x, hit.pos.y);
+//			printf("Intersection with terrain at: %6.2f, %6.2f\n", hit.pos.x, hit.pos.y);
 //			printf("Geometry coords: %8.4f %8.4f %8.4f %8.4f\n", hit.g.getMesh().begin.x, hit.g.getMesh().begin.y, hit.g.getMesh().end.x, hit.g.getMesh().end.y);
 			return 0;
 		} else if (hit.g.type == Geometry::none) {

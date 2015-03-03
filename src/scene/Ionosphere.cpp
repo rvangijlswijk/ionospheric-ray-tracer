@@ -34,7 +34,9 @@ namespace scene {
 	 */
 	void Ionosphere::interact(Ray *r, Vector2d &hitpos) {
 
-		peakDensity = NormalDistribution::getInstance().get(Ionosphere::electronPeakDensity, 5e9);
+		_altitude = getAltitude();
+		_peakProductionAltitude = NormalDistribution::getInstance().get(Ionosphere::peakProductionAltitude, 1);
+		_electronPeakDensity = NormalDistribution::getInstance().get(Ionosphere::electronPeakDensity, 5e9);
 
 		double magnitude = r->o.distance(hitpos);
 
@@ -113,7 +115,7 @@ namespace scene {
 
 		double loss = 20 * log10(exp(1)) * ki * magnitude * abs(1 / cos(geom.getSolarZenithAngle2d())) * cos(abs(theta_r));
 
-//		printf("magnitude: %4.2f, totalLoss: %4.2e, theta: %4.2f, alt: %4.2f \n", magnitude, r->signalPower, theta_r, getAltitude());
+//		printf("magnitude: %4.2f, totalLoss: %4.2e, theta: %4.2f, alt: %4.2f \n", magnitude, r->signalPower, theta_r, _altitude());
 
 //		printf("Loss: %4.2e ", loss);
 
@@ -145,11 +147,11 @@ namespace scene {
 		double pLowW =  pow(10, pLowDb/10);
 		printf("pLowDb: %4.2e, pLowW: %4.2e ", pLowDb, pLowW);
 
-		if (Ionosphere::peakProductionAltitude < zL - Constants::NEUTRAL_SCALE_HEIGHT) {
+		if (_peakProductionAltitude < zL - Constants::NEUTRAL_SCALE_HEIGHT) {
 			r->signalPower /= pLowDb;
 		} else {
 			double pHigh = 8.69 * (1/cos(geom.getSolarZenithAngle2d())) * ((Constants::NEUTRAL_SCALE_HEIGHT *
-					Ionosphere::peakProductionAltitude * pow(Constants::ELEMENTARY_CHARGE, 2) * Ionosphere::surfaceCollisionFrequency)
+					_peakProductionAltitude * pow(Constants::ELEMENTARY_CHARGE, 2) * Ionosphere::surfaceCollisionFrequency)
 					/(2 * Constants::ELECTRON_MASS * Constants::C * pow(2 * Constants::PI * r->frequency,2)));
 			printf("pHigh: %4.2e, ", pHigh);
 			if (pLowDb < pHigh) r->signalPower /= pLowW;
@@ -190,7 +192,7 @@ namespace scene {
 //			cerr << "Electron peak density: " << peakDensity << endl;
 //		}
 
-		return peakDensity;
+		return _electronPeakDensity;
 	}
 
 	/**
@@ -210,7 +212,7 @@ namespace scene {
 	 */
 	double Ionosphere::getElectronNumberDensity() {
 
-		double normalizedHeight = (getAltitude() - Ionosphere::peakProductionAltitude) / Constants::NEUTRAL_SCALE_HEIGHT;
+		double normalizedHeight = (_altitude - _peakProductionAltitude) / Constants::NEUTRAL_SCALE_HEIGHT;
 
 		return getElectronPeakDensity() *
 				exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(geom.getSolarZenithAngle2d())) * exp(-normalizedHeight) ));
@@ -275,14 +277,14 @@ namespace scene {
 	 */
 	double Ionosphere::getCollisionFrequency() {
 
-		if (getAltitude() < 30e3 || getAltitude() > 200e3) {
-			cerr << "Altitude: " << getAltitude() << endl;
+		if (_altitude < 30e3 || _altitude > 200e3) {
+			cerr << "Altitude: " << _altitude << endl;
 			printf("Begin x,y, end x,y (%4.2f, %4.2f), (%4.2f, %4.2f)\n",
 					geom.mesh2d.begin.x, geom.mesh2d.begin.y, geom.mesh2d.end.x, geom.mesh2d.end.y);
 			throw std::invalid_argument("Collision frequency interpolation not valid for this altitude! Altitude must be between 30 and 200km.");
 		}
 
-		return Ionosphere::surfaceCollisionFrequency * exp(-(getAltitude() - 73e3) / 6200);
+		return Ionosphere::surfaceCollisionFrequency * exp(-(_altitude - 73e3) / 6200);
 	}
 
 	/**

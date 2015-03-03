@@ -41,7 +41,6 @@ namespace scene {
 			double getCollisionFrequency();
 			int determineWaveBehaviour(Ray *r);
 			double layerHeight = 0;
-			double peakDensity = 0;
 			Geometry geom;
 			static constexpr double peakProductionAltitude = 125000.0;	// m
 			static constexpr double electronPeakDensity = 2.5e11;		// m^-3
@@ -50,7 +49,9 @@ namespace scene {
 		private:
 			math::NDouble* _plasmaFrequency = new math::NDouble();
 			math::NDouble* _electronNumberDensity = new math::NDouble();
-			math::NDouble* _altitude = new math::NDouble();
+			double _altitude = 0;
+			double _electronPeakDensity = 0;
+			double _peakProductionAltitude = 0;
 	};
 
 } /* namespace scene */
