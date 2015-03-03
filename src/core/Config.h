@@ -7,12 +7,10 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-#include "../../contrib/rapidjson/document.h"
+#include "../../contrib/jsoncpp/json/value.h"
 
 namespace raytracer {
 namespace core {
-
-	using namespace rapidjson;
 
 	class Config {
 
@@ -24,12 +22,13 @@ namespace core {
 			void loadFromFile(const char * filepath);
 			int getInt(const char * path);
 			double getDouble(const char * path);
+			Json::Value getArray(const char * path);
 
 		private:
 			Config() {}
 			Config(Config const&);      // Don't Implement.
 			void operator = (Config const&); // Don't implement
-			Document _doc;
+			Json::Value _doc;
 
 	};
 

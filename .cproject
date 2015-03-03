@@ -50,6 +50,7 @@
 								</option>
 								<option id="gnu.cpp.link.option.libs.692856208" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="boost_system"/>
+									<listOptionValue builtIn="false" value="json_linux-gcc-4.9.1_libmt"/>
 									<listOptionValue builtIn="false" value="boost_log"/>
 									<listOptionValue builtIn="false" value="boost_thread"/>
 									<listOptionValue builtIn="false" value="pthread"/>
@@ -191,6 +192,7 @@
 									<listOptionValue builtIn="false" value="boost_system"/>
 									<listOptionValue builtIn="false" value="boost_log"/>
 									<listOptionValue builtIn="false" value="boost_thread"/>
+									<listOptionValue builtIn="false" value="json_linux-gcc-4.9.1_libmt"/>
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.74531271" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">

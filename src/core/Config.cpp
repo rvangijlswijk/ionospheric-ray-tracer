@@ -6,43 +6,56 @@
  */
 
 #include <iostream>
-#include <cstdio>
-#include <string.h>
+#include <fstream>
 #include "Config.h"
-#include "../../contrib/rapidjson/filereadstream.h"
+#include <string>
+#include "../../contrib/jsoncpp/json/reader.h"
 
 namespace raytracer {
 namespace core {
 
-	using namespace rapidjson;
 	using namespace std;
 
 	void Config::loadFromFile(const char * filepath) {
 
-		FILE* fp = fopen(filepath, "r"); // non-Windows use "r"
-		char readBuffer[65536];
-		FileReadStream is(fp, readBuffer, sizeof(readBuffer));
-
-		_doc.ParseStream(is);
-
+		Json::Reader r = Json::Reader();
+		std::ifstream test(filepath, std::ifstream::binary);
+		bool success = r.parse(test, _doc, false);
+		if ( !success ) {
+			// report to the user the failure and their locations in the document.
+			std::cout  << r.getFormatedErrorMessages() << "\n";
+		}
 	}
 
 	int Config::getInt(const char * path) {
 
-		if (!_doc.HasMember(path)) {
-			cerr << path << " doesnt exist!";
+		if (!_doc.isMember(path)) {
+			cerr << path << " does not exist!";
 		}
 
-		return _doc[path].GetInt();
+		return _doc.get(path, "UTF-32").asInt();
 	}
 
 	double Config::getDouble(const char * path) {
 
-		if (!_doc.HasMember(path)) {
-			cerr << path << " doesnt exist!";
+		if (!_doc.isMember(path)) {
+			cerr << path << " does not exist!";
 		}
 
-		return _doc[path].GetDouble();
+		return _doc.get(path, "UTF-32").asDouble();
+	}
+
+	Json::Value Config::getArray(const char * path) {
+
+		if (!_doc.isMember(path)) {
+			cerr << path << " does not exist!";
+		}
+
+		if (!_doc.get(path, "UTF-32").isArray()) {
+			cerr << path << " is not an array!";
+		}
+
+		return _doc[path];
 	}
 
 } /* namespace core */
