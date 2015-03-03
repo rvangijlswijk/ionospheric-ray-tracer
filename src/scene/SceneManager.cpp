@@ -87,5 +87,13 @@ namespace scene {
 		return sceneObjects;
 	}
 
+	/**
+	 * Remove all objects currently defined in the scene
+	 */
+	void SceneManager::removeAllFromScene() {
+
+		sceneObjects.clear();
+	}
+
 } /* namespace scene */
 } /* namespace raytracer */

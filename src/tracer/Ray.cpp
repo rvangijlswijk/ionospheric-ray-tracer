@@ -35,7 +35,7 @@ namespace tracer {
 	 */
 	int Ray::trace() {
 
-		if (std::isnan(o.x) || std::isnan((float) o.y)) {
+		if (std::isnan(o.x) || std::isnan(o.y)) {
 			cerr << "NaN exception!" << endl;
 			return 0;
 		}
@@ -73,8 +73,8 @@ namespace tracer {
 			Application::getInstance().incrementTracing();
 			tracings++;
 			//cout << "result: ionosphere\n";
-			Ionosphere& gd = (Ionosphere&) hit.g;
-			gd.interact(this, hit.pos);
+			Ionosphere io = Ionosphere(hit.g);
+			io.interact(this, hit.pos);
 			if (behaviour == Ray::wave_no_propagation) {
 				return 0;
 			} else {
@@ -94,6 +94,7 @@ namespace tracer {
 			dataset.collisionType = Geometry::terrain;
 			Application::getInstance().addToDataset(dataset);
 			cout << "result: terrain\n";
+			printf("Intersection with terrain at: %6.2f, %6.2f\n", hit.pos.x, hit.pos.y);
 //			printf("Geometry coords: %8.4f %8.4f %8.4f %8.4f\n", hit.g.getMesh().begin.x, hit.g.getMesh().begin.y, hit.g.getMesh().end.x, hit.g.getMesh().end.y);
 			return 0;
 		} else if (hit.g.type == Geometry::none) {

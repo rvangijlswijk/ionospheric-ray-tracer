@@ -19,6 +19,7 @@
 #include "../../contrib/threadpool/threadpool.hpp"
 #include "Timer.cpp"
 #include "Config.h"
+#include "../math/NormalDistribution.h"
 
 namespace raytracer {
 namespace core {
@@ -36,7 +37,6 @@ namespace core {
 
 	void Application::init() {
 
-		createScene();
 		start();
 		run();
 	}
@@ -58,24 +58,33 @@ namespace core {
 
 		// trace a ray
 		int rayCounter = 0;
-		for (double freq = 4.5e6; freq <= 4.5e6; freq += 0.5e6) {
-			for (double SZA = 0; SZA <= 80; SZA += 0.05) {
-				Ray r;
-				r.rayNumber = ++rayCounter;
-				r.frequency = freq;
-				r.signalPower = 0;
-				r.o.y = 2 + Config::getInstance().getInt("radius");
-				r.originalAngle = SZA * Constants::PI / 180.0;
-				r.setNormalAngle(r.originalAngle);
+		for (int iteration = 0; iteration < 1; iteration++) {
 
-				Worker w;
-				w.schedule(&tp, r);
+			BOOST_LOG_TRIVIAL(info) << "Iteration " << iteration;
+
+			createScene();
+
+			for (double freq = 5e6; freq <= 5e6; freq += 0.5e6) {
+				for (double SZA = 30; SZA <= 60; SZA += 10) {
+					Ray r;
+					r.rayNumber = ++rayCounter;
+					r.frequency = freq;
+					r.signalPower = 0;
+					r.o.y = 2 + Config::getInstance().getInt("radius");
+					r.originalAngle = SZA * Constants::PI / 180.0;
+					r.setNormalAngle(r.originalAngle);
+
+					Worker w;
+					w.schedule(&tp, r);
+				}
 			}
+
+			BOOST_LOG_TRIVIAL(info) << (tp.pending() + tp.size()) << " workers queued";
+
+			tp.wait();
+
+			flushScene();
 		}
-
-		BOOST_LOG_TRIVIAL(info) << (tp.pending() + tp.size()) << " workers queued";
-
-		tp.wait();
 
 		stop();
 
@@ -99,16 +108,17 @@ namespace core {
 	 */
 	void Application::createScene() {
 
-		double R = 3.39e6; // Mars radius. Todo: move to config files
+		double R = Config::getInstance().getInt("radius");
 
 		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
 			double nextTheta = theta + Constants::PI/180;
 
 			int dh = 1000;
 			for (int h = 80000; h <= 200000; h += dh) {
-				Ionosphere io = Ionosphere(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
+				Geometry io = Geometry(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
 						Vector2d((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
-				io.layerHeight = dh;
+				io.type = Geometry::ionosphere;
+				//io.layerHeight = dh;
 
 				scm.addToScene(io);
 			}
@@ -120,6 +130,14 @@ namespace core {
 
 			scm.addToScene(tr);
 		}
+	}
+
+	/**
+	 * Flush the scene by clearing the list of scene objects
+	 */
+	void Application::flushScene() {
+
+		scm.removeAllFromScene();
 	}
 
 	void Application::addToDataset(Data dat) {

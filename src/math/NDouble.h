@@ -21,7 +21,7 @@ namespace math {
 
 		private:
 			double val = 0.0;
-			bool hasBeenSet;
+			int initialized = 0;
 	};
 
 } /* namespace threading */

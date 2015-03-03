@@ -26,8 +26,7 @@ namespace core {
 			double getDouble(const char * path);
 
 		private:
-			Config() {
-			}
+			Config() {}
 			Config(Config const&);      // Don't Implement.
 			void operator = (Config const&); // Don't implement
 			Document _doc;

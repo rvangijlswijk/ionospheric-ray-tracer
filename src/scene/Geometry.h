@@ -32,8 +32,6 @@ namespace scene {
 				terrain = 2
 			};
 			object_type type = none;
-
-		protected:
 			Line2d mesh2d;
 	};
 

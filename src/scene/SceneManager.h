@@ -26,6 +26,7 @@ namespace scene {
 			SceneManager();
 			Intersection intersect(Ray &r, Line2d &rayLine);
 			void addToScene(Geometry obj);
+			void removeAllFromScene();
 			list<Geometry> getScene();
 
 		private:

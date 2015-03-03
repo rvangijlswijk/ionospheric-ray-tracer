@@ -5,15 +5,13 @@
  *      Author: rian
  */
 
+#include <iostream>
 #include "NDouble.h"
 
 namespace raytracer {
 namespace math {
 
-	NDouble::NDouble() {
-
-		hasBeenSet = false;
-	}
+	NDouble::NDouble() {}
 
 	double NDouble::get() {
 
@@ -23,17 +21,17 @@ namespace math {
 	void NDouble::set(double v) {
 
 		val = v;
-		hasBeenSet = true;
+		initialized = 1;
 	}
 
 	bool NDouble::isset() {
 
-		return hasBeenSet;
+		return initialized == 1 ? 1 : 0;
 	}
 
 	void NDouble::unset() {
 
-		hasBeenSet = false;
+		initialized = 0;
 	}
 
 } /* namespace threading */

@@ -5,14 +5,17 @@
  *      Author: rian
  */
 
+#include <iostream>
+#include <cstdio>
+#include <string.h>
 #include "Config.h"
 #include "../../contrib/rapidjson/filereadstream.h"
-#include <cstdio>
 
 namespace raytracer {
 namespace core {
 
 	using namespace rapidjson;
+	using namespace std;
 
 	void Config::loadFromFile(const char * filepath) {
 
@@ -26,10 +29,18 @@ namespace core {
 
 	int Config::getInt(const char * path) {
 
+		if (!_doc.HasMember(path)) {
+			cerr << path << " doesnt exist!";
+		}
+
 		return _doc[path].GetInt();
 	}
 
 	double Config::getDouble(const char * path) {
+
+		if (!_doc.HasMember(path)) {
+			cerr << path << " doesnt exist!";
+		}
 
 		return _doc[path].GetDouble();
 	}
