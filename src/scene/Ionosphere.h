@@ -31,6 +31,7 @@ namespace scene {
 			void refract(Ray *r, Vector2d &hitpos);
 			void attenuate(Ray *r, double magnitude);
 			void attenuateWithers(Ray *r);
+			void exportData(Ray *r);
 			double getPlasmaFrequency();
 			double getElectronPeakDensity();
 			double getElectronNumberDensity();

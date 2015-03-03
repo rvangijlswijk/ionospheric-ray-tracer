@@ -58,14 +58,14 @@ namespace core {
 
 		// trace a ray
 		int rayCounter = 0;
-		for (int iteration = 0; iteration < 1; iteration++) {
+		for (int iteration = 0; iteration < 10; iteration++) {
 
 			BOOST_LOG_TRIVIAL(info) << "Iteration " << iteration;
 
 			createScene();
 
 			for (double freq = 5e6; freq <= 5e6; freq += 0.5e6) {
-				for (double SZA = 30; SZA <= 60; SZA += 10) {
+				for (double SZA = 60; SZA <= 60; SZA += 10) {
 					Ray r;
 					r.rayNumber = ++rayCounter;
 					r.frequency = freq;

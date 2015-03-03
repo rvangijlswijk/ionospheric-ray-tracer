@@ -34,7 +34,7 @@ namespace scene {
 	 */
 	void Ionosphere::interact(Ray *r, Vector2d &hitpos) {
 
-		peakDensity = Ionosphere::electronPeakDensity; //(NormalDistribution::getInstance().get(Ionosphere::electronPeakDensity, 1e9));
+		peakDensity = NormalDistribution::getInstance().get(Ionosphere::electronPeakDensity, 5e9);
 
 		double magnitude = r->o.distance(hitpos);
 
@@ -42,18 +42,7 @@ namespace scene {
 
 		attenuate(r, magnitude);
 
-		Data d;
-		d.x = r->o.x;
-		d.y = r->o.y;
-		d.rayNumber = r->rayNumber;
-		d.mu_r_sqrt = pow(r->previousRefractiveIndex, 2);
-		d.n_e = getElectronNumberDensity();
-		d.omega_p = getPlasmaFrequency();
-		d.theta_0 = r->originalAngle;
-		d.frequency = r->frequency;
-		d.signalPower = r->signalPower;
-		d.collisionType = Geometry::ionosphere;
-		Application::getInstance().addToDataset(d);
+		exportData(r);
 	}
 
 	void Ionosphere::refract(Ray *r, Vector2d &hitpos) {
@@ -166,6 +155,22 @@ namespace scene {
 			if (pLowDb < pHigh) r->signalPower /= pLowW;
 			else r->signalPower /= pHigh;
 		}
+	}
+
+	void Ionosphere::exportData(Ray *r) {
+
+		Data d;
+		d.x = r->o.x;
+		d.y = r->o.y;
+		d.rayNumber = r->rayNumber;
+		d.mu_r_sqrt = pow(r->previousRefractiveIndex, 2);
+		d.n_e = getElectronNumberDensity();
+		d.omega_p = getPlasmaFrequency();
+		d.theta_0 = r->originalAngle;
+		d.frequency = r->frequency;
+		d.signalPower = r->signalPower;
+		d.collisionType = Geometry::ionosphere;
+		Application::getInstance().addToDataset(d);
 	}
 
 	/**
