@@ -9,17 +9,18 @@
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
 #include "Application.h"
+#include "Timer.cpp"
+#include "Config.h"
 #include "../tracer/Ray.h"
 #include "../exporter/CsvExporter.h"
 #include "../exporter/MatlabExporter.h"
 #include "../scene/Ionosphere.h"
 #include "../scene/Terrain.h"
 #include "../math/Constants.h"
+#include "../math/NormalDistribution.h"
 #include "../threading/Worker.h"
 #include "../../contrib/threadpool/threadpool.hpp"
-#include "Timer.cpp"
-#include "Config.h"
-#include "../math/NormalDistribution.h"
+#include "../../contrib/jsoncpp/value.h"
 
 namespace raytracer {
 namespace core {
@@ -46,10 +47,8 @@ namespace core {
 		isRunning = true;
 		Config::getInstance().loadFromFile("config/mars.json");
 
-		boost::log::core::get()->set_filter
-		    (
-				boost::log::trivial::severity >= boost::log::trivial::info
-		    );
+		boost::log::core::get()->set_filter(
+				boost::log::trivial::severity >= boost::log::trivial::info);
 	}
 
 	void Application::run() {
@@ -65,7 +64,7 @@ namespace core {
 			createScene();
 
 			for (double freq = 5e6; freq <= 5e6; freq += 0.5e6) {
-				for (double SZA = 10; SZA <= 70; SZA += 10) {
+				for (double SZA = 10; SZA <= 70; SZA += 0.05) {
 					Ray r;
 					r.rayNumber = ++rayCounter;
 					r.frequency = freq;
@@ -75,13 +74,13 @@ namespace core {
 					r.setNormalAngle(r.originalAngle);
 
 					Worker w;
-					w.schedule(&tp, r);
+					//w.schedule(&tp, r);
 				}
 			}
 
 			BOOST_LOG_TRIVIAL(info) << (tp.pending() + tp.size()) << " workers queued";
 
-			tp.wait();
+			//tp.wait();
 
 			flushScene();
 		}
@@ -93,7 +92,7 @@ namespace core {
 	    printf("Elapsed: %5.2f sec. %d tracings done. %5.2f tracings/sec", t, numTracings, tracingsPerSec);
 
 		//CsvExporter ce;
-		//ce.dump("Debug/data.csv", rayPath);
+		//ce.dump("Debug/data.csv", dataSet);
 		MatlabExporter me;
 		me.dump("Debug/data.dat", dataSet);
 	}
@@ -110,25 +109,34 @@ namespace core {
 
 		double R = Config::getInstance().getInt("radius");
 
+		// terrain
 		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
 			double nextTheta = theta + Constants::PI/180;
-
-			int dh = 1000;
-			for (int h = 80000; h <= 200000; h += dh) {
-				Geometry io = Geometry(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
-						Vector2d((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
-				io.type = Geometry::ionosphere;
-				//io.layerHeight = dh;
-
-				scm.addToScene(io);
-			}
 
 			Terrain tr = Terrain(Vector2d(R*cos(theta), R*sin(theta)),
 					Vector2d(R*cos(nextTheta), R*sin(nextTheta)));
 
-			//cout <<  tr.getMesh().begin.x << "," << tr.getMesh().begin.y << "," << tr.getMesh().end.x << "," << tr.getMesh().end.y << endl;
-
 			scm.addToScene(tr);
+		}
+
+		int dh = 1000;
+		const Json::Value ionosphereConfig = Config::getInstance().getArray("ionosphere");
+		for (int idx = 0; idx < ionosphereConfig.size(); idx++) {
+
+			int hS = ionosphereConfig[idx].get("start", 0).asInt();
+			int hE = ionosphereConfig[idx].get("end", 0).asInt();
+			for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
+				double nextTheta = theta + Constants::PI/180;
+
+				for (int h = hS; h < hE; h += dh) {
+					Geometry io = Geometry(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
+							Vector2d((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
+					io.type = Geometry::ionosphere;
+					//io.layerHeight = dh;
+
+					scm.addToScene(io);
+				}
+			}
 		}
 	}
 

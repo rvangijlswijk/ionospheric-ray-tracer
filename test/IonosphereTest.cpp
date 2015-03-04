@@ -24,10 +24,13 @@ namespace {
 
 				Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + 100e3), Vector2d(100e3, 3390e3 + 100e3));
 				io.geom.setMesh(mesh);
+				io.setup();
 				Line2d mesh2 = Line2d(Vector2d(0, 3515e3), Vector2d(98408.25, 3513.6e3));
 				io2.geom.setMesh(mesh2);
+				io2.setup();
 				Line2d mesh3 = Line2d(Vector2d(3390e3 + 100e3, 100e3), Vector2d(3390e3 + 100e3, -100e3));
 				io3.geom.setMesh(mesh3);
+				io3.setup();
 
 				r.originalAngle = 30 * Constants::PI / 180.0; // SZA = 30 deg
 				r.previousRefractiveIndex = 1.0;
@@ -130,6 +133,7 @@ namespace {
 			Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + h), Vector2d(100e3, 3390e3 + h));
 			ion.geom.setMesh(mesh);
 			ion.layerHeight = 1000;
+			ion.setup();
 			ion.attenuate(&rA, ion.layerHeight);
 
 			ASSERT_NEAR(h, ion.getAltitude(), 1);

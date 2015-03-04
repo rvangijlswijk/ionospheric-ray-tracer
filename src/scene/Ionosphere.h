@@ -27,6 +27,7 @@ namespace scene {
 				REFRACTION_KELSO,		// According to Kelso, 1964
 				REFRACTION_AHDR			// Appleton-Hartree Dispersion Relation
 			};
+			void setup();
 			void interact(Ray *r, Vector2d &hitpos);
 			void refract(Ray *r, Vector2d &hitpos);
 			void attenuate(Ray *r, double magnitude);
@@ -41,6 +42,7 @@ namespace scene {
 			double getCollisionFrequency();
 			int determineWaveBehaviour(Ray *r);
 			double layerHeight = 0;
+			double electronDensityVariability = 0;
 			Geometry geom;
 			static constexpr double peakProductionAltitude = 125000.0;	// m
 			static constexpr double electronPeakDensity = 2.5e11;		// m^-3

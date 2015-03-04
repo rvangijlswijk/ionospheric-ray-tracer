@@ -30,13 +30,22 @@ namespace scene {
 	}
 
 	/**
+	 * Precalculate fixed values for this ionospheric layer.
+	 */
+	void Ionosphere::setup() {
+
+		_altitude = getAltitude();
+		_peakProductionAltitude = NormalDistribution::getInstance().get(Ionosphere::peakProductionAltitude, 1);
+		_electronPeakDensity = NormalDistribution::getInstance().get(Ionosphere::electronPeakDensity,
+				electronDensityVariability);
+	}
+
+	/**
 	 * Interaction between ray and ionospheric layer
 	 */
 	void Ionosphere::interact(Ray *r, Vector2d &hitpos) {
 
-		_altitude = getAltitude();
-		_peakProductionAltitude = NormalDistribution::getInstance().get(Ionosphere::peakProductionAltitude, 1);
-		_electronPeakDensity = NormalDistribution::getInstance().get(Ionosphere::electronPeakDensity, 5e9);
+		setup();
 
 		double magnitude = r->o.distance(hitpos);
 
@@ -182,15 +191,6 @@ namespace scene {
 	 * @unit: particles m^-3
 	 */
 	double Ionosphere::getElectronPeakDensity() {
-
-		//return NormalDistribution::getInstance().get(Ionosphere::electronPeakDensity, 1e10);
-
-		//printf("peakDensity: %4.2f", peakDensity);
-
-//		if (peakDensity < 0) {
-//			peakDensity = (NormalDistribution::getInstance().get(Ionosphere::electronPeakDensity, 1e10));
-//			cerr << "Electron peak density: " << peakDensity << endl;
-//		}
 
 		return _electronPeakDensity;
 	}

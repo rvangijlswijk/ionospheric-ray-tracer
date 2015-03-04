@@ -1,4 +1,19 @@
 {
     "name": "Mars",
-    "radius": 3390000
+    "radius": 3390000,
+    "ionosphere": [{
+        "name" : "M2 Layer",
+        "start": 105000,
+        "end": 200000,
+        "peakAltitude": 125000,
+        "peakElectronDensity": 2e11,
+        "electronDensityVariability": 5e9
+    },{
+        "name" : "M1 Layer",
+        "start": 80000,
+        "end": 105000,
+        "peakAltitude": 100000,
+        "peakElectronDensity": 1e11,
+        "electronDensityVariability": 5e9
+    }]
 }
