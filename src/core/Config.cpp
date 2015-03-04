@@ -9,7 +9,7 @@
 #include <fstream>
 #include "Config.h"
 #include <string>
-#include "../../contrib/jsoncpp/json/reader.h"
+#include "../../contrib/jsoncpp/reader.h"
 
 namespace raytracer {
 namespace core {

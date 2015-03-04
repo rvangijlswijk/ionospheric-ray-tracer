@@ -7,7 +7,7 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-#include "../../contrib/jsoncpp/json/value.h"
+#include "../../contrib/jsoncpp/value.h"
 
 namespace raytracer {
 namespace core {
