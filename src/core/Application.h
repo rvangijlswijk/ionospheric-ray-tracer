@@ -8,11 +8,26 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
+#include <iostream>
 #include <list>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
 #include <boost/thread.hpp>
-#include "../exporter/Data.h"
+#include "Timer.cpp"
+#include "Config.h"
 #include "../scene/SceneManager.h"
+#include "../scene/Ionosphere.h"
+#include "../scene/Terrain.h"
 #include "../tracer/Ray.h"
+#include "../exporter/Data.h"
+#include "../exporter/CsvExporter.h"
+#include "../exporter/MatlabExporter.h"
+#include "../math/Constants.h"
+#include "../math/NormalDistribution.h"
+#include "../threading/Worker.h"
+#include "../../contrib/threadpool/threadpool.hpp"
+#include "../../contrib/jsoncpp/value.h"
 
 namespace raytracer {
 namespace core {

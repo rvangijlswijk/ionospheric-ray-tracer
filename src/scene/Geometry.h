@@ -7,6 +7,7 @@
 #ifndef GEOMETRY_H_
 #define GEOMETRY_H_
 
+#include "../core/namespace.h"
 #include "../tracer/Ray.h"
 #include "../math/Line2d.h"
 #include "../math/Vector2d.h"
@@ -14,6 +15,7 @@
 namespace raytracer {
 namespace scene {
 
+	using namespace math;
 	using namespace tracer;
 
 	class Geometry {

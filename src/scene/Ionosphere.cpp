@@ -48,8 +48,6 @@ namespace scene {
 
 		setup();
 
-		printf("Layerheight: %4.0f", layerHeight);
-
 		double magnitude = r->o.distance(hitpos);
 
 		refract(r, hitpos);
@@ -78,9 +76,6 @@ namespace scene {
 			}
 			r->behaviour = Ray::wave_refraction;
 			double theta_r = asin((r->previousRefractiveIndex/refractiveIndex * sin(theta_i)));
-			if (theta_r > 0.9 * Constants::PI/2) {
-//				cerr << "Bend this ray! refraction: theta_i:" << theta_i * 180 / Constants::PI << ", theta_r:" << theta_r * 180 / Constants::PI << endl;
-			}
 			double beta_2 = Constants::PI/2 - theta_r - SZA;
 			if (r->d.y < 0) {
 //				cerr << "Ray going down! r->d.y:" << r->d.y << ", beta_2:" << beta_2;

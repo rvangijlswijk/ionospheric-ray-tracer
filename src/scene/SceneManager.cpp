@@ -23,19 +23,14 @@ namespace scene {
 	/**
 	 * Find which object in the scene intersects with a ray
 	 */
-	Intersection SceneManager::intersect(Ray &r, Line2d &rayLine) {
+	Intersection SceneManager::intersect(Ray* r, Line2d &rayLine) {
 
-		Vector2d pos,
-				 rayOrigin;
-		typedef std::list<Geometry*>::const_iterator geometryIter;
+		Vector2d pos, rayOrigin;
 		list<Intersection> hits;
-		//hit.g->type = Geometry::none;
-		rayOrigin.x = r.o.x;
-		rayOrigin.y = r.o.y;
+		rayOrigin.x = r->o.x;
+		rayOrigin.y = r->o.y;
 
-//		for (geometryIter i = sceneObjects.begin(); i != sceneObjects.end(); ++i) {
 		for (Geometry* gp : sceneObjects) {
-//			Geometry &g = **i;
 			Geometry g = *gp;
 			pos = rayLine.intersect(g.getMesh());
 			double smallestY = rayLine.begin.y;
@@ -58,7 +53,7 @@ namespace scene {
 				Intersection hit = Intersection();
 				hit.pos = pos;
 				hit.o = g.type;
-				hit.g = &g;
+				hit.g = gp;
 				hits.push_back(hit);
 			}
 		}
@@ -67,7 +62,7 @@ namespace scene {
 		Intersection finalHit;
 		double distance = 1000e6;
 		for (Intersection i : hits) {
-			if (rayOrigin.distance(i.pos) < distance) {
+			if (rayOrigin.distance(i.pos) < distance && r->lastHit != i.g) {
 				finalHit = i;
 				distance = rayOrigin.distance(i.pos);
 			}

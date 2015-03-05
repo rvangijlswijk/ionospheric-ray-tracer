@@ -2,7 +2,7 @@ clc;
 clear all;
 clf;
 
-angles = 30:10:60;
+angles = 10:10:70;
 frequencies = 5e6:0.05e6:5e6;
 ang=0:0.01:2*pi;
 
@@ -179,3 +179,5 @@ ylabel('Attenuation [dB]')
 
 % Chebyshev's inequality 5su_d for 96%
 su_d = delta / 5;
+
+fprintf('standard deviation: %4.2f (%4.2f pct) \n', mean(su_d), (10^(mean(su_d)/10) - 1) * 100);

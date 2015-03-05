@@ -11,6 +11,7 @@ namespace raytracer {
 namespace scene {
 
 	using namespace math;
+	using namespace tracer;
 
 	Geometry::Geometry() {
 

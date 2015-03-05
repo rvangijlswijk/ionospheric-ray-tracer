@@ -8,13 +8,16 @@
 #define RAY_H_
 
 #include <list>
+#include "../core/namespace.h"
 #include "../math/Vector2d.h"
+#include "../scene/Geometry.h"
 
 namespace raytracer {
 namespace tracer {
 
 	using namespace std;
 	using namespace math;
+	using namespace scene;
 
 	class Ray : public Vector2d {
 
@@ -34,14 +37,15 @@ namespace tracer {
 			int tracings = 0;
 			double signalPower = 0.0;
 			int rayNumber = 0;
+			Geometry* lastHit;
 			enum waveBehaviour {
-				wave_reflection,
-				wave_refraction,
-				wave_transmission,
-				wave_absorption,
-				wave_no_propagation,
-				wave_none,
-				wave_tracing_limit_exceeded
+				wave_reflection = 1,
+				wave_refraction = 2,
+				wave_transmission = 3,
+				wave_absorption = 4,
+				wave_no_propagation = 5,
+				wave_none = 6,
+				wave_tracing_limit_exceeded = 7
 			};
 			waveBehaviour behaviour;
 			static constexpr double magnitude = 10e3;

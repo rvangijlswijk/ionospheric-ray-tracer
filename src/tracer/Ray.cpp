@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <math.h>
 #include "Ray.h"
-#include "../scene/SceneManager.h"
 #include "Intersection.h"
+#include "../scene/SceneManager.h"
 #include "../core/Application.h"
 #include "../scene/Ionosphere.h"
 #include "../exporter/Data.h"
@@ -25,8 +25,8 @@ namespace tracer {
 	using namespace math;
 
 	Ray::Ray() {
-		// TODO Auto-generated constructor stub
 		behaviour = Ray::wave_none;
+		lastHit = (Geometry*)malloc(sizeof(Geometry));
 	}
 
 	/**
@@ -49,10 +49,11 @@ namespace tracer {
 		rayEnd.y = o.y + Ray::magnitude * sin(angle);
 		rayLine.end = rayEnd;
 
-//		printf("Tracing ray: %4.2e %4.2e %4.2f %4.2f theta: %4.2f\n", o.x, o.y, d.x, d.y, angle * 57.296);
+//		printf("Tracing ray: %6.3f %6.3f %6.3f %6.3f theta: %4.2f\n", o.x, o.y, d.x, d.y, angle * 57.296);
 
 		// find intersection
-		Intersection hit = Application::getInstance().getSceneManager().intersect(*this, rayLine);
+		Intersection hit = Application::getInstance().getSceneManager().intersect(this, rayLine);
+		this->lastHit = hit.g;
 
 //		cout << "rayline: (" << rayLine.end.x << "," << rayLine.end.y << ") ";
 //		cout << "previndex: " << previousRefractiveIndex << "\n";
@@ -72,7 +73,7 @@ namespace tracer {
 		if (hit.o == Geometry::ionosphere) {
 			Application::getInstance().incrementTracing();
 			tracings++;
-//			cout << "result: ionosphere\n";
+//			cout << "result: ionosphere" << endl;
 			hit.g->interact(this, hit.pos);
 			if (behaviour == Ray::wave_no_propagation) {
 				return 0;

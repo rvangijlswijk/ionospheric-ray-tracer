@@ -4,23 +4,7 @@
 // Description : Main application file.
 //============================================================================
 
-#include <iostream>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/expressions.hpp>
 #include "Application.h"
-#include "Timer.cpp"
-#include "Config.h"
-#include "../tracer/Ray.h"
-#include "../exporter/CsvExporter.h"
-#include "../exporter/MatlabExporter.h"
-#include "../scene/Ionosphere.h"
-#include "../scene/Terrain.h"
-#include "../math/Constants.h"
-#include "../math/NormalDistribution.h"
-#include "../threading/Worker.h"
-#include "../../contrib/threadpool/threadpool.hpp"
-#include "../../contrib/jsoncpp/value.h"
 
 namespace raytracer {
 namespace core {
@@ -129,11 +113,11 @@ namespace core {
 				double nextTheta = theta + Constants::PI/180;
 
 				for (int h = hS; h < hE; h += dh) {
-					Ionosphere io = Ionosphere(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
+					Ionosphere* io = new Ionosphere(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
 							Vector2d((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
-					io.layerHeight = dh;
+					io->layerHeight = dh;
 
-					scm.addToScene(&io);
+					scm.addToScene(io);
 				}
 			}
 		}
