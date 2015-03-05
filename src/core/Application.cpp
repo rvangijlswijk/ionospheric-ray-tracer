@@ -64,7 +64,7 @@ namespace core {
 			createScene();
 
 			for (double freq = 5e6; freq <= 5e6; freq += 0.5e6) {
-				for (double SZA = 10; SZA <= 70; SZA += 0.05) {
+				for (double SZA = 10; SZA <= 70; SZA += 10) {
 					Ray r;
 					r.rayNumber = ++rayCounter;
 					r.frequency = freq;
@@ -74,13 +74,13 @@ namespace core {
 					r.setNormalAngle(r.originalAngle);
 
 					Worker w;
-					//w.schedule(&tp, r);
+					w.schedule(&tp, r);
 				}
 			}
 
 			BOOST_LOG_TRIVIAL(info) << (tp.pending() + tp.size()) << " workers queued";
 
-			//tp.wait();
+			tp.wait();
 
 			flushScene();
 		}
@@ -113,7 +113,7 @@ namespace core {
 		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
 			double nextTheta = theta + Constants::PI/180;
 
-			Terrain tr = Terrain(Vector2d(R*cos(theta), R*sin(theta)),
+			Terrain* tr = new Terrain(Vector2d(R*cos(theta), R*sin(theta)),
 					Vector2d(R*cos(nextTheta), R*sin(nextTheta)));
 
 			scm.addToScene(tr);
@@ -129,12 +129,11 @@ namespace core {
 				double nextTheta = theta + Constants::PI/180;
 
 				for (int h = hS; h < hE; h += dh) {
-					Geometry io = Geometry(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
+					Ionosphere io = Ionosphere(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
 							Vector2d((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
-					io.type = Geometry::ionosphere;
-					//io.layerHeight = dh;
+					io.layerHeight = dh;
 
-					scm.addToScene(io);
+					scm.addToScene(&io);
 				}
 			}
 		}

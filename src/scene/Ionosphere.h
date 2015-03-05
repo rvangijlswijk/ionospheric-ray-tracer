@@ -17,11 +17,11 @@ namespace scene {
 
 	using namespace tracer;
 
-	class Ionosphere {
+	class Ionosphere : public Geometry {
 
 		public:
 			Ionosphere();
-			Ionosphere(Geometry g);
+			Ionosphere(Vector2d begin, Vector2d end);
 			enum refractiveMethod {
 				REFRACTION_SIMPLE,
 				REFRACTION_KELSO,		// According to Kelso, 1964
@@ -43,7 +43,6 @@ namespace scene {
 			int determineWaveBehaviour(Ray *r);
 			double layerHeight = 0;
 			double electronDensityVariability = 0;
-			Geometry geom;
 			static constexpr double peakProductionAltitude = 125000.0;	// m
 			static constexpr double electronPeakDensity = 2.5e11;		// m^-3
 			static constexpr double surfaceCollisionFrequency = 1e7;	// s^-1

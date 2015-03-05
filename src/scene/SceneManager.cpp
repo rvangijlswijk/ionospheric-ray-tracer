@@ -27,14 +27,16 @@ namespace scene {
 
 		Vector2d pos,
 				 rayOrigin;
-		Intersection hit;
+		typedef std::list<Geometry*>::const_iterator geometryIter;
 		list<Intersection> hits;
-		hit.g.type = Geometry::none;
+		//hit.g->type = Geometry::none;
 		rayOrigin.x = r.o.x;
 		rayOrigin.y = r.o.y;
 
-		for(Geometry g : sceneObjects) {
-
+//		for (geometryIter i = sceneObjects.begin(); i != sceneObjects.end(); ++i) {
+		for (Geometry* gp : sceneObjects) {
+//			Geometry &g = **i;
+			Geometry g = *gp;
 			pos = rayLine.intersect(g.getMesh());
 			double smallestY = rayLine.begin.y;
 			double biggestY = rayLine.end.y;
@@ -50,10 +52,13 @@ namespace scene {
 			}
 
 			// is it within the scene and within the limits of the ray itself?
-			if (smallestY < pos.y && pos.y < biggestY && smallestX < pos.x && pos.x < biggestX) {
+			double epsilon = 1e-5;
+			if (smallestY < (pos.y + epsilon) && biggestY > (pos.y - epsilon) &&
+					smallestX < (pos.x + epsilon) && biggestX > (pos.x - epsilon)) {
+				Intersection hit = Intersection();
 				hit.pos = pos;
 				hit.o = g.type;
-				hit.g = g;
+				hit.g = &g;
 				hits.push_back(hit);
 			}
 		}
@@ -74,7 +79,7 @@ namespace scene {
 	/**
 	 * Add an object to the scene
 	 */
-	void SceneManager::addToScene(Geometry obj) {
+	void SceneManager::addToScene(Geometry* obj) {
 
 		sceneObjects.push_back(obj);
 	}
@@ -82,7 +87,7 @@ namespace scene {
 	/**
 	 * Return a list of all objects in the scene
 	 */
-	list<Geometry> SceneManager::getScene() {
+	list<Geometry*> SceneManager::getScene() {
 
 		return sceneObjects;
 	}

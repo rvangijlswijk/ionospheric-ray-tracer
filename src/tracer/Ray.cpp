@@ -69,18 +69,17 @@ namespace tracer {
 
 		// determine ray behaviour
 		// intersection with an ionospheric layer
-		if (hit.g.type == Geometry::ionosphere) {
+		if (hit.o == Geometry::ionosphere) {
 			Application::getInstance().incrementTracing();
 			tracings++;
-			//cout << "result: ionosphere\n";
-			Ionosphere io = Ionosphere(hit.g);
-			io.interact(this, hit.pos);
+//			cout << "result: ionosphere\n";
+			hit.g->interact(this, hit.pos);
 			if (behaviour == Ray::wave_no_propagation) {
 				return 0;
 			} else {
 				return trace();
 			}
-		} else if (hit.g.type == Geometry::terrain) {
+		} else if (hit.o == Geometry::terrain) {
 			Application::getInstance().incrementTracing();
 			tracings++;
 			o = rayLine.end;
@@ -97,7 +96,7 @@ namespace tracer {
 //			printf("Intersection with terrain at: %6.2f, %6.2f\n", hit.pos.x, hit.pos.y);
 //			printf("Geometry coords: %8.4f %8.4f %8.4f %8.4f\n", hit.g.getMesh().begin.x, hit.g.getMesh().begin.y, hit.g.getMesh().end.x, hit.g.getMesh().end.y);
 			return 0;
-		} else if (hit.g.type == Geometry::none) {
+		} else if (hit.o == Geometry::none) {
 //			cout << "result: none\n";
 			o = rayLine.end;
 			Data dataset;

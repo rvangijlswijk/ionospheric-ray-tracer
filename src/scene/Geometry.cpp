@@ -46,5 +46,9 @@ namespace scene {
 		mesh2d = mesh;
 	}
 
+	void Geometry::interact(Ray *r, Vector2d &hitpos) {
+		cout << "Geometry::interact" << endl;
+	}
+
 }
 }

@@ -23,13 +23,13 @@ namespace {
 				Config::getInstance().loadFromFile("config/mars.json");
 
 				Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + 100e3), Vector2d(100e3, 3390e3 + 100e3));
-				io.geom.setMesh(mesh);
+				io.setMesh(mesh);
 				io.setup();
 				Line2d mesh2 = Line2d(Vector2d(0, 3515e3), Vector2d(98408.25, 3513.6e3));
-				io2.geom.setMesh(mesh2);
+				io2.setMesh(mesh2);
 				io2.setup();
 				Line2d mesh3 = Line2d(Vector2d(3390e3 + 100e3, 100e3), Vector2d(3390e3 + 100e3, -100e3));
-				io3.geom.setMesh(mesh3);
+				io3.setMesh(mesh3);
 				io3.setup();
 
 				r.originalAngle = 30 * Constants::PI / 180.0; // SZA = 30 deg
@@ -50,9 +50,9 @@ namespace {
 
 	TEST_F(IonosphereTest, SolarZenithAngle) {
 
-		ASSERT_NEAR(0, io.geom.getSolarZenithAngle2d(), 0.001);
-		ASSERT_NEAR(0.014, io2.geom.getSolarZenithAngle2d(), 0.001);
-		ASSERT_NEAR(1.571, io3.geom.getSolarZenithAngle2d(), 0.001);
+		ASSERT_NEAR(0, io.getSolarZenithAngle2d(), 0.001);
+		ASSERT_NEAR(0.014, io2.getSolarZenithAngle2d(), 0.001);
+		ASSERT_NEAR(1.571, io3.getSolarZenithAngle2d(), 0.001);
 	}
 
 	TEST_F(IonosphereTest, Altitude) {
@@ -131,7 +131,7 @@ namespace {
 		for (int h = 80e3; h <= 200e3; h += 1000) {
 			Ionosphere ion;
 			Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + h), Vector2d(100e3, 3390e3 + h));
-			ion.geom.setMesh(mesh);
+			ion.setMesh(mesh);
 			ion.layerHeight = 1000;
 			ion.setup();
 			ion.attenuate(&rA, ion.layerHeight);
@@ -166,7 +166,7 @@ namespace {
 			Data d;
 			d.y = h;
 			Line2d mesh = Line2d(Vector2d(0, 3390e3 + h), Vector2d(100000, 3390e3 + h));
-			io.geom.setMesh(mesh);
+			io.setMesh(mesh);
 			d.n_e = io.getElectronNumberDensity();
 			d.omega_p = io.getPlasmaFrequency();
 			d.mu_r_sqrt = io.getRefractiveIndex(&r, Ionosphere::REFRACTION_KELSO);

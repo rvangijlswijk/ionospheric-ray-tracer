@@ -10,10 +10,11 @@
 namespace raytracer {
 namespace tracer {
 
-Intersection::Intersection() {
-	// TODO Auto-generated constructor stub
+	Intersection::Intersection() {}
 
-}
+	Intersection::~Intersection() {
+		//delete g;
+	}
 
 } /* namespace engine */
 } /* namespace raytracer */

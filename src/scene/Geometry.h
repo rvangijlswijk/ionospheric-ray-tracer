@@ -22,7 +22,7 @@ namespace scene {
 			Geometry();
 			Geometry(Line2d mesh);
 			Geometry(Vector2d begin, Vector2d end);
-			Ray interact(Ray &r);
+			virtual void interact(Ray *r, Vector2d &hitpos);
 			Line2d getMesh();
 			void setMesh(Line2d mesh);
 			double getSolarZenithAngle2d();

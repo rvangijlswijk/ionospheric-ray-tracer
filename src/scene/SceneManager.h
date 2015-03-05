@@ -25,12 +25,12 @@ namespace scene {
 		public:
 			SceneManager();
 			Intersection intersect(Ray &r, Line2d &rayLine);
-			void addToScene(Geometry obj);
+			void addToScene(Geometry* obj);
 			void removeAllFromScene();
-			list<Geometry> getScene();
+			list<Geometry*> getScene();
 
 		private:
-			list<Geometry> sceneObjects;
+			list<Geometry*> sceneObjects;
 	};
 
 } /* namespace scene */

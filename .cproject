@@ -31,6 +31,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/contrib}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include/boost/log"/>
 								</option>
+								<option id="gnu.c.compiler.option.misc.verbose.1382129466" superClass="gnu.c.compiler.option.misc.verbose" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.879942772" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.287493016" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
@@ -41,6 +42,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/contrib}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include/boost/log"/>
 								</option>
+								<option id="gnu.cpp.compiler.option.other.verbose.1904293569" superClass="gnu.cpp.compiler.option.other.verbose" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.337191075" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.2101242608" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
@@ -102,11 +104,13 @@
 								<option id="gnu.cpp.compiler.option.include.paths.1176128701" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/contrib}&quot;"/>
 								</option>
+								<option id="gnu.cpp.compiler.option.other.verbose.881813658" superClass="gnu.cpp.compiler.option.other.verbose" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.823597055" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.1696502925" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.275593116" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.1793291006" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.misc.verbose.184060008" superClass="gnu.c.compiler.option.misc.verbose" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1460077895" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.403240933" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
