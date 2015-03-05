@@ -36,9 +36,8 @@ namespace scene {
 	void Ionosphere::setup() {
 
 		_altitude = getAltitude();
-		_peakProductionAltitude = NormalDistribution::getInstance().get(Ionosphere::peakProductionAltitude, 1);
-		_electronPeakDensity = NormalDistribution::getInstance().get(Ionosphere::electronPeakDensity,
-				electronDensityVariability);
+		_peakProductionAltitude = Ionosphere::peakProductionAltitude;//NormalDistribution::getInstance().get(Ionosphere::peakProductionAltitude, 1);
+		_electronPeakDensity = Ionosphere::electronPeakDensity; //NormalDistribution::getInstance().get(Ionosphere::electronPeakDensity, electronDensityVariability);
 	}
 
 	/**

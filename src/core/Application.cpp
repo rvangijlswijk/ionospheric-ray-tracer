@@ -48,7 +48,7 @@ namespace core {
 			createScene();
 
 			for (double freq = 5e6; freq <= 5e6; freq += 0.5e6) {
-				for (double SZA = 10; SZA <= 70; SZA += 10) {
+				for (double SZA = 10; SZA <= 80; SZA += 10) {
 					Ray r;
 					r.rayNumber = ++rayCounter;
 					r.frequency = freq;
@@ -109,6 +109,8 @@ namespace core {
 
 			int hS = ionosphereConfig[idx].get("start", 0).asInt();
 			int hE = ionosphereConfig[idx].get("end", 0).asInt();
+			double electronPeakDensity = atof(ionosphereConfig[idx].get("electronPeakDensity", "").asCString());
+			double peakProductionAltitude = ionosphereConfig[idx].get("peakProductionAltitude", "").asDouble();
 			for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
 				double nextTheta = theta + Constants::PI/180;
 
@@ -116,6 +118,8 @@ namespace core {
 					Ionosphere* io = new Ionosphere(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
 							Vector2d((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
 					io->layerHeight = dh;
+					io->electronPeakDensity = electronPeakDensity;
+					io->peakProductionAltitude = peakProductionAltitude;
 
 					scm.addToScene(io);
 				}

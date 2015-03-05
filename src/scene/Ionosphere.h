@@ -43,8 +43,8 @@ namespace scene {
 			int determineWaveBehaviour(Ray *r);
 			double layerHeight = 0;
 			double electronDensityVariability = 0;
-			static constexpr double peakProductionAltitude = 125000.0;	// m
-			static constexpr double electronPeakDensity = 2.5e11;		// m^-3
+			double peakProductionAltitude = 0;	// m
+			double electronPeakDensity = 0;		// m^-3
 			static constexpr double surfaceCollisionFrequency = 1e7;	// s^-1
 
 		private:

@@ -3,17 +3,15 @@
     "radius": 3390000,
     "ionosphere": [{
         "name" : "M2 Layer",
-        "start": 105000,
+        "start": 108000,
         "end": 200000,
-        "peakAltitude": 125000,
-        "peakElectronDensity": 2e11,
-        "electronDensityVariability": 5e9
+        "peakProductionAltitude": 125000,
+        "electronPeakDensity": "2.5e11"
     },{
         "name" : "M1 Layer",
-        "start": 80000,
-        "end": 105000,
-        "peakAltitude": 100000,
-        "peakElectronDensity": 1e11,
-        "electronDensityVariability": 5e9
+        "start": 70000,
+        "end": 108000,
+        "peakProductionAltitude": 100000,
+        "electronPeakDensity": "1.0e11"
     }]
 }
