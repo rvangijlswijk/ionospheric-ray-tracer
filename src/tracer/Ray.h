@@ -24,6 +24,7 @@ namespace tracer {
 		public:
 			Ray();
 			int trace();
+			void calculateTimeOfFlight(Vector2d rayEnd);
 			double getNormalAngle();
 			void setNormalAngle(double angleRad);
 			double getAngle();
@@ -36,6 +37,7 @@ namespace tracer {
 			double originalAngle = 0.0;
 			int tracings = 0;
 			double signalPower = 0.0;
+			double timeOfFlight = 0.0;
 			int rayNumber = 0;
 			Geometry* lastHit;
 			enum waveBehaviour {

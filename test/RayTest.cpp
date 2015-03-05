@@ -65,4 +65,16 @@ namespace {
 		ASSERT_NEAR(0.643, r.d.y, 0.01);
 		ASSERT_NEAR(-0.872, r.getNormalAngle(), 0.001);
 	}
+
+	TEST_F(RayTest, TimeOfFlight) {
+
+		Ray r4 = Ray();
+
+		Vector2d rayEnd = Vector2d(3e6, 0);
+
+		r4.calculateTimeOfFlight(rayEnd);
+
+		ASSERT_NEAR(0.01, r4.timeOfFlight, 1e-5);
+
+	}
 }

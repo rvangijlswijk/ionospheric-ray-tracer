@@ -42,7 +42,7 @@ namespace {
 
 		Line2d rayLine = Line2d(Vector2d(0, 0), Vector2d(0, 3390e3 + 101e3));
 
-		Intersection is = sm.intersect(r.o, rayLine);
+		Intersection is = sm.intersect(&r, rayLine);
 		Line2d mesh = (*is.g).mesh2d;
 		cout << "hit.g: " << mesh.end.x << " " << mesh.end.y;
 

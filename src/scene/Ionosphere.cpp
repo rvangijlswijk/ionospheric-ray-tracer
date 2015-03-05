@@ -31,7 +31,9 @@ namespace scene {
 	}
 
 	/**
-	 * Precalculate fixed values for this ionospheric layer.
+	 * Precalculate fixed values for this ionospheric layer. Assume static ionosphere as the
+	 * time periods that we're interested in are an order of magnitude lower than the processes
+	 * of photochemical reactions (discussion with Cyril Simon Wedlund)
 	 */
 	void Ionosphere::setup() {
 

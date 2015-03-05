@@ -55,6 +55,13 @@ namespace tracer {
 		Intersection hit = Application::getInstance().getSceneManager().intersect(this, rayLine);
 		this->lastHit = hit.g;
 
+		// calculate time-of-flight
+		if (hit.o != Geometry::none) {
+			calculateTimeOfFlight(hit.pos);
+		} else {
+			calculateTimeOfFlight(rayEnd);
+		}
+
 //		cout << "rayline: (" << rayLine.end.x << "," << rayLine.end.y << ") ";
 //		cout << "previndex: " << previousRefractiveIndex << "\n";
 
@@ -146,6 +153,12 @@ namespace tracer {
 
 		d.x = cos(angleRad);
 		d.y = sin(angleRad);
+	}
+
+	void Ray::calculateTimeOfFlight(Vector2d rayEnd) {
+
+		double magnitude = o.distance(rayEnd);
+		timeOfFlight += magnitude / Constants::C;
 	}
 
 	/**
