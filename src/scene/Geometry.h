@@ -31,7 +31,8 @@ namespace scene {
 			enum object_type {
 				none = 0,
 				ionosphere = 1,
-				terrain = 2
+				terrain = 2,
+				atmosphere = 3
 			};
 			object_type type = none;
 			Line2d mesh2d;

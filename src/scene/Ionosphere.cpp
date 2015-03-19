@@ -79,10 +79,7 @@ namespace scene {
 			double theta_r = asin((r->previousRefractiveIndex/refractiveIndex * sin(theta_i)));
 			double beta_2 = Constants::PI/2 - theta_r - SZA;
 			if (r->d.y < 0) {
-//				cerr << "Ray going down! r->d.y:" << r->d.y << ", beta_2:" << beta_2;
 				beta_2 = -Constants::PI/2 + theta_r - SZA;
-				r->setAngle(beta_2);
-//				cerr << " changed to r->d.y:" << r->d.y << ",beta_2:" << beta_2 << endl;
 			}
 			r->setAngle(beta_2);
 //			cout << "Bend this ray! refraction: " << refractiveIndex << " theta_i:" << theta_i * 180 / Constants::PI << ", theta_r:" << theta_r * 180 / Constants::PI << " \n";

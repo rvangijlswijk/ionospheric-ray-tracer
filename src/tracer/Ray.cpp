@@ -76,8 +76,8 @@ namespace tracer {
 		}
 
 		// determine ray behaviour
-		// intersection with an ionospheric layer
-		if (hit.o == Geometry::ionosphere) {
+		// intersection with an ionospheric or atmospheric layer
+		if (hit.o == Geometry::ionosphere || hit.o == Geometry::atmosphere) {
 			Application::getInstance().incrementTracing();
 			tracings++;
 //			cout << "result: ionosphere" << endl;

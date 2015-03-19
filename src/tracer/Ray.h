@@ -34,6 +34,7 @@ namespace tracer {
 			Vector2d d;	// direction
 			double frequency = 0.0;
 			double previousRefractiveIndex = 1.0;
+			double previousAtmosphericRefractiveIndex = 1.0;
 			double originalAngle = 0.0;
 			int tracings = 0;
 			double signalPower = 0.0;
