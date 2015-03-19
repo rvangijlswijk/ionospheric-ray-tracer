@@ -22,7 +22,6 @@ namespace threading {
 		public:
 			Worker();
 			boost::thread* start(Ray r);
-			void join();
 			void process(Ray r);
 			void schedule(boost::threadpool::pool *tp, Ray r);
 
