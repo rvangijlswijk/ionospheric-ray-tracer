@@ -15,10 +15,8 @@ namespace core {
 	class Config {
 
 		public:
-			static Config& getInstance() {
-				static Config instance;
-				return instance;
-			}
+			Config();
+			Config(const char * filepath);
 			void loadFromFile(const char * filepath);
 			int getInt(const char * path);
 			double getDouble(const char * path);
@@ -26,9 +24,6 @@ namespace core {
 			Json::Value getObject(const char * path);
 
 		private:
-			Config() {}
-			Config(Config const&);      // Don't Implement.
-			void operator = (Config const&); // Don't implement
 			Json::Value _doc;
 
 	};

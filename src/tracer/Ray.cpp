@@ -66,7 +66,7 @@ namespace tracer {
 //		cout << "previndex: " << previousRefractiveIndex << "\n";
 
 		// limit the simulation to avoid unnecessary calculations
-		if (rayLine.begin.distance(Vector2d(0,0)) > Config::getInstance().getInt("radius") + 250e3) {
+		if (rayLine.begin.distance(Vector2d(0,0)) > Application::getInstance().getCelestialConfig().getInt("radius") + 250e3) {
 			cerr << "Out of scene bounds!" << endl;
 			return 0;
 		}

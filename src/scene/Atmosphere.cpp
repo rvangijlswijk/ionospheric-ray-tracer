@@ -89,7 +89,7 @@ namespace scene {
 		double xAvg = (mesh2d.begin.x + mesh2d.end.x)/2;
 		double yAvg = (mesh2d.begin.y + mesh2d.end.y)/2;
 
-		return sqrt(pow(xAvg, 2) + pow(yAvg, 2)) - Config::getInstance().getInt("radius");
+		return sqrt(pow(xAvg, 2) + pow(yAvg, 2)) - Application::getInstance().getCelestialConfig().getInt("radius");
 	}
 
 	/**

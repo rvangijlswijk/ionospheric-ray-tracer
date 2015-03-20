@@ -18,7 +18,7 @@ namespace core {
 	boost::mutex datasetMutex;
 	boost::mutex tracingIncMutex;
 
-	boost::threadpool::pool tp(4);
+	boost::threadpool::pool tp;
 
 	void Application::init() {
 
@@ -29,19 +29,25 @@ namespace core {
 	void Application::start() {
 
 		isRunning = true;
-		Config::getInstance().loadFromFile("config/mars.json");
+		applicationConfig = Config("config/config.json");
+		celestialConfig = Config("config/mars.json");
 
 		boost::log::core::get()->set_filter(
 				boost::log::trivial::severity >= boost::log::trivial::info);
+
+		tp = boost::threadpool::pool(applicationConfig.getInt("parallelism"));
 	}
 
 	void Application::run() {
 
 		Timer tmr;
 
+		BOOST_LOG_TRIVIAL(info) << "Parallelism is " << applicationConfig.getInt("parallelism");
+		BOOST_LOG_TRIVIAL(info) << applicationConfig.getInt("iterations") << " iterations";
+
 		// trace a ray
 		int rayCounter = 0;
-		for (int iteration = 0; iteration < 1; iteration++) {
+		for (int iteration = 0; iteration < applicationConfig.getInt("iterations"); iteration++) {
 
 			BOOST_LOG_TRIVIAL(info) << "Iteration " << iteration;
 
@@ -53,7 +59,7 @@ namespace core {
 					r.rayNumber = ++rayCounter;
 					r.frequency = freq;
 					r.signalPower = 0;
-					r.o.y = 2 + Config::getInstance().getInt("radius");
+					r.o.y = 2 + celestialConfig.getInt("radius");
 					r.originalAngle = SZA * Constants::PI / 180.0;
 					r.setNormalAngle(r.originalAngle);
 
@@ -91,7 +97,7 @@ namespace core {
 	 */
 	void Application::createScene() {
 
-		double R = Config::getInstance().getInt("radius");
+		double R = celestialConfig.getInt("radius");
 
 		// terrain
 		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
@@ -103,8 +109,8 @@ namespace core {
 			scm.addToScene(tr);
 		}
 
-		int dh = 500;
-		const Json::Value ionosphereConfig = Config::getInstance().getArray("ionosphere");
+		int dh = applicationConfig.getInt("layerHeight");
+		const Json::Value ionosphereConfig = celestialConfig.getArray("ionosphere");
 		for (int idx = 0; idx < ionosphereConfig.size(); idx++) {
 
 			int hS = ionosphereConfig[idx].get("start", 0).asInt();
@@ -126,7 +132,7 @@ namespace core {
 			}
 		}
 
-		const Json::Value atmosphereConfig = Config::getInstance().getObject("atmosphere");
+		const Json::Value atmosphereConfig = celestialConfig.getObject("atmosphere");
 		int hS = atmosphereConfig.get("start", 0).asInt();
 		int hE = atmosphereConfig.get("end", 0).asInt();
 
@@ -168,6 +174,11 @@ namespace core {
 	SceneManager Application::getSceneManager() {
 
 		return scm;
+	}
+
+	Config Application::getCelestialConfig() {
+
+		return celestialConfig;
 	}
 
 } /* namespace core */

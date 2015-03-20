@@ -54,6 +54,7 @@ namespace core {
 			SceneManager getSceneManager();
 			list<Data> dataSet;
 			list<Ray> rays;
+			Config getCelestialConfig();
 
 		private:
 			Application() {
@@ -67,6 +68,8 @@ namespace core {
 			bool isRunning;
 			SceneManager scm;
 			int numTracings;
+			Config celestialConfig;
+			Config applicationConfig;
 
 	};
 

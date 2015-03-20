@@ -16,6 +16,13 @@ namespace core {
 
 	using namespace std;
 
+	Config::Config() {}
+
+	Config::Config(const char * filepath) {
+
+		loadFromFile(filepath);
+	}
+
 	void Config::loadFromFile(const char * filepath) {
 
 		Json::Reader r = Json::Reader();
