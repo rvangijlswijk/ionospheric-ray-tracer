@@ -103,7 +103,7 @@ namespace core {
 			scm.addToScene(tr);
 		}
 
-		int dh = 1000;
+		int dh = 500;
 		const Json::Value ionosphereConfig = Config::getInstance().getArray("ionosphere");
 		for (int idx = 0; idx < ionosphereConfig.size(); idx++) {
 
@@ -123,6 +123,22 @@ namespace core {
 
 					scm.addToScene(io);
 				}
+			}
+		}
+
+		const Json::Value atmosphereConfig = Config::getInstance().getObject("atmosphere");
+		int hS = atmosphereConfig.get("start", 0).asInt();
+		int hE = atmosphereConfig.get("end", 0).asInt();
+
+		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
+			double nextTheta = theta + Constants::PI/180;
+
+			for (int h = hS; h < hE; h += dh) {
+				Atmosphere* atm = new Atmosphere(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
+						Vector2d((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
+				atm->layerHeight = dh;
+
+				scm.addToScene(atm);
 			}
 		}
 	}

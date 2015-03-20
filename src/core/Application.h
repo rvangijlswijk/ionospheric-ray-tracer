@@ -19,6 +19,7 @@
 #include "Config.h"
 #include "../scene/SceneManager.h"
 #include "../scene/Ionosphere.h"
+#include "../scene/Atmosphere.h"
 #include "../scene/Terrain.h"
 #include "../tracer/Ray.h"
 #include "../exporter/Data.h"

@@ -58,5 +58,18 @@ namespace core {
 		return _doc[path];
 	}
 
+	Json::Value Config::getObject(const char * path) {
+
+		if (!_doc.isMember(path)) {
+			cerr << path << " does not exist!";
+		}
+
+		if (!_doc.get(path, "UTF-32").isObject()) {
+			cerr << path << " is not an object!";
+		}
+
+		return _doc[path];
+	}
+
 } /* namespace core */
 } /* namespace raytracer */

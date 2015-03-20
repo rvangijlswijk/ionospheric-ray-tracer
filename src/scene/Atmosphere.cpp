@@ -17,9 +17,9 @@ namespace scene {
 	using namespace core;
 	using namespace exporter;
 
-	Atmosphere::Atmosphere() {
-		// TODO Auto-generated constructor stub
+	Atmosphere::Atmosphere() : Geometry() {
 
+		type = Geometry::atmosphere;
 	}
 
 	Atmosphere::Atmosphere(Vector2d begin, Vector2d end) : Geometry(begin, end) {
@@ -32,6 +32,8 @@ namespace scene {
 	void Atmosphere::interact(Ray *r, Vector2d &hitpos) {
 
 		refract(r, hitpos);
+
+		exportData(r);
 	}
 
 	/**
@@ -48,14 +50,17 @@ namespace scene {
 		double theta_r = asin(r->previousAtmosphericRefractiveIndex/refractiveIndex * sin(theta_i));
 		double beta_2 = Constants::PI/2 - theta_r - SZA;
 
+//		cout << "Atmo: theta_i: " << theta_i * 57.296 << ", theta_r: " << theta_r * 57.296 << endl;
+
 		if (r->d.y < 0) {
 			beta_2 = -Constants::PI/2 + theta_r - SZA;
 		}
 		r->setAngle(beta_2);
+//		cout << "Atmo: beta_2: " << beta_2 * 57.296 << endl;
 
 		r->o.x = hitpos.x;
 		r->o.y = hitpos.y;
-		r->previousAtmosphericRefractiveIndex = theta_r;
+		r->previousAtmosphericRefractiveIndex = refractiveIndex;
 	}
 
 	void Atmosphere::attenuate(Ray *r, double magnitude) {}
@@ -96,6 +101,8 @@ namespace scene {
 		double SZA = getSolarZenithAngle2d();
 		double beta = atan(r->d.y/r->d.x);
 		double theta_i = Constants::PI/2 - beta - SZA;
+
+//		cout << "Atmo: SZA: " << SZA  * 57.296 << ", beta: " << beta * 57.296 << endl;
 
 		return theta_i;
 	}

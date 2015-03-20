@@ -31,6 +31,7 @@ namespace scene {
 			double getAltitude();
 			double getIncidentAngle(Ray *r);
 			double getRefractiveIndex();
+			double layerHeight = 0;
 		};
 
 } /* namespace threading */

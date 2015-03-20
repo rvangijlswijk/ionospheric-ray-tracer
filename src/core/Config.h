@@ -23,6 +23,7 @@ namespace core {
 			int getInt(const char * path);
 			double getDouble(const char * path);
 			Json::Value getArray(const char * path);
+			Json::Value getObject(const char * path);
 
 		private:
 			Config() {}
