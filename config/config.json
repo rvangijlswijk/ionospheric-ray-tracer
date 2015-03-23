@@ -1,0 +1,5 @@
+{
+	"parallelism": 4,
+	"iterations": 1,
+    "layerHeight": 500
+}
