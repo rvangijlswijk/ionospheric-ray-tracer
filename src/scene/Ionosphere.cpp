@@ -225,13 +225,9 @@ namespace scene {
 
 		double n = 1.0;
 
-		if (m == REFRACTION_SIMPLE) {
+		if (m == REFRACTION_KELSO) {
 
 			n = sqrt(1 - getPlasmaFrequency() / (2 * Constants::PI * r->frequency));
-		} else if (m == REFRACTION_KELSO) {
-
-			n = sqrt(1 - getElectronNumberDensity() * pow(Constants::ELEMENTARY_CHARGE, 2) /
-								(Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM * pow(2 * Constants::PI * r->frequency,2)));
 		} else if (m == REFRACTION_AHDR) {
 
 			//n = 1 - X / (1);
@@ -287,6 +283,7 @@ namespace scene {
 	 * A wave is either reflected or refracted depending on its incident angle. According to
 	 * Snells' law, a critical angle exists for which the reflected angle is 90 deg. Incident
 	 * angles above this critical angle are reflected, not refracted.
+	 * @ todo: REWRITE COMPLETELY
 	 */
 	int Ionosphere::determineWaveBehaviour(Ray *r) {
 
