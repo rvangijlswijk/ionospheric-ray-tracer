@@ -1,5 +1,11 @@
 {
 	"parallelism": 4,
 	"iterations": 1,
-    "layerHeight": 500
+    "layerHeight": {
+    	"constant": 500,
+    	"chapman": {
+    			"dhnmin": 25,
+    			"dhnmax": 2000
+    	}
+    }
 }

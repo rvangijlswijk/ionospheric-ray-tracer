@@ -21,6 +21,7 @@
 #include "../scene/Ionosphere.h"
 #include "../scene/Atmosphere.h"
 #include "../scene/Terrain.h"
+#include "../scene/ParseLayerHeight.h"
 #include "../tracer/Ray.h"
 #include "../exporter/Data.h"
 #include "../exporter/CsvExporter.h"
@@ -54,6 +55,7 @@ namespace core {
 			SceneManager getSceneManager();
 			list<Data> dataSet;
 			list<Ray> rays;
+			Config getApplicationConfig();
 			Config getCelestialConfig();
 
 		private:

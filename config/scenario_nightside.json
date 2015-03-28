@@ -1,0 +1,12 @@
+{
+    "name": "Mars",
+    "radius": 3390000,
+    "ionosphere": [{
+        "name" : "M1 Layer",
+        "model": "linear",
+        "start": 70000,
+        "end": 200000,
+        "peakProductionAltitude": 100000,
+        "electronPeakDensity": "1.0e11"
+    }]
+}

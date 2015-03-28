@@ -2,11 +2,11 @@ clc;
 clear all;
 close all;
 
-angles = 10:10:70;
+angles = 10:0.05:80;
 frequencies = 5e6:0.05e6:5e6;
 ang=0:0.01:2*pi;
 
-data = csvread('../Debug/data.dat', 0, 0, 'A1..D3600');
+data = csvread('../Debug/data.dat', 0, 0, 'A1..D800');
 
 numRays = max(data(:,1));
 numDataPoints = length(data);

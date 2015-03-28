@@ -8,6 +8,7 @@
     "ionosphere": [{
         "name" : "M2 Layer",
         "model": "chapman",
+        "stratification": "chapman",
         "start": 108000,
         "end": 200000,
         "peakProductionAltitude": 125000,
@@ -15,6 +16,7 @@
     },{
         "name" : "M1 Layer",
         "model": "chapman",
+        "stratification": "chapman",
         "start": 70000,
         "end": 108000,
         "peakProductionAltitude": 100000,

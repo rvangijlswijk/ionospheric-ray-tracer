@@ -2,7 +2,7 @@ clc;
 clear all;
 clf;
 
-angles = 10:10:70;
+angles = 10:10:80;
 frequencies = 5e6:0.05e6:5e6;
 ang=0:0.01:2*pi;
 
@@ -55,43 +55,6 @@ plasmaFreq = data(data(:,3) ~= 0, 3);
 plasmaFreq = plasmaFreq(1);
 f_f0 = frequencies / (plasmaFreq / (2*pi));
 
-%figure;
-% hold on;
-% max_x2 = zeros(length(angles),1);
-% for a=1:length(angles)
-%     x2 = zeros(length(frequencies), 1);
-%     for n=1:length(frequencies)
-%         xCur = data(abs(data(:,6) - deg2rad(angles(a))) < 0.01 & data(:,7) == frequencies(n), 1);
-%         if length(xCur) > 0
-%             x2(n, 1) = max(xCur);
-%         else
-%             x2(n, 1) = nan;
-%         end
-%     end
-%     %plot(x2(:,1), f_f0);
-%     max_x2(a,1) = max(x2);
-% end
-
-%figure;
-% hold on
-% for f=frequencies
-%     mu = data(abs(data(:,6) - deg2rad(50)) < 0.01 & data(:,7) == f, 5);
-%     mu2 = mu(mu > 0);
-%     criticalAngle = zeros(length(mu2), 1);
-%     for k=2:length(mu2)
-%         if (mu2(k-1) <= mu2(k))
-%             criticalAngle(k) = asin(mu2(k-1)/mu2(k));
-%         else
-%             criticalAngle(k) = asin(mu2(k)/mu2(k-1));
-%         end
-%     end
-%     %plot(criticalAngle*180/pi)
-% end
-
-
-
-% s = zeros(numRays, numDataPoints);
-% h2 = zeros(numRays, numDataPoints);
 SZA = zeros(numRays, 1);
 distanceFromTransmitter = zeros(numRays, 1);
 powerAtDistance = zeros(numRays, 1);
@@ -101,8 +64,8 @@ dSza = 0.2; % deg
 nBinScale = (1:nBins) .* dSza;
 SzaBins = zeros(nBins, 20);
 
-h3 = figure;
-hold on;
+% h3 = figure;
+% hold on;
 for r = 1:numRays
     hCur = data(data(:,1) == r, 3);
     xCur = data(data(:,1) == r, 2);  
@@ -153,8 +116,8 @@ pdfs = pdfs(~any(isnan(pdfs),2),:);
 
 erb = errorbar(distances, means, stddevs, 'rx');
 errorbarT(erb, 1, 1);
-ylim([-20 0])
-xlim([0 1200])
+ylim([-12 0])
+xlim([0 1000])
 xlabel('Distance [km]');
 ylabel('Attenuation [dB]');
 grid on;

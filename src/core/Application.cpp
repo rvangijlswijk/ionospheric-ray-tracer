@@ -30,7 +30,7 @@ namespace core {
 
 		isRunning = true;
 		applicationConfig = Config("config/config.json");
-		celestialConfig = Config("config/mars.json");
+		celestialConfig = Config("config/scenario_default.json");
 
 		boost::log::core::get()->set_filter(
 				boost::log::trivial::severity >= boost::log::trivial::info);
@@ -53,8 +53,8 @@ namespace core {
 
 			createScene();
 
-			for (double freq = 5e6; freq <= 5e6; freq += 0.5e6) {
-				for (double SZA = 10; SZA <= 80; SZA += 10) {
+			for (double freq = 4.5e6; freq <= 5e6; freq += 0.5e6) {
+				for (double SZA = 10; SZA <= 80; SZA += 5) {
 					Ray r;
 					r.rayNumber = ++rayCounter;
 					r.frequency = freq;
@@ -98,6 +98,7 @@ namespace core {
 	void Application::createScene() {
 
 		double R = celestialConfig.getInt("radius");
+		ParseLayerHeight plh = ParseLayerHeight();
 
 		// terrain
 		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
@@ -109,7 +110,7 @@ namespace core {
 			scm.addToScene(tr);
 		}
 
-		int dh = applicationConfig.getInt("layerHeight");
+		int dh = 2000;
 		const Json::Value ionosphereConfig = celestialConfig.getArray("ionosphere");
 		for (int idx = 0; idx < ionosphereConfig.size(); idx++) {
 
@@ -117,6 +118,7 @@ namespace core {
 			int hE = ionosphereConfig[idx].get("end", 0).asInt();
 			double electronPeakDensity = atof(ionosphereConfig[idx].get("electronPeakDensity", "").asCString());
 			double peakProductionAltitude = ionosphereConfig[idx].get("peakProductionAltitude", "").asDouble();
+			string stratificationType = ionosphereConfig[idx].get("stratification", "").asString();
 			for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
 				double nextTheta = theta + Constants::PI/180;
 
@@ -128,6 +130,8 @@ namespace core {
 					io->peakProductionAltitude = peakProductionAltitude;
 
 					scm.addToScene(io);
+
+					dh = plh.getDh(stratificationType, h, peakProductionAltitude);
 				}
 			}
 		}
@@ -135,6 +139,7 @@ namespace core {
 		const Json::Value atmosphereConfig = celestialConfig.getObject("atmosphere");
 		int hS = atmosphereConfig.get("start", 0).asInt();
 		int hE = atmosphereConfig.get("end", 0).asInt();
+		dh = 2000;
 
 		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
 			double nextTheta = theta + Constants::PI/180;
@@ -174,6 +179,11 @@ namespace core {
 	SceneManager Application::getSceneManager() {
 
 		return scm;
+	}
+
+	Config Application::getApplicationConfig() {
+
+		return applicationConfig;
 	}
 
 	Config Application::getCelestialConfig() {
