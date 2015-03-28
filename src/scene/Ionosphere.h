@@ -32,6 +32,7 @@ namespace scene {
 			void refract(Ray *r, Vector2d &hitpos);
 			void attenuate(Ray *r, double magnitude);
 			void attenuateWithers(Ray *r);
+			void rangeDelay(Ray *r);
 			void exportData(Ray *r);
 			double getPlasmaFrequency();
 			double getElectronPeakDensity();
@@ -40,6 +41,7 @@ namespace scene {
 			double getAltitude();
 			double getIncidentAngle(Ray *r);
 			double getCollisionFrequency();
+			double getTEC();
 			int determineWaveBehaviour(Ray *r);
 			double layerHeight = 0;
 			double electronDensityVariability = 0;

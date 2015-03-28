@@ -57,6 +57,7 @@ namespace core {
 			list<Ray> rays;
 			Config getApplicationConfig();
 			Config getCelestialConfig();
+			void setCelestialConfig(Config conf);
 
 		private:
 			Application() {

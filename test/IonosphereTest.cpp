@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include <list>
+#include "../src/core/Application.h"
 #include "../src/scene/Ionosphere.h"
 #include "../src/tracer/Ray.h"
 #include "../src/exporter/Data.h"
@@ -20,17 +21,21 @@ namespace {
 		protected:
 			void SetUp() {
 
-				Config::getInstance().loadFromFile("config/mars.json");
+				conf = Config("config/scenario_test.json");
+				Application::getInstance().setCelestialConfig(conf);
 
 				Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + 100e3), Vector2d(100e3, 3390e3 + 100e3));
 				io.setMesh(mesh);
 				io.setup();
+				io.layerHeight = 1000;
 				Line2d mesh2 = Line2d(Vector2d(0, 3515e3), Vector2d(98408.25, 3513.6e3));
 				io2.setMesh(mesh2);
 				io2.setup();
+				io2.layerHeight = 1000;
 				Line2d mesh3 = Line2d(Vector2d(3390e3 + 100e3, 100e3), Vector2d(3390e3 + 100e3, -100e3));
 				io3.setMesh(mesh3);
 				io3.setup();
+				io3.layerHeight = 1000;
 
 				r.originalAngle = 30 * Constants::PI / 180.0; // SZA = 30 deg
 				r.previousRefractiveIndex = 1.0;
@@ -46,7 +51,13 @@ namespace {
 
 			Ionosphere io, io2, io3;
 			Ray r, r2;
+			Config conf;
 	};
+
+	TEST_F(IonosphereTest, ElectronPeakDensity) {
+
+		ASSERT_EQ(2.5e11, io.getElectronPeakDensity());
+	}
 
 	TEST_F(IonosphereTest, SolarZenithAngle) {
 
@@ -156,6 +167,17 @@ namespace {
 //		}
 //
 //		ASSERT_NEAR(-9, r.signalPower, 0.1);
+	}
+
+	TEST_F(IonosphereTest, TEC) {
+
+		ASSERT_NEAR(1.1e13, io.getTEC(), 1.1e8);
+		ASSERT_NEAR(2.5e14, io2.getTEC(), 1.1e8);
+		ASSERT_NEAR(0, io3.getTEC(), 1.1e8);
+	}
+
+	TEST_F(IonosphereTest, RangeDelay) {
+
 	}
 
 	TEST_F(IonosphereTest, ExportDataTest) {

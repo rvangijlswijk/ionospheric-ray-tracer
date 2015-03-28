@@ -40,6 +40,7 @@ namespace tracer {
 			double signalPower = 0.0;
 			double timeOfFlight = 0.0;
 			int rayNumber = 0;
+			double rangeDelay = 0.0;
 			Geometry* lastHit;
 			enum waveBehaviour {
 				wave_reflection = 1,

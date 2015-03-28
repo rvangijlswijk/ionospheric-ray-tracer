@@ -37,6 +37,8 @@ namespace scene {
 	 */
 	void Ionosphere::setup() {
 
+		cout << "HI" << endl;
+
 		_altitude = getAltitude();
 		_peakProductionAltitude = Ionosphere::peakProductionAltitude;//NormalDistribution::getInstance().get(Ionosphere::peakProductionAltitude, 1);
 		_electronPeakDensity = Ionosphere::electronPeakDensity; //NormalDistribution::getInstance().get(Ionosphere::electronPeakDensity, electronDensityVariability);
@@ -54,6 +56,8 @@ namespace scene {
 		refract(r, hitpos);
 
 		attenuate(r, magnitude);
+
+		rangeDelay(r);
 
 		exportData(r);
 	}
@@ -162,6 +166,14 @@ namespace scene {
 			if (pLowDb < pHigh) r->signalPower /= pLowW;
 			else r->signalPower /= pHigh;
 		}
+	}
+
+	/**
+	 * Range delay
+	 */
+	void Ionosphere::rangeDelay(Ray *r) {
+
+		r->rangeDelay += 0.403 * getTEC() / pow(r->frequency, 2);
 	}
 
 	void Ionosphere::exportData(Ray *r) {
@@ -277,6 +289,11 @@ namespace scene {
 		}
 
 		return Ionosphere::surfaceCollisionFrequency * exp(-(_altitude - 73e3) / 6200);
+	}
+
+	double Ionosphere::getTEC() {
+
+		return getElectronNumberDensity() * layerHeight;
 	}
 
 	/**

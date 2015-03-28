@@ -191,5 +191,10 @@ namespace core {
 		return celestialConfig;
 	}
 
+	void Application::setCelestialConfig(Config conf) {
+
+		celestialConfig = conf;
+	}
+
 } /* namespace core */
 } /* namespace raytracer */

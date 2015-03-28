@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#include "../src/core/Application.h"
 #include "../src/scene/Atmosphere.h"
 #include "../src/tracer/Ray.h"
 #include "../src/math/Constants.h"
@@ -16,7 +17,9 @@ namespace {
 		protected:
 			void SetUp() {
 
-				Config::getInstance().loadFromFile("config/mars.json");
+				conf = Config();
+				conf.loadFromFile("config/scenario_default.json");
+				Application::getInstance().setCelestialConfig(conf);
 
 				Line2d mesh = Line2d(Vector2d(-100e3, 3390e3), Vector2d(100e3, 3390e3));
 				a1.setMesh(mesh);
@@ -45,6 +48,7 @@ namespace {
 
 			Atmosphere a1, a2, a3, a4;
 			Ray r, r2;
+			Config conf;
 	};
 
 	TEST_F(AtmosphereTest, RefractiveIndex) {

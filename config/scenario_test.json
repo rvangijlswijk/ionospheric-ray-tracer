@@ -1,0 +1,17 @@
+{
+    "name": "Mars",
+    "radius": 3390000,
+    "atmosphere": {
+    	"start": 1000,
+    	"end": 40000
+    },
+    "ionosphere": [{
+        "name" : "Test Layer",
+        "model": "chapman",
+        "stratification": "chapman",
+        "start": 80000,
+        "end": 250000,
+        "peakProductionAltitude": 125000,
+        "electronPeakDensity": "2.5e11"
+    }]
+}

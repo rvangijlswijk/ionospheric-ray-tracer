@@ -21,6 +21,7 @@ namespace core {
 	Config::Config(const char * filepath) {
 
 		loadFromFile(filepath);
+		cout << "_doc: " << _doc.toStyledString() << endl;
 	}
 
 	void Config::loadFromFile(const char * filepath) {
@@ -37,7 +38,7 @@ namespace core {
 	int Config::getInt(const char * path) {
 
 		if (!_doc.isMember(path)) {
-			cerr << path << " does not exist!";
+			cerr << path << " does not exist!" << endl;
 		}
 
 		return _doc.get(path, "UTF-32").asInt();
@@ -46,7 +47,7 @@ namespace core {
 	double Config::getDouble(const char * path) {
 
 		if (!_doc.isMember(path)) {
-			cerr << path << " does not exist!";
+			cerr << path << " does not exist!" << endl;
 		}
 
 		return _doc.get(path, "UTF-32").asDouble();
@@ -55,11 +56,11 @@ namespace core {
 	Json::Value Config::getArray(const char * path) {
 
 		if (!_doc.isMember(path)) {
-			cerr << path << " does not exist!";
+			cerr << path << " does not exist!" << endl;
 		}
 
 		if (!_doc.get(path, "UTF-32").isArray()) {
-			cerr << path << " is not an array!";
+			cerr << path << " is not an array!" << endl;
 		}
 
 		return _doc[path];
@@ -68,11 +69,11 @@ namespace core {
 	Json::Value Config::getObject(const char * path) {
 
 		if (!_doc.isMember(path)) {
-			cerr << path << " does not exist!";
+			cerr << path << " does not exist!" << endl;
 		}
 
 		if (!_doc.get(path, "UTF-32").isObject()) {
-			cerr << path << " is not an object!";
+			cerr << path << " is not an object!" << endl;
 		}
 
 		return _doc[path];
