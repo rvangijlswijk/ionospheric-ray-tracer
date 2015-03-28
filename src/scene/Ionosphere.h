@@ -42,19 +42,19 @@ namespace scene {
 			double getIncidentAngle(Ray *r);
 			double getCollisionFrequency();
 			double getTEC();
+			void setPeakProductionAltitude(double p);
+			void setElectronPeakDensity(double e);
 			int determineWaveBehaviour(Ray *r);
 			double layerHeight = 0;
 			double electronDensityVariability = 0;
-			double peakProductionAltitude = 0;	// m
-			double electronPeakDensity = 0;		// m^-3
 			static constexpr double surfaceCollisionFrequency = 1e7;	// s^-1
 
 		private:
 			math::NDouble* _plasmaFrequency = new math::NDouble();
 			math::NDouble* _electronNumberDensity = new math::NDouble();
 			double _altitude = 0;
-			double _electronPeakDensity = 0;
-			double _peakProductionAltitude = 0;
+			double _peakProductionAltitude = 0;	// m
+			double _electronPeakDensity = 0;		// m^-3
 	};
 
 } /* namespace scene */

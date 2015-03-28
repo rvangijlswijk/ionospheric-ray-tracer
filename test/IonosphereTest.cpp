@@ -28,14 +28,20 @@ namespace {
 				io.setMesh(mesh);
 				io.setup();
 				io.layerHeight = 1000;
+				io.setElectronPeakDensity(2.5e11);
+				io.setPeakProductionAltitude(125e3);
 				Line2d mesh2 = Line2d(Vector2d(0, 3515e3), Vector2d(98408.25, 3513.6e3));
 				io2.setMesh(mesh2);
 				io2.setup();
 				io2.layerHeight = 1000;
+				io2.setElectronPeakDensity(2.5e11);
+				io2.setPeakProductionAltitude(125e3);
 				Line2d mesh3 = Line2d(Vector2d(3390e3 + 100e3, 100e3), Vector2d(3390e3 + 100e3, -100e3));
 				io3.setMesh(mesh3);
 				io3.setup();
 				io3.layerHeight = 1000;
+				io3.setElectronPeakDensity(2.5e11);
+				io3.setPeakProductionAltitude(125e3);
 
 				r.originalAngle = 30 * Constants::PI / 180.0; // SZA = 30 deg
 				r.previousRefractiveIndex = 1.0;
@@ -171,9 +177,9 @@ namespace {
 
 	TEST_F(IonosphereTest, TEC) {
 
-		ASSERT_NEAR(1.1e13, io.getTEC(), 1.1e8);
-		ASSERT_NEAR(2.5e14, io2.getTEC(), 1.1e8);
-		ASSERT_NEAR(0, io3.getTEC(), 1.1e8);
+		ASSERT_NEAR(1.1e13, io.getTEC(), 1.1e10);
+		ASSERT_NEAR(2.5e14, io2.getTEC(), 1.1e11);
+		ASSERT_EQ(0, io3.getTEC());
 	}
 
 	TEST_F(IonosphereTest, RangeDelay) {

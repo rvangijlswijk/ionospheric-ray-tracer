@@ -126,8 +126,8 @@ namespace core {
 					Ionosphere* io = new Ionosphere(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
 							Vector2d((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
 					io->layerHeight = dh;
-					io->electronPeakDensity = electronPeakDensity;
-					io->peakProductionAltitude = peakProductionAltitude;
+					io->setElectronPeakDensity(electronPeakDensity);
+					io->setPeakProductionAltitude(peakProductionAltitude);
 
 					scm.addToScene(io);
 

@@ -37,11 +37,7 @@ namespace scene {
 	 */
 	void Ionosphere::setup() {
 
-		cout << "HI" << endl;
-
 		_altitude = getAltitude();
-		_peakProductionAltitude = Ionosphere::peakProductionAltitude;//NormalDistribution::getInstance().get(Ionosphere::peakProductionAltitude, 1);
-		_electronPeakDensity = Ionosphere::electronPeakDensity; //NormalDistribution::getInstance().get(Ionosphere::electronPeakDensity, electronDensityVariability);
 	}
 
 	/**
@@ -322,6 +318,16 @@ namespace scene {
 			return Ray::wave_refraction;
 
 		return Ray::wave_none;
+	}
+
+	void Ionosphere::setPeakProductionAltitude(double p) {
+
+		_peakProductionAltitude = p;
+	}
+
+	void Ionosphere::setElectronPeakDensity(double e) {
+
+		_electronPeakDensity = e;
 	}
 
 } /* namespace scene */
