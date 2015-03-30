@@ -33,6 +33,8 @@ namespace scene {
 			void attenuate(Ray *r, double magnitude);
 			void attenuateWithers(Ray *r);
 			void rangeDelay(Ray *r);
+			void phaseAdvance(Ray *r);
+			void timeDelay(Ray *r);
 			void exportData(Ray *r);
 			double getPlasmaFrequency();
 			double getElectronPeakDensity();

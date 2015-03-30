@@ -177,13 +177,54 @@ namespace {
 
 	TEST_F(IonosphereTest, TEC) {
 
-		ASSERT_NEAR(1.1e13, io.getTEC(), 1.1e10);
+		ASSERT_NEAR(1.095e13, io.getTEC(), 1.1e10);
 		ASSERT_NEAR(2.5e14, io2.getTEC(), 1.1e11);
 		ASSERT_EQ(0, io3.getTEC());
 	}
 
 	TEST_F(IonosphereTest, RangeDelay) {
 
+		r.rangeDelay = 0;
+		io.rangeDelay(&r);
+		ASSERT_NEAR(0.276, r.rangeDelay, 0.001);
+
+		r.rangeDelay = 0;
+		io2.rangeDelay(&r);
+		ASSERT_NEAR(6.295, r.rangeDelay, 0.001);
+
+		r.rangeDelay = 0;
+		io3.rangeDelay(&r);
+		ASSERT_NEAR(0, r.rangeDelay, 0.001);
+	}
+
+	TEST_F(IonosphereTest, TimeDelay) {
+
+		r.timeDelay = 0;
+		io.timeDelay(&r);
+		ASSERT_NEAR(9.168e-8, r.timeDelay, 0.001);
+
+		r.timeDelay = 0;
+		io2.timeDelay(&r);
+		ASSERT_NEAR(2.093e-6, r.timeDelay, 0.001);
+
+		r.timeDelay = 0;
+		io3.timeDelay(&r);
+		ASSERT_NEAR(0, r.timeDelay, 0.001);
+	}
+
+	TEST_F(IonosphereTest, PhaseAdvance) {
+
+		r.phaseAdvance = 0;
+		io.phaseAdvance(&r);
+		ASSERT_NEAR(2.310, r.phaseAdvance, 0.001);
+
+		r.phaseAdvance = 0;
+		io2.phaseAdvance(&r);
+		ASSERT_NEAR(52.734, r.phaseAdvance, 0.001);
+
+		r.phaseAdvance = 0;
+		io3.phaseAdvance(&r);
+		ASSERT_NEAR(0, r.phaseAdvance, 0.001);
 	}
 
 	TEST_F(IonosphereTest, ExportDataTest) {

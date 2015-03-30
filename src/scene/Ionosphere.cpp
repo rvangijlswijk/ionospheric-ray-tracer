@@ -50,10 +50,10 @@ namespace scene {
 		double magnitude = r->o.distance(hitpos);
 
 		refract(r, hitpos);
-
 		attenuate(r, magnitude);
-
 		rangeDelay(r);
+		phaseAdvance(r);
+		timeDelay(r);
 
 		exportData(r);
 	}
@@ -165,11 +165,33 @@ namespace scene {
 	}
 
 	/**
-	 * Range delay
+	 * Range delay. Data from Ho, 2002.
+	 * @ todo: check formulas
+	 * @ unit: m
 	 */
 	void Ionosphere::rangeDelay(Ray *r) {
 
 		r->rangeDelay += 0.403 * getTEC() / pow(r->frequency, 2);
+	}
+
+	/**
+	 * Phase advance. Data from Ho, 2002.
+	 * @ todo: check formulas
+	 * @ unit: rad
+	 */
+	void Ionosphere::phaseAdvance(Ray *r) {
+
+		r->phaseAdvance += (8.44e-7 / r->frequency ) * getTEC();
+	}
+
+	/**
+	 * Time delay. Data from Ho, 2002.
+	 * @ todo: check formulas
+	 * @ unit: sec
+	 */
+	void Ionosphere::timeDelay(Ray *r) {
+
+		r->timeDelay += (1.34e-7 / pow(r->frequency, 2)) * getTEC();
 	}
 
 	void Ionosphere::exportData(Ray *r) {
@@ -227,7 +249,7 @@ namespace scene {
 	 * - SIMPLE:
 	 * - KELSO: The simplified method as described in Kelso, 1964, p.208
 	 * - AHDR: Refractive index according to the Appleton-Hartree
-	 * dispersion relation
+	 * dispersion relation. Only applies to a magnetized cold plasma.
 	 */
 	double Ionosphere::getRefractiveIndex(Ray *r, refractiveMethod m) {
 
@@ -287,6 +309,10 @@ namespace scene {
 		return Ionosphere::surfaceCollisionFrequency * exp(-(_altitude - 73e3) / 6200);
 	}
 
+	/**
+	 * Calculate the total electron content (TEC) which this ray experiences as it passes through
+	 * the ionosphere.
+	 */
 	double Ionosphere::getTEC() {
 
 		return getElectronNumberDensity() * layerHeight;
