@@ -1,0 +1,28 @@
+{
+    "name": "Mars",
+    "solarLongitude": 0,
+    "solarActivity": 250,
+    "radius": 3390000,
+    "atmosphere": {
+    	"start": 1000,
+    	"end": 40000,
+    	"duststorm": 0
+    },
+    "ionosphere": [{
+        "name" : "M2 Layer",
+        "model": "chapman",
+        "stratification": "chapman",
+        "start": 108000,
+        "end": 200000,
+        "peakProductionAltitude": 125000,
+        "electronPeakDensity": "2.5e11"
+    },{
+        "name" : "M1 Layer",
+        "model": "chapman",
+        "stratification": "chapman",
+        "start": 70000,
+        "end": 108000,
+        "peakProductionAltitude": 100000,
+        "electronPeakDensity": "1.0e11"
+    }]
+}
