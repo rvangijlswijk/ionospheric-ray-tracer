@@ -21,7 +21,6 @@ namespace core {
 	Config::Config(const char * filepath) {
 
 		loadFromFile(filepath);
-		cout << "_doc: " << _doc.toStyledString() << endl;
 	}
 
 	void Config::loadFromFile(const char * filepath) {

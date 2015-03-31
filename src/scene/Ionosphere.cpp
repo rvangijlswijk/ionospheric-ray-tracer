@@ -299,7 +299,7 @@ namespace scene {
 	 */
 	double Ionosphere::getCollisionFrequency() {
 
-		if (_altitude < 30e3 || _altitude > 200e3) {
+		if (_altitude < 3e3 || _altitude > 200e3) {
 			cerr << "Altitude: " << _altitude << endl;
 			printf("Begin x,y, end x,y (%4.2f, %4.2f), (%4.2f, %4.2f)\n",
 					mesh2d.begin.x, mesh2d.begin.y, mesh2d.end.x, mesh2d.end.y);

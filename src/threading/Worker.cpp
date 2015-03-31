@@ -6,16 +6,10 @@
  */
 
 #include "Worker.h"
-#include "../tracer/Ray.h"
-#include "../core/Application.h"
-#include "../math/Constants.h"
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
 
 namespace raytracer {
 namespace threading {
 
-	using namespace core;
 	using namespace math;
 	using namespace tracer;
 	using namespace boost::log;

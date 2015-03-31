@@ -1,11 +1,11 @@
 /*
- * ParseLayerHeight.cpp
+ * IonosphereConfigParser.cpp
  *
  *  Created on: 27 Mar 2015
  *      Author: rian
  */
 
-#include "ParseLayerHeight.h"
+#include "IonosphereConfigParser.h"
 
 namespace raytracer {
 namespace scene {
@@ -14,11 +14,16 @@ namespace scene {
 	using namespace core;
 	using namespace math;
 
-	ParseLayerHeight::ParseLayerHeight() {}
+	IonosphereConfigParser::IonosphereConfigParser() {}
 
-	int ParseLayerHeight::getDh(string stratificationType, double lowerHeight, double hMax) {
+	Json::Value IonosphereConfigParser::getValue(const char * path) {
 
-		const Json::Value layerHeight = Application::getInstance().getApplicationConfig().getObject("layerHeight");
+		return Application::getInstance().getApplicationConfig().getObject(path);
+	}
+
+	int IonosphereConfigParser::getDh(const char * stratificationType, double lowerHeight, double hMax) {
+
+		const Json::Value layerHeight = getValue("layerHeight");
 		if (layerHeight.isMember(stratificationType)) {
 			if (stratificationType == "chapman") {
 				int dhnmin = layerHeight[stratificationType].get("dhnmin", 0).asInt();
@@ -35,7 +40,7 @@ namespace scene {
 
 	}
 
-	int ParseLayerHeight::getDh(const char * stratificationType, double lowerHeight) {
+	int IonosphereConfigParser::getDh(const char * stratificationType, double lowerHeight) {
 
 		const Json::Value layerHeight = Application::getInstance().getApplicationConfig().getObject("layerHeight");
 		if (layerHeight.isMember(stratificationType)) {
@@ -48,20 +53,6 @@ namespace scene {
 			BOOST_LOG_TRIVIAL(error) << stratificationType << " not found!";
 		}
 
-	}
-
-	string ParseLayerHeight::getEnumType(int stratificationType) {
-
-		switch(stratificationType) {
-			case STRAT_CONSTANT:
-				return "constant";
-				break;
-			case STRAT_CHAPMAN:
-				return "chapman";
-				break;
-		}
-
-		return "";
 	}
 
 } /* namespace scene */

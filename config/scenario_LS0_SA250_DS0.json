@@ -5,7 +5,7 @@
     "radius": 3390000,
     "atmosphere": {
     	"start": 1000,
-    	"end": 40000,
+    	"end": 25000,
     	"duststorm": 0
     },
     "ionosphere": [{
@@ -24,5 +24,13 @@
         "end": 108000,
         "peakProductionAltitude": 100000,
         "electronPeakDensity": "1.0e11"
+    },{
+        "name" : "EP Layer",
+        "model": "chapman",
+        "stratification": "chapman",
+        "start": 25000,
+        "end": 70000,
+        "peakProductionAltitude": 35000,
+        "electronPeakDensity": "1.0e8"
     }]
 }

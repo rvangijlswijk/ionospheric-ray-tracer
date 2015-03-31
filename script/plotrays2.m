@@ -44,6 +44,7 @@ for f=1:length(frequencies)
     plot(0 + (3390+70)*cos(ang), (3390+70) * sin(ang)-3390, 'LineStyle', '--', 'Color', 'black')
     plot(0 + (3390+108)*cos(ang), (3390+108) * sin(ang)-3390, 'LineStyle', '--', 'Color', 'black')
     plot(0 + (3390+200)*cos(ang), (3390+200) * sin(ang)-3390, 'LineStyle', '--', 'Color', 'black')
+    plot(0 + (3390+25)*cos(ang), (3390+25) * sin(ang)-3390, 'LineStyle', '--', 'Color', 'black')
     
     title(['frequency: ' num2str(frequencies(f)/1e6) ' MHz']);
     grid on

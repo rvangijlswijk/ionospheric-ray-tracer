@@ -8,9 +8,11 @@
 #ifndef WORKER_H_
 #define WORKER_H_
 
-#include <boost/thread.hpp>
 #include "../tracer/Ray.h"
 #include "../../contrib/threadpool/threadpool.hpp"
+#include <boost/thread.hpp>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
 
 namespace raytracer {
 namespace threading {

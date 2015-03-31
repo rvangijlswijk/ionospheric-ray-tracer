@@ -4,35 +4,29 @@
 // Description : Read the layer height from a config file.
 //============================================================================
 
-#ifndef SCENE_PARSELAYERHEIGHT_H_
-#define SCENE_PARSELAYERHEIGHT_H_
+#ifndef SCENE_IONOSPHERECONFIGPARSER_H_
+#define SCENE_IONOSPHERECONFIGPARSER_H_
 
-#include "../../contrib/jsoncpp/value.h"
 #include "../core/Application.h"
+#include "../core/ConfigParser.h"
 #include "../math/Constants.h"
 #include <math.h>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/expressions.hpp>
 
 namespace raytracer {
 namespace scene {
 
-	class ParseLayerHeight {
+	using namespace core;
+
+	class IonosphereConfigParser : public ConfigParser {
 
 		public:
-			ParseLayerHeight();
-			enum stratificationType {
-				STRAT_CONSTANT,
-				STRAT_CHAPMAN
-			};
+			IonosphereConfigParser();
+			Json::Value getValue(const char * path);
 			int getDh(const char * stratificationType, double lowerHeight);
-			int getDh(string stratificationType, double lowerHeight, double hMax);
-		private:
-			string getEnumType(int stratificationType);
+			int getDh(const char * stratificationType, double lowerHeight, double hMax);
 	};
 
 } /* namespace scene */
 } /* namespace raytracer */
 
-#endif /* SCENE_PARSELAYERHEIGHT_H_ */
+#endif /* SCENE_IONOSPHERECONFIGPARSER_H_ */

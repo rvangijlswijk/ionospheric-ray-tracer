@@ -30,7 +30,7 @@ namespace core {
 
 		isRunning = true;
 		applicationConfig = Config("config/config.json");
-		celestialConfig = Config("config/scenario_default.json");
+		celestialConfig = Config("config/scenario_LS0_SA250_DS0.json");
 
 		boost::log::core::get()->set_filter(
 				boost::log::trivial::severity >= boost::log::trivial::info);
@@ -53,8 +53,8 @@ namespace core {
 
 			createScene();
 
-			for (double freq = 4.5e6; freq <= 5e6; freq += 0.5e6) {
-				for (double SZA = 10; SZA <= 80; SZA += 5) {
+			for (double freq = 5e6; freq <= 5e6; freq += 0.5e6) {
+				for (double SZA = 10; SZA <= 80; SZA += 10) {
 					Ray r;
 					r.rayNumber = ++rayCounter;
 					r.frequency = freq;
@@ -98,7 +98,7 @@ namespace core {
 	void Application::createScene() {
 
 		double R = celestialConfig.getInt("radius");
-		ParseLayerHeight plh = ParseLayerHeight();
+		IonosphereConfigParser plh = IonosphereConfigParser();
 
 		// terrain
 		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
@@ -118,7 +118,7 @@ namespace core {
 			int hE = ionosphereConfig[idx].get("end", 0).asInt();
 			double electronPeakDensity = atof(ionosphereConfig[idx].get("electronPeakDensity", "").asCString());
 			double peakProductionAltitude = ionosphereConfig[idx].get("peakProductionAltitude", "").asDouble();
-			string stratificationType = ionosphereConfig[idx].get("stratification", "").asString();
+			const char * stratificationType = ionosphereConfig[idx].get("stratification", "").asCString();
 			for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
 				double nextTheta = theta + Constants::PI/180;
 

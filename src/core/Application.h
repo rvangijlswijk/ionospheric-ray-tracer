@@ -21,7 +21,6 @@
 #include "../scene/Ionosphere.h"
 #include "../scene/Atmosphere.h"
 #include "../scene/Terrain.h"
-#include "../scene/ParseLayerHeight.h"
 #include "../tracer/Ray.h"
 #include "../exporter/Data.h"
 #include "../exporter/CsvExporter.h"
@@ -31,6 +30,7 @@
 #include "../threading/Worker.h"
 #include "../../contrib/threadpool/threadpool.hpp"
 #include "../../contrib/jsoncpp/value.h"
+#include "../scene/IonosphereConfigParser.h"
 
 namespace raytracer {
 namespace core {
