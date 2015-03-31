@@ -22,8 +22,8 @@ namespace scene {
 		public:
 			IonosphereConfigParser();
 			Json::Value getValue(const char * path);
-			int getDh(const char * stratificationType, double lowerHeight);
-			int getDh(const char * stratificationType, double lowerHeight, double hMax);
+			int getDh(const char *, double lowerHeight);
+			int getDh(const char *, double lowerHeight, double hMax);
 	};
 
 } /* namespace scene */

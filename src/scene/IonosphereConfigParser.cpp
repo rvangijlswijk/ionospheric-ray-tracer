@@ -25,17 +25,24 @@ namespace scene {
 
 		const Json::Value layerHeight = getValue("layerHeight");
 		if (layerHeight.isMember(stratificationType)) {
-			if (stratificationType == "chapman") {
+
+			if (std::string(stratificationType) == "chapman") {
 				int dhnmin = layerHeight[stratificationType].get("dhnmin", 0).asInt();
 				int dhnmax = layerHeight[stratificationType].get("dhnmax", 0).asInt();
 				double z = (lowerHeight - hMax) / Constants::NEUTRAL_SCALE_HEIGHT;
 				double dh = dhnmin + dhnmax * (1 - exp(1 - z - exp(-z)));
 				return (int)round(dh);
+
+			} else if (std::string(stratificationType) == "parabolic") {
+				int dhnmin = layerHeight[stratificationType].get("dhnmin", 0).asInt();
+				int dhnmax = layerHeight[stratificationType].get("dhnmax", 0).asInt();
+				double dh = dhnmin * (1 + (dhnmax / dhnmin) * pow((lowerHeight - hMax),2) / (4 * pow(Constants::NEUTRAL_SCALE_HEIGHT, 2)));
+				return (int)round(dh);
 			} else {
-				BOOST_LOG_TRIVIAL(error) << stratificationType << " wrong function!";
+				BOOST_LOG_TRIVIAL(error) << "stratification type \"" << stratificationType << "\" wrong function!";
 			}
 		} else {
-			BOOST_LOG_TRIVIAL(error) << stratificationType << " not found!";
+			BOOST_LOG_TRIVIAL(error) << "stratification type \"" << stratificationType << "\" not found!";
 		}
 
 	}

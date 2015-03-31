@@ -6,6 +6,10 @@
     	"chapman": {
     			"dhnmin": 25,
     			"dhnmax": 2000
+    	},
+    	"parabolic": {
+    			"dhnmin": 25,
+    			"dhnmax": 1000
     	}
     }
 }

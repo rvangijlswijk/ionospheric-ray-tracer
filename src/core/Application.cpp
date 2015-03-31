@@ -118,7 +118,8 @@ namespace core {
 			int hE = ionosphereConfig[idx].get("end", 0).asInt();
 			double electronPeakDensity = atof(ionosphereConfig[idx].get("electronPeakDensity", "").asCString());
 			double peakProductionAltitude = ionosphereConfig[idx].get("peakProductionAltitude", "").asDouble();
-			const char * stratificationType = ionosphereConfig[idx].get("stratification", "").asCString();
+			Json::Value stratificationRaw = ionosphereConfig[idx].get("stratification", "");
+			const char * stratificationType = stratificationRaw.asCString();
 			for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
 				double nextTheta = theta + Constants::PI/180;
 
