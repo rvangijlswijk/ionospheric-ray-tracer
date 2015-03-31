@@ -55,7 +55,6 @@ namespace tracer {
 			};
 			waveBehaviour behaviour;
 			static constexpr double magnitude = 10e3;
-			static constexpr int TRACING_LIMIT = 1000;
 			static constexpr double powerTransmitted = 10.0; 	// [W]
 	};
 

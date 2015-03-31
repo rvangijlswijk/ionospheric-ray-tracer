@@ -70,7 +70,7 @@ namespace tracer {
 			cerr << "Out of scene bounds!" << endl;
 			return 0;
 		}
-		if (tracings >= TRACING_LIMIT) {
+		if (tracings >= Application::getInstance().getApplicationConfig().getInt("tracingLimit")) {
 			cerr << "Tracing limit exceeded!" << endl;
 			return 0;
 		}

@@ -1,6 +1,7 @@
 {
 	"parallelism": 4,
 	"iterations": 1,
+	"tracingLimit": 5000,
     "layerHeight": {
     	"constant": 500,
     	"chapman": {
