@@ -26,6 +26,7 @@ namespace exporter {
 			double theta_0 = 0;
 			double frequency = 0;
 			double signalPower = 0;
+			double timeOfFlight = 0;
 			scene::Geometry::object_type collisionType = scene::Geometry::none;
 	};
 

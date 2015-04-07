@@ -98,6 +98,7 @@ namespace tracer {
 			dataset.theta_0 = originalAngle;
 			dataset.frequency = frequency;
 			dataset.signalPower = signalPower;
+			dataset.timeOfFlight = timeOfFlight;
 			dataset.collisionType = Geometry::terrain;
 			Application::getInstance().addToDataset(dataset);
 			cout << "result: terrain\n";
@@ -114,6 +115,7 @@ namespace tracer {
 			dataset.theta_0 = originalAngle;
 			dataset.frequency = frequency;
 			dataset.signalPower = signalPower;
+			dataset.timeOfFlight = timeOfFlight;
 			dataset.collisionType = Geometry::none;
 			Application::getInstance().addToDataset(dataset);
 			return trace();
