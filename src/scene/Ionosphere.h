@@ -49,7 +49,7 @@ namespace scene {
 			int determineWaveBehaviour(Ray *r);
 			double layerHeight = 0;
 			double electronDensityVariability = 0;
-			static constexpr double surfaceCollisionFrequency = 1e7;	// s^-1
+			static constexpr double surfaceCollisionFrequency = 2.8e10;	// s^-1
 
 		private:
 			math::NDouble* _plasmaFrequency = new math::NDouble();

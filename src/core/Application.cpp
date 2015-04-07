@@ -49,12 +49,13 @@ namespace core {
 		int rayCounter = 0;
 		for (int iteration = 0; iteration < applicationConfig.getInt("iterations"); iteration++) {
 
-			BOOST_LOG_TRIVIAL(info) << "Iteration " << iteration;
+			BOOST_LOG_TRIVIAL(info) << "Iteration " << (iteration+1) << " of " << applicationConfig.getInt("iterations");
 
 			createScene();
 
+			int numWorkers = 0;
 			for (double freq = 5e6; freq <= 5e6; freq += 0.5e6) {
-				for (double SZA = 10; SZA <= 80; SZA += 10) {
+				for (double SZA = 10; SZA <= 80; SZA += 0.1) {
 					Ray r;
 					r.rayNumber = ++rayCounter;
 					r.frequency = freq;
@@ -65,10 +66,12 @@ namespace core {
 
 					Worker w;
 					w.schedule(&tp, r);
+
+					numWorkers++;
 				}
 			}
 
-			BOOST_LOG_TRIVIAL(info) << (tp.pending() + tp.size()) << " workers queued";
+			BOOST_LOG_TRIVIAL(info) << numWorkers << " workers queued";
 
 			tp.wait();
 
@@ -132,7 +135,7 @@ namespace core {
 
 					scm.addToScene(io);
 
-					dh = plh.getDh(stratificationType, h, peakProductionAltitude);
+					dh = plh.getDh(stratificationType, h);
 				}
 			}
 		}

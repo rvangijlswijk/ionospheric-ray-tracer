@@ -10,24 +10,17 @@
     },
     "ionosphere": [{
         "name" : "M2 Layer",
-        "stratification": "chapman",
+        "stratification": "constant",
         "start": 108000,
         "end": 200000,
         "peakProductionAltitude": 125000,
         "electronPeakDensity": "2.5e11"
     },{
         "name" : "M1 Layer",
-        "stratification": "chapman",
+        "stratification": "constant",
         "start": 70000,
         "end": 108000,
         "peakProductionAltitude": 100000,
         "electronPeakDensity": "1.0e11"
-    },{
-        "name" : "EP Layer",
-        "stratification": "parabolic",
-        "start": 25000,
-        "end": 70000,
-        "peakProductionAltitude": 35000,
-        "electronPeakDensity": "1.0e8"
     }]
 }

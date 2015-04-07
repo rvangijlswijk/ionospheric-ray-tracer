@@ -51,7 +51,7 @@ namespace scene {
 
 		const Json::Value layerHeight = Application::getInstance().getApplicationConfig().getObject("layerHeight");
 		if (layerHeight.isMember(stratificationType)) {
-			if (stratificationType == "constant") {
+			if (std::string(stratificationType) == "constant") {
 				return layerHeight[stratificationType].asInt();
 			} else {
 				BOOST_LOG_TRIVIAL(error) << stratificationType << " wrong function!";

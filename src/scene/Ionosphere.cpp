@@ -106,21 +106,22 @@ namespace scene {
 	 */
 	void Ionosphere::attenuate(Ray *r, double magnitude) {
 
-		double theta_r = r->getAngle() - Constants::PI/2 + getSolarZenithAngle2d();
-		if (r->d.y < 0) {
-			theta_r = - r->getAngle() - Constants::PI/2 + getSolarZenithAngle2d();
-		}
+		double correctionFactor = 1e-2;
 
-		double mu_r = sqrt(1 - pow(getPlasmaFrequency(), 2) / pow(2 * Constants::PI * r->frequency, 2));
+//		double theta_r = r->getAngle() - Constants::PI/2 + getSolarZenithAngle2d();
+//
+//		double mu_r = sqrt(1 - pow(getPlasmaFrequency(), 2) / pow(2 * Constants::PI * r->frequency, 2));
+//
+//		double ki = (-pow(getPlasmaFrequency(), 2) / (2 * Constants::C * mu_r))
+//				* getCollisionFrequency() / (pow(2 * Constants::PI * r->frequency, 2) + pow(getCollisionFrequency(), 2));
 
-		double ki = (-pow(getPlasmaFrequency(), 2) / (2 * Constants::C * mu_r))
-				* getCollisionFrequency() / (pow(2 * Constants::PI * r->frequency, 2) + pow(getCollisionFrequency(), 2));
+//		printf("wp: %4.2e, f: %4.2e, mu_r: %4.2e, colFreq: %4.2e ", getPlasmaFrequency(), r->frequency, mu_r, getCollisionFrequency());
 
-//		printf("wp: %4.2e, f: %4.2e, mu_r: %4.2e, colFreq: %4.2e, ki: %4.2e ", getPlasmaFrequency(), r->frequency, mu_r, getCollisionFrequency(), ki);
+//		double loss = - abs(20 * log10(exp(1)) * ki * magnitude * abs(1 / cos(getSolarZenithAngle2d())) * cos(abs(theta_r)));
+		double loss = -1.15e-6 * (getElectronNumberDensity() * getCollisionFrequency() * magnitude) / pow(r->frequency, 2)
+				* correctionFactor;
 
-		double loss = 20 * log10(exp(1)) * ki * magnitude * abs(1 / cos(getSolarZenithAngle2d())) * cos(abs(theta_r));
-
-//		printf("magnitude: %4.2f, totalLoss: %4.2e, theta: %4.2f, alt: %4.2f \n", magnitude, r->signalPower, theta_r, _altitude());
+//		printf("magnitude: %4.2f, totalLoss: %4.2e, theta: %4.2f, alt: %4.2f ", magnitude, r->signalPower, theta_r, _altitude);
 
 //		printf("Loss: %4.2e ", loss);
 
@@ -299,14 +300,7 @@ namespace scene {
 	 */
 	double Ionosphere::getCollisionFrequency() {
 
-		if (_altitude < 3e3 || _altitude > 200e3) {
-			cerr << "Altitude: " << _altitude << endl;
-			printf("Begin x,y, end x,y (%4.2f, %4.2f), (%4.2f, %4.2f)\n",
-					mesh2d.begin.x, mesh2d.begin.y, mesh2d.end.x, mesh2d.end.y);
-			throw std::invalid_argument("Collision frequency interpolation not valid for this altitude! Altitude must be between 30 and 200km.");
-		}
-
-		return Ionosphere::surfaceCollisionFrequency * exp(-(_altitude - 73e3) / 6200);
+		return Ionosphere::surfaceCollisionFrequency * exp(-_altitude / Constants::NEUTRAL_SCALE_HEIGHT);
 	}
 
 	/**

@@ -10,7 +10,6 @@
     },
     "ionosphere": [{
         "name" : "M2 Layer",
-        "model": "chapman",
         "stratification": "chapman",
         "start": 108000,
         "end": 200000,
@@ -18,7 +17,6 @@
         "electronPeakDensity": "2.5e11"
     },{
         "name" : "M1 Layer",
-        "model": "chapman",
         "stratification": "chapman",
         "start": 70000,
         "end": 108000,

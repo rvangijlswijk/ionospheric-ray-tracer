@@ -123,6 +123,25 @@ namespace {
 
 	TEST_F(IonosphereTest, CollisionFrequency) {
 
+		Ionosphere cio, cio2, cio3, cio4;
+		Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + 100e3), Vector2d(100e3, 3390e3 + 100e3));
+		cio.setMesh(mesh);
+		cio.setup();
+		mesh = Line2d(Vector2d(-100e3, 3390e3 + 150e3), Vector2d(100e3, 3390e3 + 150e3));
+		cio2.setMesh(mesh);
+		cio2.setup();
+		mesh = Line2d(Vector2d(-100e3, 3390e3 + 200e3), Vector2d(100e3, 3390e3 + 200e3));
+		cio3.setMesh(mesh);
+		cio3.setup();
+		mesh = Line2d(Vector2d(-100e3, 3390e3 + 80e3), Vector2d(100e3, 3390e3 + 80e3));
+		cio4.setMesh(mesh);
+		cio4.setup();
+
+		ASSERT_NEAR(3.424e6, cio.getCollisionFrequency(), 1e4);
+		ASSERT_NEAR(3.787e4, cio2.getCollisionFrequency(), 1e2);
+		ASSERT_NEAR(418.8, cio3.getCollisionFrequency(), 4);
+		ASSERT_NEAR(2.075e7, cio4.getCollisionFrequency(), 1e5);
+
 	}
 
 	/**
@@ -146,11 +165,14 @@ namespace {
 		// M2 layer
 		rA.signalPower = 0;
 		for (int h = 80e3; h <= 200e3; h += 1000) {
+
 			Ionosphere ion;
 			Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + h), Vector2d(100e3, 3390e3 + h));
 			ion.setMesh(mesh);
 			ion.layerHeight = 1000;
 			ion.setup();
+			ion.setElectronPeakDensity(2.5e11);
+			ion.setPeakProductionAltitude(125e3);
 			ion.attenuate(&rA, ion.layerHeight);
 
 			ASSERT_NEAR(h, ion.getAltitude(), 1);
@@ -162,8 +184,8 @@ namespace {
 //		r.signalPower = 0;
 //		for (int h = 80e3; h <= 200e3; h += 1000) {
 //			Ionosphere ion;
-//			ion.peakProductionAltitude = 100e3;
-//			ion.maximumProductionRate = 1e11;
+//			ion.setElectronPeakDensity(100e3);
+//			ion.setPeakProductionAltitude(1e11);
 //			Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + h), Vector2d(100e3, 3390e3 + h));
 //			ion.setMesh(mesh);
 //			ion.layerHeight = 1000;

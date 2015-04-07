@@ -5,12 +5,12 @@
     "layerHeight": {
     	"constant": 500,
     	"chapman": {
-    			"dhnmin": 25,
-    			"dhnmax": 2000
+    			"dhnmin": 300,
+    			"dhnmax": 2500
     	},
     	"parabolic": {
-    			"dhnmin": 25,
-    			"dhnmax": 1000
+    			"dhnmin": 300,
+    			"dhnmax": 2000
     	}
     }
 }
