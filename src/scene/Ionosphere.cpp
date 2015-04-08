@@ -67,7 +67,6 @@ namespace scene {
 		int waveBehaviour = determineWaveBehaviour(r);
 
 		if (waveBehaviour == Ray::wave_reflection) {
-			r->behaviour = Ray::wave_reflection;
 			double beta_r = - beta - 2*SZA;
 			r->setAngle(beta_r);
 //			cout << "Reflect this ray! beta_r:" << beta_r * 180 / Constants::PI << " d.x,d.y:" << r->d.x << "," << r->d.y << "\n";
@@ -75,7 +74,6 @@ namespace scene {
 			if (r->d.y < 0) {
 				theta_i = Constants::PI - theta_i;
 			}
-			r->behaviour = Ray::wave_refraction;
 			double theta_r = asin((r->previousRefractiveIndex/refractiveIndex * sin(theta_i)));
 			double beta_2 = Constants::PI/2 - theta_r - SZA;
 			if (r->d.y < 0) {
@@ -321,8 +319,10 @@ namespace scene {
 	 */
 	int Ionosphere::determineWaveBehaviour(Ray *r) {
 
-		double refractiveIndex = getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
+		r->behaviour = Ray::wave_none;
+
 		double criticalAngle;
+		double refractiveIndex = getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
 		double incidentAngle = getIncidentAngle(r);
 
 		if (incidentAngle > Constants::PI/2)
@@ -334,11 +334,11 @@ namespace scene {
 			criticalAngle = asin(r->previousRefractiveIndex / refractiveIndex);
 
 		if (incidentAngle >= criticalAngle)
-			return Ray::wave_reflection;
+			r->behaviour = Ray::wave_reflection;
 		else
-			return Ray::wave_refraction;
+			r->behaviour = Ray::wave_refraction;
 
-		return Ray::wave_none;
+		return r->behaviour;
 	}
 
 	void Ionosphere::setPeakProductionAltitude(double p) {

@@ -113,7 +113,7 @@ namespace core {
 			scm.addToScene(tr);
 		}
 
-		int dh = 2000;
+		int dh = 500;
 		const Json::Value ionosphereConfig = celestialConfig.getArray("ionosphere");
 		for (int idx = 0; idx < ionosphereConfig.size(); idx++) {
 

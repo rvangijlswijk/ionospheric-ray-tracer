@@ -60,7 +60,7 @@ namespace scene {
 
 		// evaluate which hit is closest
 		Intersection finalHit;
-		double distance = 1000e6;
+		double distance = 1e9;
 		for (Intersection i : hits) {
 			if (rayOrigin.distance(i.pos) < distance && r->lastHit != i.g) {
 				finalHit = i;

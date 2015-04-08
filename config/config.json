@@ -3,14 +3,14 @@
 	"iterations": 1,
 	"tracingLimit": 5000,
     "layerHeight": {
-    	"constant": 500,
+    	"constant": 400,
     	"chapman": {
     			"dhnmin": 300,
     			"dhnmax": 2500
     	},
     	"parabolic": {
     			"dhnmin": 300,
-    			"dhnmax": 2000
+    			"dhnmax": 2500
     	}
     }
 }

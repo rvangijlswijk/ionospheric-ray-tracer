@@ -36,6 +36,7 @@ namespace tracer {
 	int Ray::trace() {
 
 		if (std::isnan(o.x) || std::isnan(o.y)) {
+			cout << "n: " << previousRefractiveIndex << endl;
 			cerr << "NaN exception!" << endl;
 			return 0;
 		}
@@ -75,11 +76,12 @@ namespace tracer {
 			return 0;
 		}
 
+		Application::getInstance().incrementTracing();
+		tracings++;
+
 		// determine ray behaviour
 		// intersection with an ionospheric or atmospheric layer
 		if (hit.o == Geometry::ionosphere || hit.o == Geometry::atmosphere) {
-			Application::getInstance().incrementTracing();
-			tracings++;
 //			cout << "result: ionosphere" << endl;
 			hit.g->interact(this, hit.pos);
 			if (behaviour == Ray::wave_no_propagation) {
@@ -88,8 +90,6 @@ namespace tracer {
 				return trace();
 			}
 		} else if (hit.o == Geometry::terrain) {
-			Application::getInstance().incrementTracing();
-			tracings++;
 			o = rayLine.end;
 			Data dataset;
 			dataset.rayNumber = rayNumber;
@@ -160,6 +160,7 @@ namespace tracer {
 	void Ray::calculateTimeOfFlight(Vector2d rayEnd) {
 
 		double magnitude = o.distance(rayEnd);
+
 		timeOfFlight += magnitude / Constants::C;
 	}
 
