@@ -1,30 +1,29 @@
 //============================================================================
-// Name        : Vector2d.h
+// Name        : Vector3d.h
 // Author      : Rian van Gijlswijk
-// Description : Represents a vector in 2D space
+// Description : Represents a vector in 3D space
 //============================================================================
 
-#ifndef VECTOR2D_H_
-#define VECTOR2D_H_
+#ifndef VECTOR3D_H_
+#define VECTOR3D_H_
 
 namespace raytracer {
 namespace math {
 
-class Vector2d {
+class Vector3d {
 
 	public:
-		Vector2d();
-		Vector2d(double xPos, double yPos);
+		Vector3d();
+		Vector3d(double xPos, double yPos, double zPos);
 
-		double x;
-		double y;
+		double x, y, z;
 
 		double magnitude();
-		double dotProduct(Vector2d v2);
-		double distance(Vector2d v2);
+		double dotProduct(Vector3d v2);
+		double distance(Vector3d v2);
 };
 
 } /* namespace math */
 } /* namespace raytracer */
 
-#endif /* VECTOR2D_H_ */
+#endif /* VECTOR3D_H_ */
