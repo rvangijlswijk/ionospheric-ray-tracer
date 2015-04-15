@@ -14,6 +14,7 @@
 #include "../scene/Ionosphere.h"
 #include "../exporter/Data.h"
 #include "../math/Constants.h"
+#include "../math/Line3d.h"
 #include "../core/Config.h"
 
 namespace raytracer {
@@ -42,13 +43,13 @@ namespace tracer {
 		}
 
 		// extrapolate a line from the ray start and its direction
-		Line2d rayLine;
-		Vector2d rayEnd;
+		Line3d rayLine;
+		Vector3d rayEnd;
 		double angle = atan2(d.y, d.x);
-		rayLine.begin = o;
+		rayLine.origin = o;
 		rayEnd.x = o.x + Ray::magnitude * cos(angle);
 		rayEnd.y = o.y + Ray::magnitude * sin(angle);
-		rayLine.end = rayEnd;
+		rayLine.destination = rayEnd;
 
 //		printf("Tracing ray: %6.3f %6.3f %6.3f %6.3f theta: %4.2f\n", o.x, o.y, d.x, d.y, angle * 57.296);
 
@@ -57,7 +58,7 @@ namespace tracer {
 		this->lastHit = hit.g;
 
 		// calculate time-of-flight
-		if (hit.o != Geometry::none) {
+		if (hit.o != GeometryType::none) {
 			calculateTimeOfFlight(hit.pos);
 		} else {
 			calculateTimeOfFlight(rayEnd);
@@ -67,7 +68,7 @@ namespace tracer {
 //		cout << "previndex: " << previousRefractiveIndex << "\n";
 
 		// limit the simulation to avoid unnecessary calculations
-		if (rayLine.begin.distance(Vector2d(0,0)) > Application::getInstance().getCelestialConfig().getInt("radius") + 250e3) {
+		if (rayLine.origin.distance(Vector3d(0,0,0)) > Application::getInstance().getCelestialConfig().getInt("radius") + 250e3) {
 			cerr << "Out of scene bounds!" << endl;
 			return 0;
 		}
@@ -81,7 +82,7 @@ namespace tracer {
 
 		// determine ray behaviour
 		// intersection with an ionospheric or atmospheric layer
-		if (hit.o == Geometry::ionosphere || hit.o == Geometry::atmosphere) {
+		if (hit.o == GeometryType::ionosphere || hit.o == GeometryType::atmosphere) {
 //			cout << "result: ionosphere" << endl;
 			hit.g->interact(this, hit.pos);
 			if (behaviour == Ray::wave_no_propagation) {
@@ -89,35 +90,17 @@ namespace tracer {
 			} else {
 				return trace();
 			}
-		} else if (hit.o == Geometry::terrain) {
-			o = rayLine.end;
-			Data dataset;
-			dataset.rayNumber = rayNumber;
-			dataset.x = o.x;
-			dataset.y = o.y;
-			dataset.theta_0 = originalAngle;
-			dataset.frequency = frequency;
-			dataset.signalPower = signalPower;
-			dataset.timeOfFlight = timeOfFlight;
-			dataset.collisionType = Geometry::terrain;
-			Application::getInstance().addToDataset(dataset);
+		} else if (hit.o == GeometryType::terrain) {
+			o = rayLine.destination;
+			exportData(GeometryType::none);
 			cout << "result: terrain\n";
 //			printf("Intersection with terrain at: %6.2f, %6.2f\n", hit.pos.x, hit.pos.y);
 //			printf("Geometry coords: %8.4f %8.4f %8.4f %8.4f\n", hit.g.getMesh().begin.x, hit.g.getMesh().begin.y, hit.g.getMesh().end.x, hit.g.getMesh().end.y);
 			return 0;
-		} else if (hit.o == Geometry::none) {
+		} else if (hit.o == GeometryType::none) {
 //			cout << "result: none\n";
-			o = rayLine.end;
-			Data dataset;
-			dataset.rayNumber = rayNumber;
-			dataset.x = o.x;
-			dataset.y = o.y;
-			dataset.theta_0 = originalAngle;
-			dataset.frequency = frequency;
-			dataset.signalPower = signalPower;
-			dataset.timeOfFlight = timeOfFlight;
-			dataset.collisionType = Geometry::none;
-			Application::getInstance().addToDataset(dataset);
+			o = rayLine.destination;
+			exportData(GeometryType::none);
 			return trace();
 		}
 
@@ -157,25 +140,26 @@ namespace tracer {
 		d.y = sin(angleRad);
 	}
 
-	void Ray::calculateTimeOfFlight(Vector2d rayEnd) {
+	void Ray::calculateTimeOfFlight(Vector3d rayEnd) {
 
 		double magnitude = o.distance(rayEnd);
 
 		timeOfFlight += magnitude / Constants::C;
 	}
 
-	/**
-	 * Perform an instance copy of this ray
-	 */
-	Ray Ray::copy() {
+	void Ray::exportData(GeometryType collisionType) {
 
-		Ray r2;
-		r2.previousRefractiveIndex = previousRefractiveIndex;
-		r2.originalAngle = originalAngle;
-		r2.frequency = frequency;
-		r2.tracings = tracings;
-
-		return r2;
+		Data d;
+		d.x = o.x;
+		d.y = o.y;
+		d.rayNumber = rayNumber;
+		d.mu_r_sqrt = pow(previousRefractiveIndex, 2);
+		d.theta_0 = originalAngle;
+		d.frequency = frequency;
+		d.signalPower = signalPower;
+		d.timeOfFlight = timeOfFlight;
+		d.collisionType = collisionType;
+		Application::getInstance().addToDataset(d);
 	}
 
 } /* namespace tracer */

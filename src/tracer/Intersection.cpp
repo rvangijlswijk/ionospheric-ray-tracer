@@ -12,9 +12,6 @@ namespace tracer {
 
 	Intersection::Intersection() {}
 
-	Intersection::~Intersection() {
-		//delete g;
-	}
 
 } /* namespace engine */
 } /* namespace raytracer */

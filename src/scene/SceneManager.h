@@ -10,6 +10,7 @@
 
 #include <list>
 #include "../math/Line2d.h"
+#include "../math/Line3d.h"
 #include "../tracer/Ray.h"
 #include "../tracer/Intersection.h"
 #include "Geometry.h"
@@ -25,6 +26,7 @@ namespace scene {
 		public:
 			SceneManager();
 			Intersection intersect(Ray* r, Line2d &rayLine);
+			Intersection intersect(Ray* r, Line3d &rayLine);
 			void addToScene(Geometry* obj);
 			void removeAllFromScene();
 			list<Geometry*> getScene();

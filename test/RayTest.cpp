@@ -70,7 +70,7 @@ namespace {
 
 		Ray r4 = Ray();
 
-		Vector2d rayEnd = Vector2d(3e6, 0);
+		Vector3d rayEnd = Vector3d(3e6, 0, 0);
 
 		r4.calculateTimeOfFlight(rayEnd);
 

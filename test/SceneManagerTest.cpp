@@ -2,8 +2,8 @@
 #include "../src/scene/SceneManager.h"
 #include "../src/scene/Ionosphere.h"
 #include "../src/tracer/Ray.h"
-#include "../src/math/Vector2d.h"
-#include "../src/math/Line2d.h"
+#include "../src/math/Vector3d.h"
+#include "../src/math/Line3d.h"
 
 namespace {
 
@@ -16,7 +16,7 @@ namespace {
 			void SetUp() {
 
 				sm = SceneManager();
-				io = Ionosphere(Vector2d(-100e3, 3390e3 + 100e3), Vector2d(100e3, 3390e3 + 100e3));
+				io = Ionosphere(Vector3d(1, 0, 0), Vector3d(100e3, 3390e3 + 100e3, 0));
 
 				sm.addToScene(&io);
 			}
@@ -28,10 +28,10 @@ namespace {
 	TEST_F(SceneManagerTest, MeshIsSet) {
 
 		for (Geometry* g : sm.getScene()) {
-			ASSERT_EQ(-100e3, g->getMesh().begin.x);
-			ASSERT_EQ(3390e3 + 100e3, g->getMesh().begin.y);
-			ASSERT_EQ(100e3, g->getMesh().end.x);
-			ASSERT_EQ(3390e3 + 100e3, g->getMesh().end.y);
+			ASSERT_EQ(100e3, g->getMesh().centerpoint.x);
+			ASSERT_EQ(3390e3 + 100e3, g->getMesh().centerpoint.y);
+			ASSERT_EQ(0, g->getMesh().centerpoint.z);
+			ASSERT_EQ(1, g->getMesh().normal.x);
 		}
 	}
 
@@ -40,17 +40,15 @@ namespace {
 		raytracer::tracer::Ray r = raytracer::tracer::Ray();
 		r.o = Vector2d(0, 0);
 
-		Line2d rayLine = Line2d(Vector2d(0, 0), Vector2d(0, 3390e3 + 101e3));
+		Line3d rayLine = Line3d(Vector3d(0, 0, 0), Vector2d(0, 3390e3 + 101e3, 0));
 
 		Intersection is = sm.intersect(&r, rayLine);
-		Line2d mesh = (*is.g).mesh2d;
-		cout << "hit.g: " << mesh.end.x << " " << mesh.end.y;
+		Plane3d mesh = (*is.g).mesh3d;
 
 		ASSERT_EQ(0, is.pos.x);
 		ASSERT_EQ(3390e3 + 100e3, is.pos.y);
-		ASSERT_NEAR(-100e3, mesh.begin.x, 10);
-		ASSERT_EQ(3390e3 + 100e3, mesh.begin.y);
-		ASSERT_EQ(100e3, mesh.end.x);
-		ASSERT_EQ(3390e3 + 100e3, is.g->getMesh().end.y);
+		ASSERT_NEAR(100e3, mesh.centerpoint.x, 10);
+		ASSERT_NEAR(3390e3 + 100e3, mesh.centerpoint.y, 10);
+		ASSERT_NEAR(0, mesh.centerpoint.z, 10);
 	}
 }

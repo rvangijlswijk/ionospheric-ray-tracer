@@ -7,10 +7,12 @@
 #ifndef VECTOR2D_H_
 #define VECTOR2D_H_
 
+#include "Vector.h"
+
 namespace raytracer {
 namespace math {
 
-class Vector2d {
+class Vector2d : Vector {
 
 	public:
 		Vector2d();

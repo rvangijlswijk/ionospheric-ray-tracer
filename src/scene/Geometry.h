@@ -7,10 +7,15 @@
 #ifndef GEOMETRY_H_
 #define GEOMETRY_H_
 
+#include <iostream>
+#include <cmath>
 #include "../core/namespace.h"
+#include "../math/Constants.h"
+#include "../math/Line3d.h"
+#include "../math/Plane3d.h"
+#include "../math/Vector3d.h"
 #include "../tracer/Ray.h"
-#include "../math/Line2d.h"
-#include "../math/Vector2d.h"
+#include "GeometryType.h"
 
 namespace raytracer {
 namespace scene {
@@ -22,20 +27,14 @@ namespace scene {
 
 		public:
 			Geometry();
-			Geometry(Line2d mesh);
-			Geometry(Vector2d begin, Vector2d end);
-			virtual void interact(Ray *r, Vector2d &hitpos);
-			Line2d getMesh();
-			void setMesh(Line2d mesh);
+			Geometry(Plane3d mesh);
+			Geometry(Vector3d n, Vector3d c);
+			virtual void interact(Ray *r, Vector3d &hitpos);
+			Plane3d getMesh();
+			void setMesh(Plane3d mesh);
 			double getSolarZenithAngle2d();
-			enum object_type {
-				none = 0,
-				ionosphere = 1,
-				terrain = 2,
-				atmosphere = 3
-			};
-			object_type type = none;
-			Line2d mesh2d;
+			GeometryType type = none;
+			Plane3d mesh3d;
 	};
 
 } /* namespace scene */

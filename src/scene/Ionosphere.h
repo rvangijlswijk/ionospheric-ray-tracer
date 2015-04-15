@@ -9,8 +9,6 @@
 #define IONOSPHERE_H_
 
 #include "Geometry.h"
-#include "../math/NDouble.h"
-#include "../math/Nullable.h"
 
 namespace raytracer {
 namespace scene {
@@ -21,15 +19,15 @@ namespace scene {
 
 		public:
 			Ionosphere();
-			Ionosphere(Vector2d begin, Vector2d end);
+			Ionosphere(Vector3d n, Vector3d c);
 			enum refractiveMethod {
 				REFRACTION_SIMPLE,
 				REFRACTION_KELSO,		// According to Kelso, 1964
 				REFRACTION_AHDR			// Appleton-Hartree Dispersion Relation
 			};
 			void setup();
-			void interact(Ray *r, Vector2d &hitpos);
-			void refract(Ray *r, Vector2d &hitpos);
+			void interact(Ray *r, Vector3d &hitpos);
+			void refract(Ray *r, Vector3d &hitpos);
 			void attenuate(Ray *r, double magnitude);
 			void attenuateWithers(Ray *r);
 			void rangeDelay(Ray *r);
@@ -52,8 +50,6 @@ namespace scene {
 			static constexpr double surfaceCollisionFrequency = 2.8e10;	// s^-1
 
 		private:
-			math::NDouble* _plasmaFrequency = new math::NDouble();
-			math::NDouble* _electronNumberDensity = new math::NDouble();
 			double _altitude = 0;
 			double _peakProductionAltitude = 0;	// m
 			double _electronPeakDensity = 0;		// m^-3

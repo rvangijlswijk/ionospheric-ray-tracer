@@ -7,6 +7,8 @@
 #ifndef VECTOR3D_H_
 #define VECTOR3D_H_
 
+#include "Vector.h"
+
 namespace raytracer {
 namespace math {
 
@@ -19,7 +21,8 @@ class Vector3d {
 		double x, y, z;
 
 		double magnitude();
-		double dotProduct(Vector3d v2);
+		double dot(Vector3d v2);
+		Vector3d cross(Vector3d v2);
 		double distance(Vector3d v2);
 };
 

@@ -17,12 +17,12 @@ class Plane3d {
 
 	public:
 		Plane3d();
+		Plane3d(Vector3d normal, Vector3d centerpoint);
 
-		double x, y, z;
-		double x0, y0, z0;
-		double a, b, c;
+		Vector3d normal, centerpoint;
+		double size;
 
-		Vector3d normal();
+		double getConstant();
 };
 
 } /* namespace math */
