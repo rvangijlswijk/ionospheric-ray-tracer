@@ -24,7 +24,10 @@ namespace scene {
 	using namespace exporter;
 	using namespace core;
 
-	Ionosphere::Ionosphere() : Geometry() {}
+	Ionosphere::Ionosphere() : Geometry() {
+
+		type = GeometryType::ionosphere;
+	}
 
 	Ionosphere::Ionosphere(Vector3d n, Vector3d c) : Geometry(n, c) {
 

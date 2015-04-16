@@ -36,7 +36,7 @@ namespace {
 				io2.layerHeight = 1000;
 				io2.setElectronPeakDensity(2.5e11);
 				io2.setPeakProductionAltitude(125e3);
-				Plane3d mesh3 = Plane3d(Vector3d(1, 0, 0), Vector3d(0, 3390e3 + 100e3, 0));
+				Plane3d mesh3 = Plane3d(Vector3d(1, 0, 0), Vector3d(3390e3 + 100e3, 0, 0));
 				io3.setMesh(mesh3);
 				io3.setup();
 				io3.layerHeight = 1000;
@@ -177,23 +177,25 @@ namespace {
 			ASSERT_NEAR(h, ion.getAltitude(), 1);
 		}
 
-		ASSERT_NEAR(-1.5, rA.signalPower, 0.1);
+		ASSERT_NEAR(-1.5, rA.signalPower, 0.5);
 
 		// M1 layer
-//		r.signalPower = 0;
-//		for (int h = 80e3; h <= 200e3; h += 1000) {
-//			Ionosphere ion;
-//			ion.setElectronPeakDensity(100e3);
-//			ion.setPeakProductionAltitude(1e11);
-//			Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + h), Vector2d(100e3, 3390e3 + h));
-//			ion.setMesh(mesh);
-//			ion.layerHeight = 1000;
-//			ion.attenuate(&rA);
-//
-//			ASSERT_NEAR(h, ion.getAltitude(), 1);
-//		}
-//
-//		ASSERT_NEAR(-9, r.signalPower, 0.1);
+		rA.previousRefractiveIndex = 1.0;
+		rA.signalPower = 0;
+		for (int h = 80e3; h <= 200e3; h += 1000) {
+			Ionosphere ion;
+			Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + h, 0));
+			ion.setMesh(mesh);
+			ion.layerHeight = 1000;
+			ion.setup();
+			ion.setElectronPeakDensity(1e11);
+			ion.setPeakProductionAltitude(100e3);
+			ion.attenuate(&rA, ion.layerHeight);
+
+			ASSERT_NEAR(h, ion.getAltitude(), 1);
+		}
+
+		ASSERT_NEAR(-9, rA.signalPower, 0.5);
 	}
 
 	TEST_F(IonosphereTest, TEC) {
