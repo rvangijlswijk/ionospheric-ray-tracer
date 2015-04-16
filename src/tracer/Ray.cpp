@@ -126,9 +126,15 @@ namespace tracer {
 		d.y = sin(terrainAngle);
 	}
 
+	/**
+	 * Return a scalar value of the angle between direction vector and axis
+	 * @param double angle
+	 */
 	double Ray::getAngle() {
 
-		return atan2(d.y, d.x);
+		Vector3d axis = Vector3d(1, 0, 0);
+
+		return acos(d.dot(axis) / (d.magnitude() * axis.magnitude()));
 	}
 
 	/**
@@ -138,6 +144,7 @@ namespace tracer {
 
 		d.x = cos(angleRad);
 		d.y = sin(angleRad);
+		d.z = 0;
 	}
 
 	void Ray::calculateTimeOfFlight(Vector3d rayEnd) {

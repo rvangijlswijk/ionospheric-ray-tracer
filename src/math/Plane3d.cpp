@@ -25,6 +25,10 @@ namespace math {
 		centerpoint = c;
 	}
 
+	/**
+	 * A plane is described by a(x-x0) + b(y-y0) + c(z-z0) + d = 0.
+	 * The constant d is then d = -(a*x0 + b*y0 + c*z0)
+	 */
 	double Plane3d::getConstant() {
 
 		return -normal.x * centerpoint.x - normal.y * centerpoint.y - normal.z * centerpoint.z;

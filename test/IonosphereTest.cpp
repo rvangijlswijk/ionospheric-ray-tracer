@@ -24,19 +24,19 @@ namespace {
 				conf = Config("config/scenario_test.json");
 				Application::getInstance().setCelestialConfig(conf);
 
-				Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + 100e3), Vector2d(100e3, 3390e3 + 100e3));
+				Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 100e3, 0));
 				io.setMesh(mesh);
 				io.setup();
 				io.layerHeight = 1000;
 				io.setElectronPeakDensity(2.5e11);
 				io.setPeakProductionAltitude(125e3);
-				Line2d mesh2 = Line2d(Vector2d(0, 3515e3), Vector2d(98408.25, 3513.6e3));
+				Plane3d mesh2 = Plane3d(Vector3d(0.02, 1, 0), Vector3d(49204, 3514.3e3, 0));
 				io2.setMesh(mesh2);
 				io2.setup();
 				io2.layerHeight = 1000;
 				io2.setElectronPeakDensity(2.5e11);
 				io2.setPeakProductionAltitude(125e3);
-				Line2d mesh3 = Line2d(Vector2d(3390e3 + 100e3, 100e3), Vector2d(3390e3 + 100e3, -100e3));
+				Plane3d mesh3 = Plane3d(Vector3d(1, 0, 0), Vector3d(0, 3390e3 + 100e3, 0));
 				io3.setMesh(mesh3);
 				io3.setup();
 				io3.layerHeight = 1000;
@@ -48,7 +48,7 @@ namespace {
 				r.setNormalAngle(r.originalAngle);
 				r.frequency = 4e6;
 
-				r2.o = Vector2d(0, 3514.8e3);
+				r2.o = Vector3d(0, 3514.8e3, 0);
 				r2.originalAngle = 80 * Constants::PI / 180.0; // SZA = 30 deg
 				r2.previousRefractiveIndex = 1.0;
 				r2.setAngle(10 * Constants::PI / 180.0);
@@ -124,16 +124,16 @@ namespace {
 	TEST_F(IonosphereTest, CollisionFrequency) {
 
 		Ionosphere cio, cio2, cio3, cio4;
-		Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + 100e3), Vector2d(100e3, 3390e3 + 100e3));
+		Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 100e3, 0));
 		cio.setMesh(mesh);
 		cio.setup();
-		mesh = Line2d(Vector2d(-100e3, 3390e3 + 150e3), Vector2d(100e3, 3390e3 + 150e3));
+		mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 150e3, 0));
 		cio2.setMesh(mesh);
 		cio2.setup();
-		mesh = Line2d(Vector2d(-100e3, 3390e3 + 200e3), Vector2d(100e3, 3390e3 + 200e3));
+		mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 200e3, 0));
 		cio3.setMesh(mesh);
 		cio3.setup();
-		mesh = Line2d(Vector2d(-100e3, 3390e3 + 80e3), Vector2d(100e3, 3390e3 + 80e3));
+		mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 80e3, 0));
 		cio4.setMesh(mesh);
 		cio4.setup();
 
@@ -141,7 +141,6 @@ namespace {
 		ASSERT_NEAR(3.787e4, cio2.getCollisionFrequency(), 1e2);
 		ASSERT_NEAR(418.8, cio3.getCollisionFrequency(), 4);
 		ASSERT_NEAR(2.075e7, cio4.getCollisionFrequency(), 1e5);
-
 	}
 
 	/**
@@ -167,7 +166,7 @@ namespace {
 		for (int h = 80e3; h <= 200e3; h += 1000) {
 
 			Ionosphere ion;
-			Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + h), Vector2d(100e3, 3390e3 + h));
+			Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + h, 0));
 			ion.setMesh(mesh);
 			ion.layerHeight = 1000;
 			ion.setup();
@@ -256,7 +255,7 @@ namespace {
 		for (int h = 50000; h<500000; h+=100) {
 			Data d;
 			d.y = h;
-			Line2d mesh = Line2d(Vector2d(0, 3390e3 + h), Vector2d(100000, 3390e3 + h));
+			Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + h, 0));
 			io.setMesh(mesh);
 			d.n_e = io.getElectronNumberDensity();
 			d.omega_p = io.getPlasmaFrequency();

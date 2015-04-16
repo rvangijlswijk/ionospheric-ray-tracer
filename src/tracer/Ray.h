@@ -28,11 +28,25 @@ namespace tracer {
 			void calculateTimeOfFlight(Vector3d rayEnd);
 			double getNormalAngle();
 			void setNormalAngle(double angleRad);
+
+			/**
+			 * Return a scalar value of the angle between direction vector and axis
+			 * @param double angle
+			 */
 			double getAngle();
 			void setAngle(double angleRad);
+			void setAngle(Vector3d angle);
 			void exportData(GeometryType collisionType);
-			Vector3d o;	// origin
-			Vector3d d;	// direction
+
+			/**
+			 * Origin
+			 */
+			Vector3d o;
+
+			/**
+			 * Direction vector
+			 */
+			Vector3d d;
 			double frequency = 0.0;
 			double previousRefractiveIndex = 1.0;
 			double previousAtmosphericRefractiveIndex = 1.0;

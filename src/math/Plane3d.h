@@ -19,9 +19,23 @@ class Plane3d {
 		Plane3d();
 		Plane3d(Vector3d normal, Vector3d centerpoint);
 
+		/**
+		 * normal vector and centerpoint of Plane.
+		 */
 		Vector3d normal, centerpoint;
-		double size;
 
+		/**
+		 * width and height of the plane. Planes are assumed to be always square.
+		 * The size dictates the boundaries of this plane. Edges of the plane are
+		 * 1/2 size away from centerpoint
+		 * Size is in meters
+		 */
+		double size = 100;
+
+		/**
+		 * A plane is described by a(x-x0) + b(y-y0) + c(z-z0) + d = 0.
+		 * The constant d is then d = -(a*x0 + b*y0 + c*z0)
+		 */
 		double getConstant();
 };
 

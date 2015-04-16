@@ -26,6 +26,8 @@ namespace scene {
 	Intersection SceneManager::intersect(Ray * r, Line3d & rayLine) {
 
 		Vector3d pos;
+		Intersection finalHit;
+		finalHit.o = GeometryType::none;
 		list<Intersection> hits;
 
 		for (Geometry* gp : sceneObjects) {
@@ -42,13 +44,14 @@ namespace scene {
 			}
 		}
 
-		// evaluate which hit is closest
-		Intersection finalHit;
-		double distance = 1e9;
-		for (Intersection i : hits) {
-			if (r->o.distance(i.pos) < distance && r->lastHit != i.g) {
-				finalHit = i;
-				distance = r->o.distance(i.pos);
+		if (hits.size() > 0) {
+			// evaluate which hit is closest
+			double distance = 1e9;
+			for (Intersection i : hits) {
+				if (r->o.distance(i.pos) < distance && r->lastHit != i.g) {
+					finalHit = i;
+					distance = r->o.distance(i.pos);
+				}
 			}
 		}
 

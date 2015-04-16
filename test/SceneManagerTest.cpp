@@ -38,13 +38,14 @@ namespace {
 	TEST_F(SceneManagerTest, Intersection) {
 
 		raytracer::tracer::Ray r = raytracer::tracer::Ray();
-		r.o = Vector2d(0, 0);
+		r.o = Vector3d(0, 0, 0);
 
-		Line3d rayLine = Line3d(Vector3d(0, 0, 0), Vector2d(0, 3390e3 + 101e3, 0));
+		Line3d rayLine = Line3d(Vector3d(0, 0, 0), Vector3d(0, 3390e3 + 101e3, 0));
 
 		Intersection is = sm.intersect(&r, rayLine);
 		Plane3d mesh = (*is.g).mesh3d;
 
+		ASSERT_NE(GeometryType::none, is.o);
 		ASSERT_EQ(0, is.pos.x);
 		ASSERT_EQ(3390e3 + 100e3, is.pos.y);
 		ASSERT_NEAR(100e3, mesh.centerpoint.x, 10);

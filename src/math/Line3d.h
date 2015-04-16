@@ -23,6 +23,11 @@ class Line3d {
 		Vector3d origin;
 		Vector3d destination;
 		Vector3d getVector();
+
+		/**
+		 * Find intersection point of this line with a 3D plane
+		 * @param Plane3d plane the plane to intersect with
+		 */
 		Vector3d intersect(Plane3d plane);
 };
 

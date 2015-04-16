@@ -21,16 +21,16 @@ namespace {
 				conf.loadFromFile("config/scenario_default.json");
 				Application::getInstance().setCelestialConfig(conf);
 
-				Line2d mesh = Line2d(Vector2d(-100e3, 3390e3), Vector2d(100e3, 3390e3));
+				Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3, 0));
 				a1.setMesh(mesh);
 				a1.setup();
-				mesh = Line2d(Vector2d(-100e3, 3390e3 + 10e3), Vector2d(100e3, 3390e3 + 10e3));
+				mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 10e3, 0));
 				a2.setMesh(mesh);
 				a2.setup();
-				mesh = Line2d(Vector2d(-100e3, 3390e3 + 20e3), Vector2d(100e3, 3390e3 + 20e3));
+				mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 20e3, 0));
 				a3.setMesh(mesh);
 				a3.setup();
-				mesh = Line2d(Vector2d(-100e3, 3390e3 + 30e3), Vector2d(100e3, 3390e3 + 30e3));
+				mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 30e3, 0));
 				a4.setMesh(mesh);
 				a4.setup();
 
@@ -39,7 +39,7 @@ namespace {
 				r.setNormalAngle(r.originalAngle);
 				r.frequency = 4e6;
 
-				r2.o = Vector2d(0, 3514.8e3);
+				r2.o = Vector3d(0, 3390e3 - 1, 0);
 				r2.originalAngle = 80 * Constants::PI / 180.0; // SZA = 30 deg
 				r2.previousRefractiveIndex = 1.0;
 				r2.setAngle(10 * Constants::PI / 180.0);
