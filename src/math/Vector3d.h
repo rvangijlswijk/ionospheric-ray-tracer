@@ -20,9 +20,27 @@ class Vector3d {
 
 		double x, y, z;
 
+		/**
+		 * Magnitude of the vector
+		 */
 		double magnitude();
+
+		/**
+		 * Dot product between this vector and another vector v2
+		 */
 		double dot(Vector3d v2);
+
+		/**
+		 * Cross product between this vector and another vector v2
+		 *
+		 * vector result = s1i + s2j + s3k = u × v
+		 */
 		Vector3d cross(Vector3d v2);
+
+		/**
+		 * Euclidian distance between two 3D-points. The vectors are in this
+		 * case regarded as points in 3D space
+		 */
 		double distance(Vector3d v2);
 };
 

@@ -20,9 +20,9 @@ class Line3d {
 	public:
 		Line3d();
 		Line3d(Vector3d o, Vector3d d);
+		Vector3d getVector();
 		Vector3d origin;
 		Vector3d destination;
-		Vector3d getVector();
 
 		/**
 		 * Find intersection point of this line with a 3D plane

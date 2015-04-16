@@ -20,6 +20,9 @@ namespace math {
 		z = zPos;
 	}
 
+	/**
+	 * Magnitude of the vector
+	 */
 	double Vector3d::magnitude() {
 
 		return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
@@ -49,6 +52,10 @@ namespace math {
 		return result;
 	}
 
+	/**
+	 * Euclidian distance between two 3D-points. The vectors are in this
+	 * case regarded as points in 3D space
+	 */
 	double Vector3d::distance(Vector3d v2) {
 
 		return sqrt(pow(x - v2.x, 2) + pow(y - v2.y, 2) + pow(z - v2.z, 2));
