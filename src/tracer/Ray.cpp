@@ -36,7 +36,8 @@ namespace tracer {
 	 */
 	int Ray::trace() {
 
-		if (std::isnan(o.x) || std::isnan(o.y)) {
+		// isnan check
+		if (o.x != o.x || o.y != o.y) {
 			cout << "n: " << previousRefractiveIndex << endl;
 			cerr << "NaN exception!" << endl;
 			return 0;
@@ -49,6 +50,7 @@ namespace tracer {
 		rayLine.origin = o;
 		rayEnd.x = o.x + Ray::magnitude * cos(angle);
 		rayEnd.y = o.y + Ray::magnitude * sin(angle);
+		rayEnd.z = 0;
 		rayLine.destination = rayEnd;
 
 //		printf("Tracing ray: %6.3f %6.3f %6.3f %6.3f theta: %4.2f\n", o.x, o.y, d.x, d.y, angle * 57.296);
