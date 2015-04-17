@@ -29,6 +29,11 @@ namespace scene {
 		type = GeometryType::ionosphere;
 	}
 
+	Ionosphere::Ionosphere(Plane3d mesh) : Geometry(mesh) {
+
+		type = GeometryType::ionosphere;
+	}
+
 	Ionosphere::Ionosphere(Vector3d n, Vector3d c) : Geometry(n, c) {
 
 		type = GeometryType::ionosphere;
