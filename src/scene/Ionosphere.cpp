@@ -67,6 +67,9 @@ namespace scene {
 		exportData(r);
 	}
 
+	/**
+	 *
+	 */
 	void Ionosphere::refract(Ray *r, Vector3d &hitpos) {
 
 		double refractiveIndex = getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
@@ -76,20 +79,32 @@ namespace scene {
 		int waveBehaviour = determineWaveBehaviour(r);
 
 		if (waveBehaviour == Ray::wave_reflection) {
-			double beta_r = - beta - 2*SZA;
-			r->setAngle(beta_r);
-//			cout << "Reflect this ray! beta_r:" << beta_r * 180 / Constants::PI << " d.x,d.y:" << r->d.x << "," << r->d.y << "\n";
+//			double beta_r = - beta - 2*SZA;
+//			r->setAngle(beta_r);
+			r->d.x = r->d.x + 2 * cos(theta_i) * mesh3d.normal.x;
+			r->d.y = r->d.y + 2 * cos(theta_i) * mesh3d.normal.y;
+			r->d.z = r->d.z + 2 * cos(theta_i) * mesh3d.normal.z;
+			cout << "Reflect this ray! d.x,d.y:" << r->d.x << "," << r->d.y << "\n";
 		} else if (waveBehaviour == Ray::wave_refraction) {
-			if (r->d.y < 0) {
-				theta_i = Constants::PI - theta_i;
-			}
-			double theta_r = asin((r->previousRefractiveIndex/refractiveIndex * sin(theta_i)));
-			double beta_2 = Constants::PI/2 - theta_r - SZA;
-			if (r->d.y < 0) {
-				beta_2 = -Constants::PI/2 + theta_r - SZA;
-			}
-			r->setAngle(beta_2);
-//			cout << "Bend this ray! refraction: " << refractiveIndex << " theta_i:" << theta_i * 180 / Constants::PI << ", theta_r:" << theta_r * 180 / Constants::PI << " \n";
+			cout << "r.d: " << "V3D (" << r->d.x << "," << r->d.y << "," << r->d.z << ")" << "; N:"
+					<< "V3D (" << mesh3d.normal.x << "," << mesh3d.normal.y << "," << mesh3d.normal.z << ")" << "\n";
+//			if (r->d.y < 0) {
+//				theta_i = Constants::PI - theta_i;
+//			}
+			double ratio = r->previousRefractiveIndex/refractiveIndex;
+			double coefficient = ratio * cos(theta_i) - sqrt(1 - pow(ratio, 2) * (1 - pow(cos(theta_i), 2)));
+
+			r->d.x = ratio * r->d.x + coefficient * mesh3d.normal.x;
+			r->d.y = ratio * r->d.y + coefficient * mesh3d.normal.y;
+			r->d.z = ratio * r->d.z + coefficient * mesh3d.normal.z;
+			cout << "r.d: " << "V3D (" << r->d.x << "," << r->d.y << "," << r->d.z << ")" << "; N:"
+					<< "V3D (" << mesh3d.normal.x << "," << mesh3d.normal.y << "," << mesh3d.normal.z << ")" << "\n";
+			double theta_r = asin(abs(r->d * mesh3d.normal) / (r->d.magnitude() * mesh3d.normal.magnitude()));
+//			double beta_2 = Constants::PI/2 - theta_r - SZA;
+//			if (r->d.y < 0) {
+//				beta_2 = -Constants::PI/2 + theta_r - SZA;
+//			}
+			cout << "Bend this ray! refraction: " << r->previousRefractiveIndex/refractiveIndex << " theta_i:" << theta_i * 180 / Constants::PI << ", theta_r:" << theta_r * 180 / Constants::PI << " \n";
 		} else if (waveBehaviour == Ray::wave_none) {
 			r->behaviour = Ray::wave_none;
 			cout << "Ray goes straight!\n";
@@ -284,24 +299,23 @@ namespace scene {
 	 */
 	double Ionosphere::getAltitude() {
 
-		double xAvg = (mesh3d.centerpoint.x + mesh3d.centerpoint.x)/2;
-		double yAvg = (mesh3d.centerpoint.y + mesh3d.centerpoint.y)/2;
-		double zAvg = (mesh3d.centerpoint.z + mesh3d.centerpoint.z)/2;
-
-		return sqrt(pow(xAvg, 2) + pow(yAvg, 2) + pow(zAvg, 2)) - Application::getInstance().getCelestialConfig().getInt("radius");
+		return sqrt(pow(mesh3d.centerpoint.x, 2) + pow(mesh3d.centerpoint.y, 2) + pow(mesh3d.centerpoint.z, 2))
+				- Application::getInstance().getCelestialConfig().getInt("radius");
 	}
 
 	/**
 	 * The incident angle of a ray with respect to the ionospheric layer. This angle depends
 	 * on the propagation angle of the ray and the angle of the layer w.r.t. the sun (SZA)
+	 * The angle is then complementary to the angle between the ray direction vector and the
+	 * normal of the plane.
 	 */
 	double Ionosphere::getIncidentAngle(Ray *r) {
 
-		double SZA = getSolarZenithAngle2d();
-		double beta = atan(r->d.y/r->d.x);
-		double theta_i = Constants::PI/2 - beta - SZA;
+//		double SZA = getSolarZenithAngle2d();
+//		double beta = atan(r->d.y/r->d.x);
+//		double theta_i = Constants::PI/2 - beta - SZA;
 
-		return theta_i;
+		return asin(abs(r->d * mesh3d.normal) / (r->d.magnitude() * mesh3d.normal.magnitude()));
 	}
 
 	/**
@@ -314,7 +328,8 @@ namespace scene {
 	}
 
 	/**
-	 * Calculate the total electron content (TEC) which this ray experiences as it passes through
+	 * Calculate the total electron content
+	 *  (TEC) which this ray experiences as it passes through
 	 * the ionosphere.
 	 */
 	double Ionosphere::getTEC() {
@@ -338,6 +353,7 @@ namespace scene {
 
 		if (incidentAngle > Constants::PI/2)
 			incidentAngle -= Constants::PI/2;
+
 
 		if (refractiveIndex <= r->previousRefractiveIndex)
 			criticalAngle = asin(refractiveIndex / r->previousRefractiveIndex);

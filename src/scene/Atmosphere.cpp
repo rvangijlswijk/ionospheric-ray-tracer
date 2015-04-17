@@ -57,7 +57,7 @@ namespace scene {
 			beta_2 = -Constants::PI/2 + theta_r - SZA;
 		}
 		r->setAngle(beta_2);
-//		cout << "Atmo: beta_2: " << beta_2 * 57.296 << endl;
+		cout << "Atmo: beta_2: " << beta_2 * 57.296 << endl;
 
 		r->o.x = hitpos.x;
 		r->o.y = hitpos.y;
