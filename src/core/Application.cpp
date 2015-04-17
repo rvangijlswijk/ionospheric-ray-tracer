@@ -54,8 +54,8 @@ namespace core {
 			createScene();
 
 			int numWorkers = 0;
-			for (double freq = 4.5e6; freq <= 5e6; freq += 0.5e6) {
-				for (double SZA = 10; SZA <= 80; SZA += 0.05) {
+			for (double freq = 5e6; freq <= 5e6; freq += 0.5e6) {
+				for (double SZA = 30; SZA <= 30; SZA += 10) {
 					Ray r;
 					r.rayNumber = ++rayCounter;
 					r.frequency = freq;
@@ -101,14 +101,13 @@ namespace core {
 	void Application::createScene() {
 
 		double R = celestialConfig.getInt("radius");
+		double angularStepSize = Constants::PI/180;
 		IonosphereConfigParser plh = IonosphereConfigParser();
 
 		// terrain
-		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
-			double nextTheta = theta + Constants::PI/180;
+		for (double theta = 0; theta < 2*Constants::PI; theta += angularStepSize) {
 
-			Terrain* tr = new Terrain(Vector3d(R*cos(theta), R*sin(theta), 0),
-					Vector3d(R*cos(nextTheta), R*sin(nextTheta), 0));
+			Terrain* tr = new Terrain(Vector3d(cos(theta), sin(theta), 0), Vector3d(R*cos(theta), R*sin(theta), 0));
 
 			scm.addToScene(tr);
 		}
@@ -123,12 +122,12 @@ namespace core {
 			double peakProductionAltitude = ionosphereConfig[idx].get("peakProductionAltitude", "").asDouble();
 			Json::Value stratificationRaw = ionosphereConfig[idx].get("stratification", "");
 			const char * stratificationType = stratificationRaw.asCString();
-			for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
-				double nextTheta = theta + Constants::PI/180;
+			for (double theta = 0; theta < 2*Constants::PI; theta += angularStepSize) {
 
 				for (int h = hS; h < hE; h += dh) {
-					Ionosphere* io = new Ionosphere(Vector3d((R + h) * cos(theta), (R + h) * sin(theta), 0),
-							Vector3d((R + h) * cos(nextTheta), (R + h) * sin(nextTheta), 0));
+					Plane3d mesh = Plane3d(Vector3d(cos(theta), sin(theta), 0), Vector3d((R + h) * cos(theta), (R + h) * sin(theta), 0));
+					mesh.size = angularStepSize * R;
+					Ionosphere* io = new Ionosphere(mesh);
 					io->layerHeight = dh;
 					io->setElectronPeakDensity(electronPeakDensity);
 					io->setPeakProductionAltitude(peakProductionAltitude);
@@ -140,22 +139,21 @@ namespace core {
 			}
 		}
 
-		const Json::Value atmosphereConfig = celestialConfig.getObject("atmosphere");
-		int hS = atmosphereConfig.get("start", 0).asInt();
-		int hE = atmosphereConfig.get("end", 0).asInt();
-		dh = 2000;
-
-		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
-			double nextTheta = theta + Constants::PI/180;
-
-			for (int h = hS; h < hE; h += dh) {
-				Atmosphere* atm = new Atmosphere(Vector3d((R + h) * cos(theta), (R + h) * sin(theta), 0),
-						Vector3d((R + h) * cos(nextTheta), (R + h) * sin(nextTheta), 0));
-				atm->layerHeight = dh;
-
-				scm.addToScene(atm);
-			}
-		}
+//		const Json::Value atmosphereConfig = celestialConfig.getObject("atmosphere");
+//		int hS = atmosphereConfig.get("start", 0).asInt();
+//		int hE = atmosphereConfig.get("end", 0).asInt();
+//		dh = 2000;
+//
+//		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
+//			double nextTheta = theta + Constants::PI/180;
+//
+//			for (int h = hS; h < hE; h += dh) {
+//				Atmosphere* atm = new Atmosphere(Vector3d(cos(theta), sin(theta), 0),Vector3d((R + h) * cos(theta), (R + h) * sin(theta), 0));
+//				atm->layerHeight = dh;
+//
+//				scm.addToScene(atm);
+//			}
+//		}
 	}
 
 	/**

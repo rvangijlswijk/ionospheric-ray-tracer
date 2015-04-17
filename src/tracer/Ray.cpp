@@ -55,18 +55,7 @@ namespace tracer {
 
 //		printf("Tracing ray: %6.3f %6.3f %6.3f %6.3f theta: %4.2f\n", o.x, o.y, d.x, d.y, angle * 57.296);
 
-		// find intersection
-		Intersection hit = Application::getInstance().getSceneManager().intersect(this, rayLine);
-		this->lastHit = hit.g;
-
-		// calculate time-of-flight
-		if (hit.o != GeometryType::none) {
-			calculateTimeOfFlight(hit.pos);
-		} else {
-			calculateTimeOfFlight(rayEnd);
-		}
-
-//		cout << "rayline: (" << rayLine.end.x << "," << rayLine.end.y << ") ";
+//		cout << "rayline: (" << rayLine.destination.x << "," << rayLine.destination.y << ") \n";
 //		cout << "previndex: " << previousRefractiveIndex << "\n";
 
 		// limit the simulation to avoid unnecessary calculations
@@ -77,6 +66,18 @@ namespace tracer {
 		if (tracings >= Application::getInstance().getApplicationConfig().getInt("tracingLimit")) {
 			cerr << "Tracing limit exceeded!" << endl;
 			return 0;
+		}
+
+		// find intersection
+		Intersection hit = Application::getInstance().getSceneManager().intersect(this, rayLine);
+		this->lastHit = hit.g;
+//		printf("Hit: %6.3f, %6.3f \n", hit.pos.x, hit.pos.y);
+
+		// calculate time-of-flight
+		if (hit.o != GeometryType::none) {
+			calculateTimeOfFlight(hit.pos);
+		} else {
+			calculateTimeOfFlight(rayEnd);
 		}
 
 		Application::getInstance().incrementTracing();
@@ -94,7 +95,7 @@ namespace tracer {
 			}
 		} else if (hit.o == GeometryType::terrain) {
 			o = rayLine.destination;
-			exportData(GeometryType::none);
+			exportData(GeometryType::terrain);
 			cout << "result: terrain\n";
 //			printf("Intersection with terrain at: %6.2f, %6.2f\n", hit.pos.x, hit.pos.y);
 //			printf("Geometry coords: %8.4f %8.4f %8.4f %8.4f\n", hit.g.getMesh().begin.x, hit.g.getMesh().begin.y, hit.g.getMesh().end.x, hit.g.getMesh().end.y);
