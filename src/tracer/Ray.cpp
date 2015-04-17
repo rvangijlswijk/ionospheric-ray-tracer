@@ -137,7 +137,7 @@ namespace tracer {
 
 		Vector3d axis = Vector3d(1, 0, 0);
 
-		return acos(d.dot(axis) / (d.magnitude() * axis.magnitude()));
+		return acos(d*axis / (d.magnitude() * axis.magnitude()));
 	}
 
 	/**

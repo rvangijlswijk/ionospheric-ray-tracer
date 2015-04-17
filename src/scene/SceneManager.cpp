@@ -34,6 +34,7 @@ namespace scene {
 		for (Geometry* gp : sceneObjects) {
 			Geometry g = *gp;
 			pos = rayLine.intersect(g.getMesh());
+//			printf("Pos: %4.2f, %4.2f, %4.2f", pos.x, pos.y, pos.z);
 
 			if (abs(pos.x) > epsilon || abs(pos.y) > epsilon || abs(pos.z) > epsilon) {
 				double smallestX = rayLine.origin.x;

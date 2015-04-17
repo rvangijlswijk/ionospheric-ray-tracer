@@ -2,11 +2,14 @@
  * Line3d.cpp
  */
 
+#include <iostream>
 #include <cmath>
 #include "Line3d.h"
 
 namespace raytracer {
 namespace math {
+
+	using namespace std;
 
 	Line3d::Line3d() {}
 
@@ -29,14 +32,15 @@ namespace math {
 
 		Vector3d intersection;
 
-		double t = -(origin.dot(plane.normal) + plane.getConstant() ) / (destination.dot(plane.normal));
+		Vector3d ab = destination - origin;
+		double t = -(plane.normal * origin + plane.getConstant()) / (ab * plane.normal);
+
+//		std::cout << "t: " << t << " ";
 
 		// an intersection occurs if t is nonnegative and real between 0 and 1 and the point of intersection
 		// is within the dimensions of the plane: {dx, dy, dz} < plane.size/2
 		if (t >= 0.0 && t <= 1.0) {
-			intersection.x = origin.x + t*destination.x;
-			intersection.y = origin.y + t*destination.y;
-			intersection.z = origin.z + t*destination.z;
+			intersection = origin + ab*t;
 
 			double dx = std::abs(plane.centerpoint.x - intersection.x);
 			double dy = std::abs(plane.centerpoint.y - intersection.y);

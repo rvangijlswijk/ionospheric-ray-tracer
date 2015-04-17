@@ -34,6 +34,27 @@ class Vector3d {
 			return dot(v2);
 		}
 
+		Vector3d multiply(double t);
+		Vector3d operator*(double t) {
+			return multiply(t);
+		}
+
+		/**
+		 * Add vector v2 to this vector
+		 */
+		Vector3d add(Vector3d v2);
+		Vector3d operator+(Vector3d v2) {
+			return add(v2);
+		}
+
+		/**
+		 * Substract vector v2 from this vector
+		 */
+		Vector3d substract(Vector3d v2);
+		Vector3d operator-(Vector3d v2) {
+			return substract(v2);
+		}
+
 		/**
 		 * Cross product between this vector and another vector v2
 		 *

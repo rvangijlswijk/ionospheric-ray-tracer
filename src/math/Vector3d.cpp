@@ -36,6 +36,42 @@ namespace math {
 		return x*v2.x + y*v2.y + z*v2.z;
 	}
 
+	Vector3d Vector3d::multiply(double t) {
+
+		Vector3d newV;
+		newV.x = x*t;
+		newV.y = y*t;
+		newV.z = z*t;
+
+		return newV;
+	}
+
+	/**
+	 * Add vector v2 to this vector
+	 */
+	Vector3d Vector3d::add(Vector3d v2) {
+
+		Vector3d newV;
+		newV.x = x + v2.x;
+		newV.y = y + v2.y;
+		newV.z = z + v2.z;
+
+		return newV;
+	}
+
+	/**
+	 * Substract vector v2 from this vector
+	 */
+	Vector3d Vector3d::substract(Vector3d v2) {
+
+		Vector3d newV;
+		newV.x = x - v2.x;
+		newV.y = y - v2.y;
+		newV.z = z - v2.z;
+
+		return newV;
+	}
+
 	/**
 	 * Cross product between this vector and another vector v2
 	 *

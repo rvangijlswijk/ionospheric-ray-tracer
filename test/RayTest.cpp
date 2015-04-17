@@ -27,7 +27,8 @@ namespace {
 		Ray r2 = Ray();
 		r2.d = Vector3d(1, -1.732, 0);
 
-		ASSERT_NEAR(-1.047, r2.getAngle(), 0.001);
+		// angle is always positive semidefinite
+		ASSERT_NEAR(1.047, r2.getAngle(), 0.001);
 
 		Ray r3 = Ray();
 		r3.d = Vector3d(-10, 10, 0);

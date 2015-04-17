@@ -66,8 +66,38 @@ namespace {
 		Line3d rayLine = Line3d(Vector3d(0, 0, 0), Vector3d(100e3, 3390e3 + 99e3, 0));
 
 		Intersection is = sm.intersect(&r, rayLine);
+
+		ASSERT_EQ(GeometryType::none, is.o);
+	}
+
+	TEST_F(SceneManagerTest, IntersectionAngled) {
+
+		raytracer::tracer::Ray r = raytracer::tracer::Ray();
+		r.o = Vector3d(0, 0, 0);
+
+		double angle = Constants::PI/3;
+		double offset  = 250;
+
+		Line3d rayLine = Line3d();
+		rayLine.origin = Vector3d(100e3 - 100e3/tan(angle) - offset, 3390e3, 0);
+		rayLine.destination.x = 100e3 / tan(angle) + 100e3 - offset;
+		rayLine.destination.y = 200e3 + 3390e3;
+
+		Intersection is = sm.intersect(&r, rayLine);
 		Plane3d mesh = (*is.g).mesh3d;
 
+		ASSERT_NEAR((rayLine.destination.y - rayLine.origin.y) / (rayLine.destination.x - rayLine.origin.x), tan(angle), 1e-3);
+		ASSERT_EQ(GeometryType::ionosphere, is.o);
+		ASSERT_NEAR(100e3 - offset, is.pos.x, 10);
+		ASSERT_EQ(3390e3 + 100e3, is.pos.y);
+		ASSERT_NEAR(100e3, mesh.centerpoint.x, 10);
+		ASSERT_NEAR(3390e3 + 100e3, mesh.centerpoint.y, 10);
+		ASSERT_NEAR(0, mesh.centerpoint.z, 10);
+
+		rayLine.origin.x -= 1e3;
+		rayLine.destination.x -= 1e3;
+
+		is = sm.intersect(&r, rayLine);
 		ASSERT_EQ(GeometryType::none, is.o);
 	}
 
