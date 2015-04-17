@@ -7,6 +7,7 @@
 #ifndef VECTOR3D_H_
 #define VECTOR3D_H_
 
+#include <iostream>
 #include "Vector.h"
 
 namespace raytracer {
@@ -46,12 +47,12 @@ class Vector3d {
 		 */
 		double distance(Vector3d v2);
 
+//		friend std::ostream& operator<<(std::ostream &strm, const raytracer::math::Vector3d &v) {
+//
+//			return strm << "V3D (" << v.x << "," << v.y << "," << v.z << ")";
+//		}
+
 };
-
-std::ostream& operator<<(std::ostream &strm, const Vector3d &v) {
-
-	return strm << "V3D (" << v.x << "," << v.y << "," << v.z << ")";
-}
 
 } /* namespace math */
 } /* namespace raytracer */
