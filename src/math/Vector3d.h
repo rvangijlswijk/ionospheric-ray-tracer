@@ -27,6 +27,24 @@ class Vector3d {
 		double magnitude();
 
 		/**
+		 * Unit vector representation
+		 */
+		Vector3d norm();
+
+		/**
+		 * Euclidian distance between two 3D-points. The vectors are in this
+		 * case regarded as points in 3D space
+		 */
+		double distance(Vector3d v2);
+
+		/**
+		 * Cross product between this vector and another vector v2
+		 *
+		 * vector result = s1i + s2j + s3k = u × v
+		 */
+		Vector3d cross(Vector3d v2);
+
+		/**
 		 * Dot product between this vector and another vector v2
 		 */
 		double dot(Vector3d v2);
@@ -34,9 +52,20 @@ class Vector3d {
 			return dot(v2);
 		}
 
+		/**
+		 * Multiply this vector with a constant value
+		 */
 		Vector3d multiply(double t);
 		Vector3d operator*(double t) {
 			return multiply(t);
+		}
+
+		/**
+		 * Divide this vector by a constant value
+		 */
+		Vector3d divide(double t);
+		Vector3d operator/(double t) {
+			return divide(t);
 		}
 
 		/**
@@ -54,19 +83,6 @@ class Vector3d {
 		Vector3d operator-(Vector3d v2) {
 			return substract(v2);
 		}
-
-		/**
-		 * Cross product between this vector and another vector v2
-		 *
-		 * vector result = s1i + s2j + s3k = u × v
-		 */
-		Vector3d cross(Vector3d v2);
-
-		/**
-		 * Euclidian distance between two 3D-points. The vectors are in this
-		 * case regarded as points in 3D space
-		 */
-		double distance(Vector3d v2);
 
 //		friend std::ostream& operator<<(std::ostream &strm, const raytracer::math::Vector3d &v) {
 //

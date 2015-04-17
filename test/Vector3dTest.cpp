@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "../src/math/Vector3d.h"
+#include <cmath>
 
 namespace {
 
@@ -57,5 +58,18 @@ namespace {
 
 		v1.distance(v2);
 
+	}
+
+	TEST_F(Vector3dTest, Norm) {
+
+		Vector3d v1 = Vector3d(3, 2, 3);
+		Vector3d v2 = Vector3d(6, 1, 2.5);
+
+		ASSERT_NEAR(3 / sqrt(22), v1.norm().x, 1e-4);
+		ASSERT_NEAR(2 / sqrt(22), v1.norm().y, 1e-4);
+		ASSERT_NEAR(3 / sqrt(22), v1.norm().z, 1e-4);
+		ASSERT_NEAR(6 / sqrt(43.25), v2.norm().x, 1e-4);
+		ASSERT_NEAR(1 / sqrt(43.25), v2.norm().y, 1e-4);
+		ASSERT_NEAR(2.5 / sqrt(43.25), v2.norm().z, 1e-4);
 	}
 }

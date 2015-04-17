@@ -29,6 +29,20 @@ namespace math {
 	}
 
 	/**
+	 * Unit vector representation
+	 */
+	Vector3d Vector3d::norm() {
+
+		Vector3d newV;
+
+		newV.x = x/magnitude();
+		newV.y = y/magnitude();
+		newV.z = z/magnitude();
+
+		return newV;
+	}
+
+	/**
 	 * Dot product between this vector and another vector v2
 	 */
 	double Vector3d::dot(Vector3d v2) {
@@ -36,12 +50,28 @@ namespace math {
 		return x*v2.x + y*v2.y + z*v2.z;
 	}
 
+	/**
+	 * Multiply this vector with a constant value
+	 */
 	Vector3d Vector3d::multiply(double t) {
 
 		Vector3d newV;
 		newV.x = x*t;
 		newV.y = y*t;
 		newV.z = z*t;
+
+		return newV;
+	}
+
+	/**
+	 * Divide this vector by a constant value
+	 */
+	Vector3d Vector3d::divide(double t) {
+
+		Vector3d newV;
+		newV.x = x/t;
+		newV.y = y/t;
+		newV.z = z/t;
 
 		return newV;
 	}
