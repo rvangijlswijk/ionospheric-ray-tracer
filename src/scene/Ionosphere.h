@@ -19,6 +19,7 @@ namespace scene {
 
 		public:
 			Ionosphere();
+			Ionosphere(Plane3d mesh);
 			Ionosphere(Vector3d n, Vector3d c);
 			enum refractiveMethod {
 				REFRACTION_SIMPLE,
