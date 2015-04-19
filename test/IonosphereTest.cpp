@@ -30,7 +30,8 @@ namespace {
 				io.layerHeight = 1000;
 				io.setElectronPeakDensity(2.5e11);
 				io.setPeakProductionAltitude(125e3);
-				Plane3d mesh2 = Plane3d(Vector3d(0.02, 1, 0), Vector3d(49204, 3514.3e3, 0));
+				// a layer with an SZA angle of 1 degree
+				Plane3d mesh2 = Plane3d(Vector3d(0.0175, 1, 0), Vector3d(49204, 3514.3e3, 0));
 				io2.setMesh(mesh2);
 				io2.setup();
 				io2.layerHeight = 1000;
@@ -101,15 +102,20 @@ namespace {
 
 	TEST_F(IonosphereTest, RefractiveIndexKelso) {
 
-		ASSERT_NEAR(0.98, io.getRefractiveIndex(&r, Ionosphere::REFRACTION_KELSO), 0.01);
-		ASSERT_NEAR(0.44, io2.getRefractiveIndex(&r2, Ionosphere::REFRACTION_KELSO), 0.01);
+		ASSERT_NEAR(0.972, io.getRefractiveIndex(&r, Ionosphere::REFRACTION_KELSO), 0.01);
+		ASSERT_TRUE(std::isnan(io2.getRefractiveIndex(&r, Ionosphere::REFRACTION_KELSO)));
+		ASSERT_NEAR(1, io3.getRefractiveIndex(&r, Ionosphere::REFRACTION_KELSO), 0.01);
+		ASSERT_NEAR(0.982, io.getRefractiveIndex(&r2, Ionosphere::REFRACTION_KELSO), 0.01);
+		ASSERT_NEAR(0.440, io2.getRefractiveIndex(&r2, Ionosphere::REFRACTION_KELSO), 0.01);
+		ASSERT_NEAR(1, io3.getRefractiveIndex(&r2, Ionosphere::REFRACTION_KELSO), 0.01);
 	}
 
 	TEST_F(IonosphereTest, IncidentAngle) {
 
 		ASSERT_NEAR(0.524, io.getIncidentAngle(&r), 0.001);
-		ASSERT_NEAR(0.510, io2.getIncidentAngle(&r), 0.001);
-		ASSERT_NEAR(1.382, io2.getIncidentAngle(&r2), 0.001);
+		ASSERT_NEAR(0.506, io2.getIncidentAngle(&r), 0.001);
+		ASSERT_NEAR(1.379, io2.getIncidentAngle(&r2), 0.001);
+		ASSERT_NEAR(0.175, io3.getIncidentAngle(&r2), 0.001);
 	}
 
 	TEST_F(IonosphereTest, DetermineWaveBehaviour) {
