@@ -28,7 +28,8 @@ namespace scene {
 			};
 			void setup();
 			void interact(Ray *r, Vector3d &hitpos);
-			void refract(Ray *r, Vector3d &hitpos);
+			void refract(Ray *r);
+			void reflect(Ray *r);
 			void attenuate(Ray *r, double magnitude);
 			void attenuateWithers(Ray *r);
 			void rangeDelay(Ray *r);

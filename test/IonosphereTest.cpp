@@ -169,12 +169,11 @@ namespace {
 
 		Ray* rref = new Ray;
 		rref->frequency = 5e6;
-		Vector3d hitpos = Vector3d(0, 100, 0);
 
 		rref->o = Vector3d(0, 0, 0);
 		rref->d = Vector3d(0.5, 0.867, 0);
 		rref->previousRefractiveIndex = 1/1.068;
-		rio.refract(rref, hitpos);
+		rio.refract(rref);
 
 		ASSERT_NEAR(0.534, rref->d.x, 1e-3);
 		ASSERT_NEAR(1.005, rref->d.y, 1e-3);
@@ -183,7 +182,7 @@ namespace {
 		rref->o = Vector3d(0, 0, 0);
 		rref->d = Vector3d(0.5 * sqrt(2), -0.5 * sqrt(2), 0);
 		rref->previousRefractiveIndex = 1/0.9;
-		rio.refract(rref, hitpos);
+		rio.refract(rref);
 
 		ASSERT_NEAR(0.636, rref->d.x, 1e-3);
 		ASSERT_NEAR(-0.771, rref->d.y, 1e-3);
@@ -207,14 +206,13 @@ namespace {
 
 		Ray* rref = new Ray;
 		rref->frequency = 5e6;
-		Vector3d hitpos = Vector3d(0, 100, 0);
 
 		rref->o = Vector3d(0, 0, 0);
 		rref->d = Vector3d(0.5, 0.867, 0); // theta_i = 30 deg, theta_0 = 60 deg
 		rref->previousRefractiveIndex = 1.1; // n1 > n2
 		double factor_i = rref->d.y / rref->d.x;
 		double theta_i = rio.getIncidentAngle(rref);
-		rio.refract(rref, hitpos);
+		rio.refract(rref);
 		double factor_r = rref->d.y / rref->d.x;
 		double theta_r = acos(rref->d * rio.mesh3d.normal / (rref->d.magnitude() * rio.mesh3d.normal.magnitude()));
 
@@ -225,12 +223,34 @@ namespace {
 		rref->previousRefractiveIndex = 0.9; // n2 > n1
 		factor_i = rref->d.y / rref->d.x;
 		theta_i = rio.getIncidentAngle(rref);
-		rio.refract(rref, hitpos);
+		rio.refract(rref);
 		factor_r = rref->d.y / rref->d.x;
 		theta_r = acos(rref->d * rio.mesh3d.normal / (rref->d.magnitude() * rio.mesh3d.normal.magnitude()));
 
 		ASSERT_LT(factor_i, factor_r);
 		ASSERT_GT(theta_i, theta_r);
+	}
+
+	TEST_F(IonosphereTest, Reflect) {
+
+		Ionosphere rio = Ionosphere();
+		Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 100, 0));
+		rio.setMesh(mesh);
+		rio.setup();
+		rio.setElectronPeakDensity(1);
+		rio.setPeakProductionAltitude(125e3);
+
+		Ray* rref = new Ray;
+		rref->frequency = 5e6;
+
+		rref->o = Vector3d(0, 0, 0);
+		rref->d = Vector3d(0.5 * sqrt(2), -0.5 * sqrt(2), 0);
+		rref->previousRefractiveIndex = 1/0.9;
+		rio.reflect(rref);
+
+		ASSERT_NEAR(0.707, rref->d.x, 1e-3);
+		ASSERT_NEAR(0.707, rref->d.y, 1e-3);
+		ASSERT_NEAR(0, rref->d.z, 1e-3);
 	}
 
 	/**

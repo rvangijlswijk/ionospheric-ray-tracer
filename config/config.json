@@ -3,7 +3,7 @@
 	"iterations": 1,
 	"tracingLimit": 5000,
     "layerHeight": {
-    	"constant": 100,
+    	"constant": 250,
     	"chapman": {
     			"dhnmin": 300,
     			"dhnmax": 2500

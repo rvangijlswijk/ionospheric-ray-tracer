@@ -57,8 +57,15 @@ namespace scene {
 		setup();
 
 		double magnitude = r->o.distance(hitpos);
+		int waveBehaviour = determineWaveBehaviour(r);
 
-		refract(r, hitpos);
+		if (waveBehaviour == Ray::wave_reflection) {
+			reflect(r);
+		} else if (waveBehaviour == Ray::wave_refraction) {
+			refract(r);
+		}
+		r->o = hitpos;
+
 		attenuate(r, magnitude);
 		rangeDelay(r);
 		phaseAdvance(r);
@@ -70,35 +77,37 @@ namespace scene {
 	/**
 	 *
 	 */
-	void Ionosphere::refract(Ray *r, Vector3d &hitpos) {
+	void Ionosphere::refract(Ray *r) {
 
 		double refractiveIndex = getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
 		double theta_i = getIncidentAngle(r);
-		int waveBehaviour = determineWaveBehaviour(r);
 
-		if (waveBehaviour == Ray::wave_reflection) {
-			r->d = r->d + mesh3d.normal * 2 * cos(theta_i);
-			cout << "Reflect this ray! d.x,d.y:" << r->d.x << "," << r->d.y;
-		} else if (waveBehaviour == Ray::wave_refraction) {
-//			cout << "r.d: " << "V3D (" << r->d.x << "," << r->d.y << "," << r->d.z << ")" << "; N:"
-//					<< "V3D (" << mesh3d.normal.x << "," << mesh3d.normal.y << "," << mesh3d.normal.z << ")";
-			double ratio = refractiveIndex/r->previousRefractiveIndex;
-			double coefficient = ratio * cos(theta_i) - sqrt(1 - pow(ratio, 2) * (1 - pow(cos(theta_i), 2)));
-//			cout << " coef: " << coefficient;
-			r->d = r->d.norm() * ratio + mesh3d.normal.norm() * coefficient;
-//			cout << "r.d: " << "V3D (" << r->d.x << "," << r->d.y << "," << r->d.z << ")" << "; N:"
-//					<< "V3D (" << mesh3d.normal.x << "," << mesh3d.normal.y << "," << mesh3d.normal.z << ")";
-			double theta_r = acos(r->d * mesh3d.normal / (r->d.magnitude() * mesh3d.normal.magnitude()));
-//			cout << "Bend this ray! refraction: " << ratio << " theta_i:" << theta_i * 180 / Constants::PI
-//					<< ", theta_r:" << theta_r * 180 / Constants::PI;
-		} else if (waveBehaviour == Ray::wave_none) {
-			r->behaviour = Ray::wave_none;
-			cout << "Ray goes straight!\n";
-		} else {
-			cerr << "No idea what to do with this ray!";
-		}
-		r->o = hitpos;
+//		cout << "r.d: " << "V3D (" << r->d.x << "," << r->d.y << "," << r->d.z << ")" << "; N:"
+//				<< "V3D (" << mesh3d.normal.x << "," << mesh3d.normal.y << "," << mesh3d.normal.z << ")";
+		double ratio = refractiveIndex/r->previousRefractiveIndex;
+		double coefficient = ratio * cos(theta_i) - sqrt(1 - pow(ratio, 2) * (1 - pow(cos(theta_i), 2)));
+		r->d = r->d.norm() * ratio + mesh3d.normal.norm() * coefficient;
+//		cout << "r.d: " << "V3D (" << r->d.x << "," << r->d.y << "," << r->d.z << ")" << "; N:"
+//				<< "V3D (" << mesh3d.normal.x << "," << mesh3d.normal.y << "," << mesh3d.normal.z << ")";
+		double theta_r = acos(r->d * mesh3d.normal / (r->d.magnitude() * mesh3d.normal.magnitude()));
+//		cout << "Bend this ray! refraction: " << ratio << " theta_i:" << theta_i * 180 / Constants::PI
+//				<< ", theta_r:" << theta_r * 180 / Constants::PI;
+
 		r->previousRefractiveIndex = refractiveIndex;
+	}
+
+	/**
+	 *
+	 */
+	void Ionosphere::reflect(Ray *r) {
+
+		double refractiveIndex = getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
+		double theta_i = getIncidentAngle(r);
+
+		r->d = r->d.norm() + mesh3d.normal.norm() * 2 * cos(theta_i);
+
+		r->previousRefractiveIndex = refractiveIndex;
+//		cout << "Reflect this ray! d.x,d.y:" << r->d.x << "," << r->d.y;
 	}
 
 	/**
