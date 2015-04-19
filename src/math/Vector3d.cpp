@@ -127,5 +127,8 @@ namespace math {
 		return sqrt(pow(x - v2.x, 2) + pow(y - v2.y, 2) + pow(z - v2.z, 2));
 	}
 
+	Vector3d Vector3d::SUBSOLAR = Vector3d(0, 1, 0);
+	Vector3d Vector3d::POLAR = Vector3d(0, 0, 1);
+
 } /* namespace math */
 } /* namespace raytracer */

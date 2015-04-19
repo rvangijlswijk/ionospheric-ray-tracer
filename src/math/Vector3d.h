@@ -19,6 +19,8 @@ class Vector3d {
 		Vector3d();
 		Vector3d(double xPos, double yPos, double zPos);
 
+		static Vector3d SUBSOLAR,
+						POLAR;
 		double x, y, z;
 
 		/**
