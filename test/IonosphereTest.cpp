@@ -116,6 +116,15 @@ namespace {
 		ASSERT_NEAR(0.506, io2.getIncidentAngle(&r), 0.001);
 		ASSERT_NEAR(1.379, io2.getIncidentAngle(&r2), 0.001);
 		ASSERT_NEAR(0.175, io3.getIncidentAngle(&r2), 0.001);
+
+		Ionosphere rio = Ionosphere();
+		Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 100, 0));
+		rio.setMesh(mesh);
+
+		Ray ri = Ray();
+		ri.d = Vector3d(0.707, -0.707, 0);
+
+		ASSERT_NEAR(0.786, rio.getIncidentAngle(&ri), 1e-3);
 	}
 
 	TEST_F(IonosphereTest, DetermineWaveBehaviour) {
@@ -147,6 +156,81 @@ namespace {
 		ASSERT_NEAR(3.787e4, cio2.getCollisionFrequency(), 1e2);
 		ASSERT_NEAR(418.8, cio3.getCollisionFrequency(), 4);
 		ASSERT_NEAR(2.075e7, cio4.getCollisionFrequency(), 1e5);
+	}
+
+	TEST_F(IonosphereTest, Refract) {
+
+		Ionosphere rio = Ionosphere();
+		Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 100, 0));
+		rio.setMesh(mesh);
+		rio.setup();
+		rio.setElectronPeakDensity(1);
+		rio.setPeakProductionAltitude(125e3);
+
+		Ray* rref = new Ray;
+		rref->frequency = 5e6;
+		Vector3d hitpos = Vector3d(0, 100, 0);
+
+		rref->o = Vector3d(0, 0, 0);
+		rref->d = Vector3d(0.5, 0.867, 0);
+		rref->previousRefractiveIndex = 1/1.068;
+		rio.refract(rref, hitpos);
+
+		ASSERT_NEAR(0.534, rref->d.x, 1e-3);
+		ASSERT_NEAR(1.005, rref->d.y, 1e-3);
+		ASSERT_NEAR(0, rref->d.z, 1e-3);
+
+		rref->o = Vector3d(0, 0, 0);
+		rref->d = Vector3d(0.5 * sqrt(2), -0.5 * sqrt(2), 0);
+		rref->previousRefractiveIndex = 1/0.9;
+		rio.refract(rref, hitpos);
+
+		ASSERT_NEAR(0.636, rref->d.x, 1e-3);
+		ASSERT_NEAR(-0.771, rref->d.y, 1e-3);
+		ASSERT_NEAR(0, rref->d.z, 1e-3);
+	}
+
+	/**
+	 * if a ray transverses from a medium n1 to a medium n2 where n1 > n2,
+	 * then the incident angle theta_i is lower than the reflected angle theta_r
+	 * w.r.t. the normal: theta_i < theta_r
+	 * else if n1 < n2, then theta_i > theta_r
+	 */
+	TEST_F(IonosphereTest, RefractSnelliusLaw) {
+
+		Ionosphere rio = Ionosphere();
+		Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 100, 0));
+		rio.setMesh(mesh);
+		rio.setup();
+		rio.setElectronPeakDensity(1);
+		rio.setPeakProductionAltitude(125e3);
+
+		Ray* rref = new Ray;
+		rref->frequency = 5e6;
+		Vector3d hitpos = Vector3d(0, 100, 0);
+
+		rref->o = Vector3d(0, 0, 0);
+		rref->d = Vector3d(0.5, 0.867, 0); // theta_i = 30 deg, theta_0 = 60 deg
+		rref->previousRefractiveIndex = 1.1; // n1 > n2
+		double factor_i = rref->d.y / rref->d.x;
+		double theta_i = rio.getIncidentAngle(rref);
+		rio.refract(rref, hitpos);
+		double factor_r = rref->d.y / rref->d.x;
+		double theta_r = acos(rref->d * rio.mesh3d.normal / (rref->d.magnitude() * rio.mesh3d.normal.magnitude()));
+
+		ASSERT_NEAR(0.524, theta_i, 1e-3);	// theta_i = 30 deg
+		ASSERT_GT(factor_i, factor_r);
+		ASSERT_LT(theta_i, theta_r);
+
+		rref->previousRefractiveIndex = 0.9; // n2 > n1
+		factor_i = rref->d.y / rref->d.x;
+		theta_i = rio.getIncidentAngle(rref);
+		rio.refract(rref, hitpos);
+		factor_r = rref->d.y / rref->d.x;
+		theta_r = acos(rref->d * rio.mesh3d.normal / (rref->d.magnitude() * rio.mesh3d.normal.magnitude()));
+
+		ASSERT_LT(factor_i, factor_r);
+		ASSERT_GT(theta_i, theta_r);
 	}
 
 	/**

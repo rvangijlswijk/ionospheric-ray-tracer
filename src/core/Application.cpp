@@ -30,7 +30,7 @@ namespace core {
 
 		isRunning = true;
 		applicationConfig = Config("config/config.json");
-		celestialConfig = Config("config/scenario_LS0_SA250_DS0.json");
+		celestialConfig = Config("config/scenario_default.json");
 
 		boost::log::core::get()->set_filter(
 				boost::log::trivial::severity >= boost::log::trivial::info);
@@ -54,8 +54,8 @@ namespace core {
 			createScene();
 
 			int numWorkers = 0;
-			for (double freq = 5e6; freq <= 5e6; freq += 0.5e6) {
-				for (double SZA = 30; SZA <= 30; SZA += 10) {
+			for (double freq = 4.5e6; freq <= 5e6; freq += 0.5e6) {
+				for (double SZA = 10; SZA <= 80; SZA += 10) {
 					Ray r;
 					r.rayNumber = ++rayCounter;
 					r.frequency = freq;
