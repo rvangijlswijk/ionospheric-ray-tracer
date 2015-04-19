@@ -55,7 +55,7 @@ namespace core {
 
 			int numWorkers = 0;
 			for (double freq = 5e6; freq <= 5e6; freq += 0.5e6) {
-				for (double SZA = 10; SZA <= 80; SZA += 0.1) {
+				for (double SZA = 10; SZA <= 80; SZA += 10) {
 					Ray r;
 					r.rayNumber = ++rayCounter;
 					r.frequency = freq;

@@ -257,7 +257,7 @@ namespace scene {
 
 		if (m == REFRACTION_KELSO) {
 
-			n = sqrt(1 - getPlasmaFrequency() / (2 * Constants::PI * r->frequency));
+			n = sqrt(1 - pow(getPlasmaFrequency(), 2) / pow(2 * Constants::PI * r->frequency, 2));
 		} else if (m == REFRACTION_AHDR) {
 
 			//n = 1 - X / (1);
