@@ -34,6 +34,15 @@ namespace math {
 		return -normal.x * centerpoint.x - normal.y * centerpoint.y - normal.z * centerpoint.z;
 	}
 
+	/**
+	 * The antinormal points downwards from the plane, i.e. in opposite
+	 * direction of the normal
+	 */
+	Vector3d Plane3d::antiNormal() {
+
+		return (normal * -1);
+	}
+
 } /* namespace math */
 } /* namespace raytracer */
 

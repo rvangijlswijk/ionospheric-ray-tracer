@@ -37,6 +37,12 @@ class Plane3d {
 		 * The constant d is then d = -(a*x0 + b*y0 + c*z0)
 		 */
 		double getConstant();
+
+		/**
+		 * The antinormal points downwards from the plane, i.e. in opposite
+		 * direction of the normal
+		 */
+		Vector3d antiNormal();
 };
 
 } /* namespace math */
