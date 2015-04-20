@@ -34,6 +34,8 @@ namespace scene {
 
 		refract(r, hitpos);
 
+		r->o = hitpos;
+
 		exportData(r);
 	}
 
@@ -59,8 +61,6 @@ namespace scene {
 		r->setAngle(beta_2);
 		cout << "Atmo: beta_2: " << beta_2 * 57.296 << endl;
 
-		r->o.x = hitpos.x;
-		r->o.y = hitpos.y;
 		r->previousAtmosphericRefractiveIndex = refractiveIndex;
 	}
 
@@ -71,6 +71,7 @@ namespace scene {
 		Data d;
 		d.x = r->o.x;
 		d.y = r->o.y;
+		d.z = r->o.z;
 		d.rayNumber = r->rayNumber;
 		d.theta_0 = r->originalAngle;
 		d.frequency = r->frequency;

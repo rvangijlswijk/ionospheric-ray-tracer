@@ -64,7 +64,10 @@ namespace core {
 					r.signalPower = 0;
 					r.o.y = 2 + celestialConfig.getInt("radius");
 					r.originalAngle = SZA * Constants::PI / 180.0;
-					r.setNormalAngle(r.originalAngle);
+					Vector3d direction = Vector3d(cos(Constants::PI/2.0 - r.originalAngle),
+							sin(Constants::PI/2.0 - r.originalAngle),
+							tan(-4 * Constants::PI / 180));
+					r.d = direction.norm();
 
 					Worker w;
 					w.schedule(&tp, r);
@@ -107,13 +110,16 @@ namespace core {
 		IonosphereConfigParser plh = IonosphereConfigParser();
 
 		// terrain
-		for (double theta = 0; theta < 2*Constants::PI; theta += angularStepSize) {
+		for (double latitude = Constants::PI/2; latitude < Constants::PI/2 + 10*Constants::PI/180; latitude += angularStepSize) {
+			for (double theta = 0; theta < 2*Constants::PI; theta += angularStepSize) {
 
-			Plane3d mesh = Plane3d(Vector3d(cos(theta), sin(theta), 0), Vector3d(R*cos(theta), R*sin(theta), 0));
-			mesh.size = angularStepSize * R;
-			Terrain* tr = new Terrain(mesh);
+				Vector3d N = Vector3d(cos(theta), sin(theta), cos(latitude)).norm();
+				Plane3d mesh = Plane3d(N, Vector3d(R*N.x, R*N.y, R*N.z));
+				mesh.size = angularStepSize * R;
+				Terrain* tr = new Terrain(mesh);
 
-			scm.addToScene(tr);
+				scm.addToScene(tr);
+			}
 		}
 
 		int dh = 500;
@@ -126,19 +132,22 @@ namespace core {
 			double peakProductionAltitude = ionosphereConfig[idx].get("peakProductionAltitude", "").asDouble();
 			Json::Value stratificationRaw = ionosphereConfig[idx].get("stratification", "");
 			const char * stratificationType = stratificationRaw.asCString();
-			for (double theta = 0; theta < 2*Constants::PI; theta += angularStepSize) {
+			for (double latitude = Constants::PI/2; latitude < Constants::PI/2 + 10*Constants::PI/180; latitude += angularStepSize) {
+				for (double theta = 0; theta < 2*Constants::PI; theta += angularStepSize) {
 
-				for (int h = hS; h < hE; h += dh) {
-					Plane3d mesh = Plane3d(Vector3d(cos(theta), sin(theta), 0), Vector3d((R + h) * cos(theta), (R + h) * sin(theta), 0));
-					mesh.size = angularStepSize * R;
-					Ionosphere* io = new Ionosphere(mesh);
-					io->layerHeight = dh;
-					io->setElectronPeakDensity(electronPeakDensity);
-					io->setPeakProductionAltitude(peakProductionAltitude);
+					for (int h = hS; h < hE; h += dh) {
+						Vector3d N = Vector3d(cos(theta), sin(theta), cos(latitude)).norm();
+						Plane3d mesh = Plane3d(N, Vector3d((R+h)*N.x, (R+h)*N.y, (R+h)*N.z));
+						mesh.size = angularStepSize * R;
+						Ionosphere* io = new Ionosphere(mesh);
+						io->layerHeight = dh;
+						io->setElectronPeakDensity(electronPeakDensity);
+						io->setPeakProductionAltitude(peakProductionAltitude);
 
-					scm.addToScene(io);
+						scm.addToScene(io);
 
-					dh = plh.getDh(stratificationType, h);
+						//dh = plh.getDh(stratificationType, h);
+					}
 				}
 			}
 		}

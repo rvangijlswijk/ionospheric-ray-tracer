@@ -224,6 +224,7 @@ namespace scene {
 		Data d;
 		d.x = r->o.x;
 		d.y = r->o.y;
+		d.z = r->o.z;
 		d.rayNumber = r->rayNumber;
 		d.mu_r_sqrt = pow(r->previousRefractiveIndex, 2);
 		d.n_e = getElectronNumberDensity();

@@ -49,7 +49,7 @@ namespace tracer {
 		rayLine.origin = o;
 		rayEnd.x = o.x + Ray::magnitude * cos(angle);
 		rayEnd.y = o.y + Ray::magnitude * sin(angle);
-		rayEnd.z = 0;
+		rayEnd.z = o.z + Ray::magnitude * d.z;
 		rayLine.destination = rayEnd;
 
 //		printf("Tracing ray: %6.3f %6.3f %6.3f %6.3f theta: %4.2f\n", o.x, o.y, d.x, d.y, angle * 57.296);
@@ -95,7 +95,7 @@ namespace tracer {
 		} else if (hit.o == GeometryType::terrain) {
 			o = rayLine.destination;
 			exportData(GeometryType::terrain);
-			BOOST_LOG_TRIVIAL(warning) << "result: terrain\n";
+			BOOST_LOG_TRIVIAL(warning) << "Ray " << rayNumber << " result: terrain";
 //			printf("Intersection with terrain at: %6.2f, %6.2f\n", hit.pos.x, hit.pos.y);
 //			printf("Geometry coords: %8.4f %8.4f %8.4f %8.4f\n", hit.g.getMesh().begin.x, hit.g.getMesh().begin.y, hit.g.getMesh().end.x, hit.g.getMesh().end.y);
 			return 0;
@@ -158,6 +158,7 @@ namespace tracer {
 		Data d;
 		d.x = o.x;
 		d.y = o.y;
+		d.z = o.z;
 		d.rayNumber = rayNumber;
 		d.mu_r_sqrt = pow(previousRefractiveIndex, 2);
 		d.theta_0 = originalAngle;
