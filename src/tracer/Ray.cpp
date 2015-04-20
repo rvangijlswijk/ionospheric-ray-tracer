@@ -38,8 +38,7 @@ namespace tracer {
 
 		// isnan check
 		if (o.x != o.x || o.y != o.y) {
-			cout << "n: " << previousRefractiveIndex << endl;
-			cerr << "NaN exception!" << endl;
+			BOOST_LOG_TRIVIAL(error) << "NaN exception!";
 			return 0;
 		}
 
@@ -60,11 +59,12 @@ namespace tracer {
 
 		// limit the simulation to avoid unnecessary calculations
 		if (rayLine.origin.distance(Vector3d(0,0,0)) > Application::getInstance().getCelestialConfig().getInt("radius") + 250e3) {
-			cerr << "Out of scene bounds!" << endl;
+			BOOST_LOG_TRIVIAL(error) << "Out of scene bounds!";
+
 			return 0;
 		}
 		if (tracings >= Application::getInstance().getApplicationConfig().getInt("tracingLimit")) {
-			cerr << "Tracing limit exceeded!" << endl;
+			BOOST_LOG_TRIVIAL(error) << "Tracing limit exceeded!";
 			return 0;
 		}
 
@@ -86,7 +86,6 @@ namespace tracer {
 		// determine ray behaviour
 		// intersection with an ionospheric or atmospheric layer
 		if (hit.o == GeometryType::ionosphere || hit.o == GeometryType::atmosphere) {
-//			cout << "result: ionosphere" << endl;
 			hit.g->interact(this, hit.pos);
 			if (behaviour == Ray::wave_no_propagation) {
 				return 0;
@@ -96,12 +95,11 @@ namespace tracer {
 		} else if (hit.o == GeometryType::terrain) {
 			o = rayLine.destination;
 			exportData(GeometryType::terrain);
-			cout << "result: terrain\n";
+			BOOST_LOG_TRIVIAL(warning) << "result: terrain\n";
 //			printf("Intersection with terrain at: %6.2f, %6.2f\n", hit.pos.x, hit.pos.y);
 //			printf("Geometry coords: %8.4f %8.4f %8.4f %8.4f\n", hit.g.getMesh().begin.x, hit.g.getMesh().begin.y, hit.g.getMesh().end.x, hit.g.getMesh().end.y);
 			return 0;
 		} else if (hit.o == GeometryType::none) {
-//			cout << "result: none\n";
 			o = rayLine.destination;
 			exportData(GeometryType::none);
 			return trace();
@@ -135,9 +133,7 @@ namespace tracer {
 	 */
 	double Ray::getAngle() {
 
-		Vector3d axis = Vector3d(1, 0, 0);
-
-		return acos(d*axis / (d.magnitude() * axis.magnitude()));
+		return d.angle(Vector3d::EQUINOX);
 	}
 
 	/**
