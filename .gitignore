@@ -8,6 +8,7 @@ log/
 *.lo
 *.o
 *.obj
+*.m~
 
 # Precompiled Headers
 *.gch
