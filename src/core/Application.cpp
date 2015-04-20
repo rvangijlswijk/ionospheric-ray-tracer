@@ -105,19 +105,21 @@ namespace core {
 	 */
 	void Application::createScene() {
 
+		int numSceneObjectsCreated = 0;
 		double R = celestialConfig.getInt("radius");
 		double angularStepSize = Constants::PI/360;
 		IonosphereConfigParser plh = IonosphereConfigParser();
 
 		// terrain
 		for (double latitude = Constants::PI/2; latitude < Constants::PI/2 + 10*Constants::PI/180; latitude += angularStepSize) {
-			for (double theta = 0; theta < 2*Constants::PI; theta += angularStepSize) {
+			for (double theta = Constants::PI/4; theta < Constants::PI/2; theta += angularStepSize) {
 
 				Vector3d N = Vector3d(cos(theta), sin(theta), cos(latitude)).norm();
 				Plane3d mesh = Plane3d(N, Vector3d(R*N.x, R*N.y, R*N.z));
 				mesh.size = angularStepSize * R;
 				Terrain* tr = new Terrain(mesh);
 
+				numSceneObjectsCreated++;
 				scm.addToScene(tr);
 			}
 		}
@@ -133,7 +135,7 @@ namespace core {
 			Json::Value stratificationRaw = ionosphereConfig[idx].get("stratification", "");
 			const char * stratificationType = stratificationRaw.asCString();
 			for (double latitude = Constants::PI/2; latitude < Constants::PI/2 + 10*Constants::PI/180; latitude += angularStepSize) {
-				for (double theta = 0; theta < 2*Constants::PI; theta += angularStepSize) {
+				for (double theta = Constants::PI/4; theta < Constants::PI/2; theta += angularStepSize) {
 
 					for (int h = hS; h < hE; h += dh) {
 						Vector3d N = Vector3d(cos(theta), sin(theta), cos(latitude)).norm();
@@ -144,6 +146,7 @@ namespace core {
 						io->setElectronPeakDensity(electronPeakDensity);
 						io->setPeakProductionAltitude(peakProductionAltitude);
 
+						numSceneObjectsCreated++;
 						scm.addToScene(io);
 
 						//dh = plh.getDh(stratificationType, h);
@@ -164,6 +167,7 @@ namespace core {
 //				Atmosphere* atm = new Atmosphere(Vector3d(cos(theta), sin(theta), 0),Vector3d((R + h) * cos(theta), (R + h) * sin(theta), 0));
 //				atm->layerHeight = dh;
 //
+//				numSceneObjectsCreated++;
 //				scm.addToScene(atm);
 //			}
 //		}

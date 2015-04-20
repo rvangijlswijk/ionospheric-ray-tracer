@@ -25,13 +25,35 @@ namespace scene {
 
 		public:
 			SceneManager();
-			Intersection intersect(Ray* r, Line2d &rayLine);
+
+			/**
+			 * Find which object in the scene intersects with a ray
+			 */
 			Intersection intersect(Ray* r, Line3d &rayLine);
+
+			/**
+			 * Add an object to the scene
+			 */
 			void addToScene(Geometry* obj);
+
+			/**
+			 * Remove all objects currently defined in the scene
+			 */
 			void removeAllFromScene();
+
+			/**
+			 * Return a list of all objects in the scene
+			 */
 			list<Geometry*> getScene();
 
 		private:
+
+			/**
+			 * Retrieve a list of scene objects which have a possibility of
+			 * colliding with the ray. Other objects are discarded.
+			 */
+			list<Geometry*> getPossibleHits(Ray * r);
+
 			list<Geometry*> sceneObjects;
 	};
 
