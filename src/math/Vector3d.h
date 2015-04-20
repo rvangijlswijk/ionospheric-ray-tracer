@@ -19,7 +19,8 @@ class Vector3d {
 		Vector3d();
 		Vector3d(double xPos, double yPos, double zPos);
 
-		static Vector3d SUBSOLAR,
+		static Vector3d EQUINOX,
+						SUBSOLAR,
 						POLAR;
 		double x, y, z;
 
@@ -85,6 +86,12 @@ class Vector3d {
 		Vector3d operator-(Vector3d v2) {
 			return substract(v2);
 		}
+
+		/**
+		 * Return the angle theta between two vectors A and B where
+		 * theta = acos(A*B / (A.magnitude()*B.magnitude()))
+		 */
+		double angle(Vector3d v2);
 
 //		friend std::ostream& operator<<(std::ostream &strm, const raytracer::math::Vector3d &v) {
 //

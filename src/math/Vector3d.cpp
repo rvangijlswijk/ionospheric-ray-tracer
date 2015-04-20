@@ -127,6 +127,16 @@ namespace math {
 		return sqrt(pow(x - v2.x, 2) + pow(y - v2.y, 2) + pow(z - v2.z, 2));
 	}
 
+	/**
+	 * Return the angle theta between two vectors A and B where
+	 * theta = acos(A*B / (A.magnitude()*B.magnitude()))
+	 */
+	double Vector3d::angle(Vector3d v2) {
+
+		return acos(this->dot(v2) / (this->magnitude() * v2.magnitude()));
+	}
+
+	Vector3d Vector3d::EQUINOX = Vector3d(1, 0, 0);
 	Vector3d Vector3d::SUBSOLAR = Vector3d(0, 1, 0);
 	Vector3d Vector3d::POLAR = Vector3d(0, 0, 1);
 

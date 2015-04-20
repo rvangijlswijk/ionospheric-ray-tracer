@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "../src/math/Vector3d.h"
+#include "../src/math/Constants.h"
 #include <cmath>
 
 namespace {
@@ -24,11 +25,19 @@ namespace {
 		Vector3d v2 = Vector3d(6, 1, 2.5);
 
 		ASSERT_NEAR(27.5, v1.dot(v2), 1e-4);
+		ASSERT_NEAR(27.5, v1 * v2, 1e-4);
 
 		Vector3d v3 = Vector3d(0, 2, 2.5);
 		Vector3d v4 = Vector3d(1, -5, -2);
 
 		ASSERT_NEAR(-15.0, v3.dot(v4), 1e-4);
+		ASSERT_NEAR(-15.0, v3 * v4, 1e-4);
+
+		Vector3d v5 = Vector3d(0.174, 0.985, 0);
+		Vector3d v6 = Vector3d(0.643, 0.767, 0);
+
+		ASSERT_NEAR(0.8674, v5.dot(v6), 1e-4);
+		ASSERT_NEAR(0.8674, v5 * v6, 1e-4);
 	}
 
 	TEST_F(Vector3dTest, CrossProduct) {
@@ -71,5 +80,22 @@ namespace {
 		ASSERT_NEAR(6 / sqrt(43.25), v2.norm().x, 1e-4);
 		ASSERT_NEAR(1 / sqrt(43.25), v2.norm().y, 1e-4);
 		ASSERT_NEAR(2.5 / sqrt(43.25), v2.norm().z, 1e-4);
+	}
+
+	TEST_F(Vector3dTest, Angle) {
+
+		Vector3d v1 = Vector3d(1, 0, 0);
+		Vector3d v2 = Vector3d(0, 1, 0);
+
+		ASSERT_NEAR(Constants::PI/2, v1.angle(v2), 1e-4);
+
+		Vector3d v3 = Vector3d(0.174, 0.985, 0);
+		Vector3d v4 = Vector3d(0.643, 0.767, 0);
+
+		ASSERT_NEAR(0.5228, v3.angle(v4), 1e-4);
+
+		Vector3d v5 = Vector3d(0.560, 0.579, 0);
+
+		ASSERT_NEAR(0.5939, v5.angle(v3), 1e-4);
 	}
 }
