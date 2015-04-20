@@ -8,6 +8,7 @@
 #define VECTOR3D_H_
 
 #include <iostream>
+#include <iomanip>
 #include "Vector.h"
 
 namespace raytracer {
@@ -93,10 +94,10 @@ class Vector3d {
 		 */
 		double angle(Vector3d v2);
 
-//		friend std::ostream& operator<<(std::ostream &strm, const raytracer::math::Vector3d &v) {
-//
-//			return strm << "V3D (" << v.x << "," << v.y << "," << v.z << ")";
-//		}
+		friend std::ostream& operator<<(std::ostream &strm, const raytracer::math::Vector3d &v) {
+
+			return strm << std::fixed << std::setprecision(4) << "V3D (" << v.x << "," << v.y << "," << v.z << ")";
+		}
 
 };
 

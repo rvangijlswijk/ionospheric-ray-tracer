@@ -32,8 +32,10 @@ namespace core {
 		applicationConfig = Config("config/config.json");
 		celestialConfig = Config("config/scenario_default.json");
 
+//		boost::log::add_file_log("log/sample.log");
+
 		boost::log::core::get()->set_filter(
-				boost::log::trivial::severity >= boost::log::trivial::info);
+				boost::log::trivial::severity >= boost::log::trivial::warning);
 
 		tp = boost::threadpool::pool(applicationConfig.getInt("parallelism"));
 	}
@@ -42,19 +44,19 @@ namespace core {
 
 		Timer tmr;
 
-		BOOST_LOG_TRIVIAL(info) << "Parallelism is " << applicationConfig.getInt("parallelism");
-		BOOST_LOG_TRIVIAL(info) << applicationConfig.getInt("iterations") << " iterations";
+		BOOST_LOG_TRIVIAL(warning) << "Parallelism is " << applicationConfig.getInt("parallelism");
+		BOOST_LOG_TRIVIAL(warning) << applicationConfig.getInt("iterations") << " iterations";
 
 		// trace a ray
 		int rayCounter = 0;
 		for (int iteration = 0; iteration < applicationConfig.getInt("iterations"); iteration++) {
 
-			BOOST_LOG_TRIVIAL(info) << "Iteration " << (iteration+1) << " of " << applicationConfig.getInt("iterations");
+			BOOST_LOG_TRIVIAL(warning) << "Iteration " << (iteration+1) << " of " << applicationConfig.getInt("iterations");
 
 			createScene();
 
 			int numWorkers = 0;
-			for (double freq = 4.5e6; freq <= 6e6; freq += 0.5e6) {
+			for (double freq = 5e6; freq <= 5e6; freq += 0.5e6) {
 				for (double SZA = 10; SZA <= 80; SZA += 10) {
 					Ray r;
 					r.rayNumber = ++rayCounter;
@@ -71,7 +73,7 @@ namespace core {
 				}
 			}
 
-			BOOST_LOG_TRIVIAL(info) << numWorkers << " workers queued";
+			BOOST_LOG_TRIVIAL(warning) << numWorkers << " workers queued";
 
 			tp.wait();
 
@@ -101,13 +103,15 @@ namespace core {
 	void Application::createScene() {
 
 		double R = celestialConfig.getInt("radius");
-		double angularStepSize = Constants::PI/180;
+		double angularStepSize = Constants::PI/360;
 		IonosphereConfigParser plh = IonosphereConfigParser();
 
 		// terrain
 		for (double theta = 0; theta < 2*Constants::PI; theta += angularStepSize) {
 
-			Terrain* tr = new Terrain(Vector3d(cos(theta), sin(theta), 0), Vector3d(R*cos(theta), R*sin(theta), 0));
+			Plane3d mesh = Plane3d(Vector3d(cos(theta), sin(theta), 0), Vector3d(R*cos(theta), R*sin(theta), 0));
+			mesh.size = angularStepSize * R;
+			Terrain* tr = new Terrain(mesh);
 
 			scm.addToScene(tr);
 		}

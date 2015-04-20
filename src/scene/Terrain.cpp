@@ -15,6 +15,11 @@ namespace scene {
 		type = GeometryType::terrain;
 	}
 
+	Terrain::Terrain(Plane3d mesh) : Geometry(mesh) {
+
+		type = GeometryType::terrain;
+	}
+
 	Terrain::Terrain(Vector3d n, Vector3d c) : Geometry(n, c) {
 
 		type = GeometryType::terrain;

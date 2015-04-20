@@ -27,7 +27,7 @@ namespace exporter {
 			data << std::fixed << std::setprecision(1) << dataset.front().rayNumber << ","
 				<< std::setprecision(2) << dataset.front().x << ","
 				<< std::setprecision(2) << dataset.front().y << ","
-				<< std::setprecision(2) << dataset.front().omega_p << ","
+				<< std::setprecision(3) << dataset.front().omega_p << ","
 				<< std::setprecision(4) << dataset.front().n_e << ","
 				<< std::setprecision(6) << dataset.front().mu_r_sqrt << ","
 				<< std::setprecision(4) << dataset.front().theta_0 << ","

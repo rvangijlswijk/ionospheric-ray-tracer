@@ -172,21 +172,41 @@ namespace {
 
 		rref->o = Vector3d(0, 0, 0);
 		rref->d = Vector3d(0.5, 0.867, 0);
-		rref->previousRefractiveIndex = 1/1.068;
+		rref->previousRefractiveIndex = 1.068;
 		rio.refract(rref);
 
 		ASSERT_NEAR(0.534, rref->d.x, 1e-3);
-		ASSERT_NEAR(1.005, rref->d.y, 1e-3);
+		ASSERT_NEAR(0.846, rref->d.y, 1e-3);
 		ASSERT_NEAR(0, rref->d.z, 1e-3);
 
 		rref->o = Vector3d(0, 0, 0);
 		rref->d = Vector3d(0.5 * sqrt(2), -0.5 * sqrt(2), 0);
-		rref->previousRefractiveIndex = 1/0.9;
+		rref->previousRefractiveIndex = 0.9;
 		rio.refract(rref);
 
 		ASSERT_NEAR(0.636, rref->d.x, 1e-3);
 		ASSERT_NEAR(-0.771, rref->d.y, 1e-3);
 		ASSERT_NEAR(0, rref->d.z, 1e-3);
+
+		mesh = Plane3d(Vector3d(0.174, 0.985, 0), Vector3d(0, 100, 0));	// SZA = 10 deg
+		rio.setMesh(mesh);
+		rio.setup();
+
+		rref->o = Vector3d(0, 0, 0);
+		rref->d = Vector3d(0.643, 0.767, 0);
+		rref->previousRefractiveIndex = 0.9;
+		double theta_i = rio.getIncidentAngle(rref);
+
+		rio.refract(rref);
+
+		ASSERT_NEAR(0.522, theta_i, 1e-3);	// theta_i = 30 deg
+		ASSERT_NEAR(0.466, rref->d.angle(rio.mesh3d.normal), 1e-3);	//theta_r = 26.7 deg
+		ASSERT_NEAR(0.930, rref->d.angle(Vector3d::EQUINOX), 1e-3);	//beta_r = 53.3 deg
+		ASSERT_NEAR(0.930, rref->getAngle(), 1e-3);
+		ASSERT_NEAR(0.598, rref->d.x, 1e-3);
+		ASSERT_NEAR(0.802, rref->d.y, 1e-3);
+		ASSERT_NEAR(0, rref->d.z, 1e-3);
+
 	}
 
 	/**
@@ -349,15 +369,15 @@ namespace {
 
 		r.phaseAdvance = 0;
 		io.phaseAdvance(&r);
-		ASSERT_NEAR(2.310, r.phaseAdvance, 0.001);
+		ASSERT_NEAR(2.310, r.phaseAdvance, 1e-3);
 
 		r.phaseAdvance = 0;
 		io2.phaseAdvance(&r);
-		ASSERT_NEAR(52.734, r.phaseAdvance, 0.001);
+		ASSERT_NEAR(52.733, r.phaseAdvance, 1e-3);
 
 		r.phaseAdvance = 0;
 		io3.phaseAdvance(&r);
-		ASSERT_NEAR(0, r.phaseAdvance, 0.001);
+		ASSERT_NEAR(0, r.phaseAdvance, 1e-3);
 	}
 
 	TEST_F(IonosphereTest, ExportDataTest) {

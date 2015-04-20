@@ -82,17 +82,18 @@ namespace scene {
 		double refractiveIndex = getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
 		double theta_i = getIncidentAngle(r);
 
-//		cout << "r.d: " << "V3D (" << r->d.x << "," << r->d.y << "," << r->d.z << ")" << "; N:"
-//				<< "V3D (" << mesh3d.normal.x << "," << mesh3d.normal.y << "," << mesh3d.normal.z << ")";
-		double ratio = refractiveIndex/r->previousRefractiveIndex;
+		double ratio = r->previousRefractiveIndex/refractiveIndex;
 		double coefficient = ratio * cos(theta_i) - sqrt(1 - pow(ratio, 2) * (1 - pow(cos(theta_i), 2)));
-		r->d = r->d.norm() * ratio + mesh3d.normal.norm() * coefficient;
-//		cout << "r.d: " << "V3D (" << r->d.x << "," << r->d.y << "," << r->d.z << ")" << "; N:"
-//				<< "V3D (" << mesh3d.normal.x << "," << mesh3d.normal.y << "," << mesh3d.normal.z << ")";
-		double theta_r = acos(r->d * mesh3d.normal / (r->d.magnitude() * mesh3d.normal.magnitude()));
-//		cout << "Bend this ray! refraction: " << ratio << " theta_i:" << theta_i * 180 / Constants::PI
-//				<< ", theta_r:" << theta_r * 180 / Constants::PI;
+		Vector3d newR = Vector3d();
 
+		if (r->d.y > 0)
+			newR = r->d * ratio - mesh3d.normal * coefficient;
+		else
+			newR = r->d * ratio + mesh3d.normal * coefficient;
+
+		BOOST_LOG_TRIVIAL(info) << std::fixed << "REFRACT Alt: " << std::setprecision(0) << getAltitude() << "\tr.d_i: " << r->d << "\tr.d_r: " << newR << "\tN: " << mesh3d.normal << "\tn1/n2: " << ratio << "\ttheta_i: " << theta_i;
+
+		r->d = newR.norm();
 		r->previousRefractiveIndex = refractiveIndex;
 	}
 
@@ -104,10 +105,17 @@ namespace scene {
 		double refractiveIndex = getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
 		double theta_i = getIncidentAngle(r);
 
-		r->d = r->d.norm() + mesh3d.normal.norm() * 2 * cos(theta_i);
+		Vector3d newR = Vector3d();
 
+		if (r->d.y > 0)
+			newR = r->d - mesh3d.normal * 2 * cos(theta_i);
+		else
+			newR = r->d + mesh3d.normal * 2 * cos(theta_i);
+
+		BOOST_LOG_TRIVIAL(info) << std::fixed << "REFLECT Alt: " << std::setprecision(0) << getAltitude() << "\tr.d_i: " << r->d << "\tr.d_r: " << newR << "\tN: " << mesh3d.normal << "\ttheta_i: " << theta_i;
+
+		r->d = newR.norm();
 		r->previousRefractiveIndex = refractiveIndex;
-//		cout << "Reflect this ray! d.x,d.y:" << r->d.x << "," << r->d.y;
 	}
 
 	/**
@@ -257,9 +265,10 @@ namespace scene {
 	double Ionosphere::getElectronNumberDensity() {
 
 		double normalizedHeight = (_altitude - _peakProductionAltitude) / Constants::NEUTRAL_SCALE_HEIGHT;
+		double angle = mesh3d.normal.angle(Vector3d::SUBSOLAR);
 
 		return getElectronPeakDensity() *
-				exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(getSolarZenithAngle2d())) * exp(-normalizedHeight) ));
+				exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(angle)) * exp(-normalizedHeight) ));
 	}
 
 	/**
@@ -353,7 +362,7 @@ namespace scene {
 		else
 			criticalAngle = asin(r->previousRefractiveIndex / refractiveIndex);
 
-		if (incidentAngle >= criticalAngle)
+		if (r->previousRefractiveIndex > refractiveIndex && incidentAngle >= criticalAngle)
 			r->behaviour = Ray::wave_reflection;
 		else
 			r->behaviour = Ray::wave_refraction;
