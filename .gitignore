@@ -1,6 +1,7 @@
 # Folders
 Debug/
 Release/
+log/
 
 # Compiled Object files
 *.slo
