@@ -112,7 +112,7 @@ namespace core {
 
 		// terrain
 		for (double latitude = Constants::PI/2; latitude < Constants::PI/2 + 10*Constants::PI/180; latitude += angularStepSize) {
-			for (double theta = Constants::PI/4; theta < Constants::PI/2; theta += angularStepSize) {
+			for (double theta = 0; theta < Constants::PI/2; theta += angularStepSize) {
 
 				Vector3d N = Vector3d(cos(theta), sin(theta), cos(latitude)).norm();
 				Plane3d mesh = Plane3d(N, Vector3d(R*N.x, R*N.y, R*N.z));
@@ -124,7 +124,7 @@ namespace core {
 			}
 		}
 
-		int dh = 500;
+		int dh = 400;
 		const Json::Value ionosphereConfig = celestialConfig.getArray("ionosphere");
 		for (int idx = 0; idx < ionosphereConfig.size(); idx++) {
 
@@ -171,6 +171,15 @@ namespace core {
 //				scm.addToScene(atm);
 //			}
 //		}
+
+		if (numSceneObjectsCreated > 1e9)
+			BOOST_LOG_TRIVIAL(warning) << setprecision(2) << numSceneObjectsCreated/1.0e9 << "G scene objects created";
+		else if (numSceneObjectsCreated > 1e6)
+			BOOST_LOG_TRIVIAL(warning) << setprecision(2) << numSceneObjectsCreated/1.0e6 << "M scene objects created";
+		else if (numSceneObjectsCreated > 1e3)
+			BOOST_LOG_TRIVIAL(warning) << setprecision(2) << numSceneObjectsCreated/1.0e3 << "K scene objects created";
+		else
+			BOOST_LOG_TRIVIAL(warning) << setprecision(2) << numSceneObjectsCreated << " scene objects created";
 	}
 
 	/**
