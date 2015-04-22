@@ -353,6 +353,8 @@ namespace scene {
 		double criticalAngle;
 		double refractiveIndex = getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
 		double incidentAngle = getIncidentAngle(r);
+		double angularFrequency = 2 * Constants::PI * r->frequency;
+		double epsilon = 1e-5;
 
 		if (incidentAngle > Constants::PI/2)
 			incidentAngle -= Constants::PI/2;
@@ -363,7 +365,8 @@ namespace scene {
 		else
 			criticalAngle = asin(r->previousRefractiveIndex / refractiveIndex);
 
-		if (r->previousRefractiveIndex > refractiveIndex && incidentAngle >= criticalAngle)
+		if (r->previousRefractiveIndex > refractiveIndex &&
+				(incidentAngle >= criticalAngle || abs(angularFrequency - getPlasmaFrequency()) < epsilon))
 			r->behaviour = Ray::wave_reflection;
 		else
 			r->behaviour = Ray::wave_refraction;
