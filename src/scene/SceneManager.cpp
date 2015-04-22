@@ -36,12 +36,12 @@ namespace scene {
 			Vector3d* dest = &rayLine.destination;
 			Vector3d* org = &rayLine.origin;
 
-			if ((r->o.x < cp->x && r->o.y < cp->y && org->x < dest->x && org->y < dest->y) ||
-				(r->o.x > cp->x && r->o.y < cp->y && org->x > dest->x && org->y < dest->y) ||
-				(r->o.x > cp->x && r->o.y > cp->y && org->x > dest->x && org->y > dest->y) ||
-				(r->o.x < cp->x && r->o.y > cp->y && org->x < dest->x && org->y > dest->y)) {
-				// this sceneobj is out of boundaries
-			} else {
+//			if ((r->o.x < cp->x && r->o.y < cp->y && org->x < dest->x && org->y < dest->y) ||
+//				(r->o.x > cp->x && r->o.y < cp->y && org->x > dest->x && org->y < dest->y) ||
+//				(r->o.x > cp->x && r->o.y > cp->y && org->x > dest->x && org->y > dest->y) ||
+//				(r->o.x < cp->x && r->o.y > cp->y && org->x < dest->x && org->y > dest->y)) {
+//				// this sceneobj is out of boundaries
+//			} else {
 				pos = rayLine.intersect(gp->getMesh());
 
 				if (abs(pos.x) > epsilon || abs(pos.y) > epsilon || abs(pos.z) > epsilon) {
@@ -76,7 +76,7 @@ namespace scene {
 						hits.push_back(hit);
 					}
 				}
-			}
+//			}
 		}
 
 		if (hits.size() > 0) {
