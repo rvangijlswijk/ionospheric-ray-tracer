@@ -144,49 +144,17 @@ namespace scene {
 //		double loss = - abs(20 * log10(exp(1)) * ki * magnitude * abs(1 / cos(getSolarZenithAngle2d())) * cos(abs(theta_r)));
 		double loss = -1.15e-6 * (getElectronNumberDensity() * getCollisionFrequency() * magnitude) / pow(r->frequency, 2)
 				* correctionFactor;
+//		double collisionFrequency = getCollisionFrequency();
+//		double loss = ((pow(Constants::ELEMENTARY_CHARGE, 2) / (2 * Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM)))
+//				* (1 / (2 * Constants::PI * getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO) * r->frequency))
+//				* (getElectronNumberDensity() * collisionFrequency / (pow(2 * Constants::PI * r->frequency, 2) + pow(collisionFrequency, 2)))
+//				* magnitude;
 
 //		printf("magnitude: %4.2f, totalLoss: %4.2e, theta: %4.2f, alt: %4.2f ", magnitude, r->signalPower, theta_r, _altitude);
 
 //		printf("Loss: %4.2e ", loss);
 
 		r->signalPower += loss;
-	}
-
-	/**
-	 * A radio wave is attenuated by its propagation through the ionosphere.
-	 * The attenuation calculation is based on Withers, 2011. The ray frequencies
-	 * are considered intermediate frequencies with neither rayFreq << plasmaFreq and
-	 * plasmaFreq << rayFreq. Thus, the altitude w.r.t scale height depends what
-	 * attenuation factor (A) needs to be used.
-	 * Possible cases:
-	 *  A = P_lo if (z0 - zl)/H < -1
-	 *  A = minimum[P_lo, P_hi] if (z0 - zl)/H > -1
-	 * Subsequently: P = P_t / A where P is the resulting power
-	 */
-	void Ionosphere::attenuateWithers(Ray *r) {
-
-		double zL = Constants::NEUTRAL_SCALE_HEIGHT * log(Ionosphere::surfaceCollisionFrequency
-				/ (2 * Constants::PI * r->frequency));
-
-		printf("zL: %4.2e", zL);
-
-		double pLowDb = 8.69 * (1/cos(getSolarZenithAngle2d())) * ((Constants::NEUTRAL_SCALE_HEIGHT * getElectronPeakDensity())
-				/(2 * Constants::ELECTRON_MASS * Constants::C * Constants::PERMITTIVITY_VACUUM * r->frequency * 2 *Constants::PI));
-
-		pLowDb = 7.3e-10 * (1/cos(getSolarZenithAngle2d())) * Constants::NEUTRAL_SCALE_HEIGHT * 1e9 / r->frequency;
-		double pLowW =  pow(10, pLowDb/10);
-		printf("pLowDb: %4.2e, pLowW: %4.2e ", pLowDb, pLowW);
-
-		if (_peakProductionAltitude < zL - Constants::NEUTRAL_SCALE_HEIGHT) {
-			r->signalPower /= pLowDb;
-		} else {
-			double pHigh = 8.69 * (1/cos(getSolarZenithAngle2d())) * ((Constants::NEUTRAL_SCALE_HEIGHT *
-					_peakProductionAltitude * pow(Constants::ELEMENTARY_CHARGE, 2) * Ionosphere::surfaceCollisionFrequency)
-					/(2 * Constants::ELECTRON_MASS * Constants::C * pow(2 * Constants::PI * r->frequency,2)));
-			printf("pHigh: %4.2e, ", pHigh);
-			if (pLowDb < pHigh) r->signalPower /= pLowW;
-			else r->signalPower /= pHigh;
-		}
 	}
 
 	/**
