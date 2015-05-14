@@ -2,9 +2,6 @@
  * Geometry.cpp
  */
 
-#include <iostream>
-#include <cmath>
-#include "../math/Constants.h"
 #include "Geometry.h"
 
 namespace raytracer {
@@ -17,14 +14,14 @@ namespace scene {
 
 	}
 
-	Geometry::Geometry(Line2d mesh) {
+	Geometry::Geometry(Plane3d mesh) {
 
-		mesh2d = mesh;
+		mesh3d = mesh;
 	}
 
-	Geometry::Geometry(Vector2d begin, Vector2d end) {
+	Geometry::Geometry(Vector3d n, Vector3d c) {
 
-		mesh2d = Line2d(begin, end);
+		mesh3d = Plane3d(n, c);
 	}
 
 	/**
@@ -34,20 +31,20 @@ namespace scene {
 	 */
 	double Geometry::getSolarZenithAngle2d() {
 
-		return atan2(mesh2d.getCenterPoint().x, mesh2d.getCenterPoint().y);
+		return atan2(mesh3d.centerpoint.x, mesh3d.centerpoint.y);
 	}
 
-	Line2d Geometry::getMesh() {
+	Plane3d Geometry::getMesh() {
 
-		return mesh2d;
+		return mesh3d;
 	}
 
-	void Geometry::setMesh(Line2d mesh) {
+	void Geometry::setMesh(Plane3d mesh) {
 
-		mesh2d = mesh;
+		mesh3d = mesh;
 	}
 
-	void Geometry::interact(Ray *r, Vector2d &hitpos) {
+	void Geometry::interact(Ray *r, Vector3d &hitpos) {
 		cout << "Geometry::interact" << endl;
 	}
 

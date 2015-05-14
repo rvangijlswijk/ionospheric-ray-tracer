@@ -24,19 +24,20 @@ namespace {
 				conf = Config("config/scenario_test.json");
 				Application::getInstance().setCelestialConfig(conf);
 
-				Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + 100e3), Vector2d(100e3, 3390e3 + 100e3));
+				Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 100e3, 0));
 				io.setMesh(mesh);
 				io.setup();
 				io.layerHeight = 1000;
 				io.setElectronPeakDensity(2.5e11);
 				io.setPeakProductionAltitude(125e3);
-				Line2d mesh2 = Line2d(Vector2d(0, 3515e3), Vector2d(98408.25, 3513.6e3));
+				// a layer with an SZA angle of 1 degree
+				Plane3d mesh2 = Plane3d(Vector3d(0.0175, 1, 0), Vector3d(49204, 3514.3e3, 0));
 				io2.setMesh(mesh2);
 				io2.setup();
 				io2.layerHeight = 1000;
 				io2.setElectronPeakDensity(2.5e11);
 				io2.setPeakProductionAltitude(125e3);
-				Line2d mesh3 = Line2d(Vector2d(3390e3 + 100e3, 100e3), Vector2d(3390e3 + 100e3, -100e3));
+				Plane3d mesh3 = Plane3d(Vector3d(1, 0, 0), Vector3d(3390e3 + 100e3, 0, 0));
 				io3.setMesh(mesh3);
 				io3.setup();
 				io3.layerHeight = 1000;
@@ -48,7 +49,7 @@ namespace {
 				r.setNormalAngle(r.originalAngle);
 				r.frequency = 4e6;
 
-				r2.o = Vector2d(0, 3514.8e3);
+				r2.o = Vector3d(0, 3514.8e3, 0);
 				r2.originalAngle = 80 * Constants::PI / 180.0; // SZA = 30 deg
 				r2.previousRefractiveIndex = 1.0;
 				r2.setAngle(10 * Constants::PI / 180.0);
@@ -101,15 +102,29 @@ namespace {
 
 	TEST_F(IonosphereTest, RefractiveIndexKelso) {
 
-		ASSERT_NEAR(0.98, io.getRefractiveIndex(&r, Ionosphere::REFRACTION_KELSO), 0.01);
-		ASSERT_NEAR(0.44, io2.getRefractiveIndex(&r2, Ionosphere::REFRACTION_KELSO), 0.01);
+		ASSERT_NEAR(0.972, io.getRefractiveIndex(&r, Ionosphere::REFRACTION_KELSO), 0.01);
+		ASSERT_TRUE(std::isnan(io2.getRefractiveIndex(&r, Ionosphere::REFRACTION_KELSO)));
+		ASSERT_NEAR(1, io3.getRefractiveIndex(&r, Ionosphere::REFRACTION_KELSO), 0.01);
+		ASSERT_NEAR(0.982, io.getRefractiveIndex(&r2, Ionosphere::REFRACTION_KELSO), 0.01);
+		ASSERT_NEAR(0.440, io2.getRefractiveIndex(&r2, Ionosphere::REFRACTION_KELSO), 0.01);
+		ASSERT_NEAR(1, io3.getRefractiveIndex(&r2, Ionosphere::REFRACTION_KELSO), 0.01);
 	}
 
 	TEST_F(IonosphereTest, IncidentAngle) {
 
 		ASSERT_NEAR(0.524, io.getIncidentAngle(&r), 0.001);
-		ASSERT_NEAR(0.510, io2.getIncidentAngle(&r), 0.001);
-		ASSERT_NEAR(1.382, io2.getIncidentAngle(&r2), 0.001);
+		ASSERT_NEAR(0.506, io2.getIncidentAngle(&r), 0.001);
+		ASSERT_NEAR(1.379, io2.getIncidentAngle(&r2), 0.001);
+		ASSERT_NEAR(0.175, io3.getIncidentAngle(&r2), 0.001);
+
+		Ionosphere rio = Ionosphere();
+		Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 100, 0));
+		rio.setMesh(mesh);
+
+		Ray ri = Ray();
+		ri.d = Vector3d(0.707, -0.707, 0);
+
+		ASSERT_NEAR(0.786, rio.getIncidentAngle(&ri), 1e-3);
 	}
 
 	TEST_F(IonosphereTest, DetermineWaveBehaviour) {
@@ -124,16 +139,16 @@ namespace {
 	TEST_F(IonosphereTest, CollisionFrequency) {
 
 		Ionosphere cio, cio2, cio3, cio4;
-		Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + 100e3), Vector2d(100e3, 3390e3 + 100e3));
+		Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 100e3, 0));
 		cio.setMesh(mesh);
 		cio.setup();
-		mesh = Line2d(Vector2d(-100e3, 3390e3 + 150e3), Vector2d(100e3, 3390e3 + 150e3));
+		mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 150e3, 0));
 		cio2.setMesh(mesh);
 		cio2.setup();
-		mesh = Line2d(Vector2d(-100e3, 3390e3 + 200e3), Vector2d(100e3, 3390e3 + 200e3));
+		mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 200e3, 0));
 		cio3.setMesh(mesh);
 		cio3.setup();
-		mesh = Line2d(Vector2d(-100e3, 3390e3 + 80e3), Vector2d(100e3, 3390e3 + 80e3));
+		mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 80e3, 0));
 		cio4.setMesh(mesh);
 		cio4.setup();
 
@@ -141,7 +156,121 @@ namespace {
 		ASSERT_NEAR(3.787e4, cio2.getCollisionFrequency(), 1e2);
 		ASSERT_NEAR(418.8, cio3.getCollisionFrequency(), 4);
 		ASSERT_NEAR(2.075e7, cio4.getCollisionFrequency(), 1e5);
+	}
 
+	TEST_F(IonosphereTest, Refract) {
+
+		Ionosphere rio = Ionosphere();
+		Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 100, 0));
+		rio.setMesh(mesh);
+		rio.setup();
+		rio.setElectronPeakDensity(1);
+		rio.setPeakProductionAltitude(125e3);
+
+		Ray* rref = new Ray;
+		rref->frequency = 5e6;
+
+		rref->o = Vector3d(0, 0, 0);
+		rref->d = Vector3d(0.5, 0.867, 0);
+		rref->previousRefractiveIndex = 1.068;
+		rio.refract(rref);
+
+		ASSERT_NEAR(0.534, rref->d.x, 1e-3);
+		ASSERT_NEAR(0.846, rref->d.y, 1e-3);
+		ASSERT_NEAR(0, rref->d.z, 1e-3);
+
+		rref->o = Vector3d(0, 0, 0);
+		rref->d = Vector3d(0.5 * sqrt(2), -0.5 * sqrt(2), 0);
+		rref->previousRefractiveIndex = 0.9;
+		rio.refract(rref);
+
+		ASSERT_NEAR(0.636, rref->d.x, 1e-3);
+		ASSERT_NEAR(-0.771, rref->d.y, 1e-3);
+		ASSERT_NEAR(0, rref->d.z, 1e-3);
+
+		mesh = Plane3d(Vector3d(0.174, 0.985, 0), Vector3d(0, 100, 0));	// SZA = 10 deg
+		rio.setMesh(mesh);
+		rio.setup();
+
+		rref->o = Vector3d(0, 0, 0);
+		rref->d = Vector3d(0.643, 0.767, 0);
+		rref->previousRefractiveIndex = 0.9;
+		double theta_i = rio.getIncidentAngle(rref);
+
+		rio.refract(rref);
+
+		ASSERT_NEAR(0.522, theta_i, 1e-3);	// theta_i = 30 deg
+		ASSERT_NEAR(0.466, rref->d.angle(rio.mesh3d.normal), 1e-3);	//theta_r = 26.7 deg
+		ASSERT_NEAR(0.930, rref->d.angle(Vector3d::EQUINOX), 1e-3);	//beta_r = 53.3 deg
+		ASSERT_NEAR(0.930, rref->getAngle(), 1e-3);
+		ASSERT_NEAR(0.598, rref->d.x, 1e-3);
+		ASSERT_NEAR(0.802, rref->d.y, 1e-3);
+		ASSERT_NEAR(0, rref->d.z, 1e-3);
+
+	}
+
+	/**
+	 * if a ray transverses from a medium n1 to a medium n2 where n1 > n2,
+	 * then the incident angle theta_i is lower than the reflected angle theta_r
+	 * w.r.t. the normal: theta_i < theta_r
+	 * else if n1 < n2, then theta_i > theta_r
+	 */
+	TEST_F(IonosphereTest, RefractSnelliusLaw) {
+
+		Ionosphere rio = Ionosphere();
+		Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 100, 0));
+		rio.setMesh(mesh);
+		rio.setup();
+		rio.setElectronPeakDensity(1);
+		rio.setPeakProductionAltitude(125e3);
+
+		Ray* rref = new Ray;
+		rref->frequency = 5e6;
+
+		rref->o = Vector3d(0, 0, 0);
+		rref->d = Vector3d(0.5, 0.867, 0); // theta_i = 30 deg, theta_0 = 60 deg
+		rref->previousRefractiveIndex = 1.1; // n1 > n2
+		double factor_i = rref->d.y / rref->d.x;
+		double theta_i = rio.getIncidentAngle(rref);
+		rio.refract(rref);
+		double factor_r = rref->d.y / rref->d.x;
+		double theta_r = acos(rref->d * rio.mesh3d.normal / (rref->d.magnitude() * rio.mesh3d.normal.magnitude()));
+
+		ASSERT_NEAR(0.524, theta_i, 1e-3);	// theta_i = 30 deg
+		ASSERT_GT(factor_i, factor_r);
+		ASSERT_LT(theta_i, theta_r);
+
+		rref->previousRefractiveIndex = 0.9; // n2 > n1
+		factor_i = rref->d.y / rref->d.x;
+		theta_i = rio.getIncidentAngle(rref);
+		rio.refract(rref);
+		factor_r = rref->d.y / rref->d.x;
+		theta_r = acos(rref->d * rio.mesh3d.normal / (rref->d.magnitude() * rio.mesh3d.normal.magnitude()));
+
+		ASSERT_LT(factor_i, factor_r);
+		ASSERT_GT(theta_i, theta_r);
+	}
+
+	TEST_F(IonosphereTest, Reflect) {
+
+		Ionosphere rio = Ionosphere();
+		Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 100, 0));
+		rio.setMesh(mesh);
+		rio.setup();
+		rio.setElectronPeakDensity(1);
+		rio.setPeakProductionAltitude(125e3);
+
+		Ray* rref = new Ray;
+		rref->frequency = 5e6;
+
+		rref->o = Vector3d(0, 0, 0);
+		rref->d = Vector3d(0.5 * sqrt(2), -0.5 * sqrt(2), 0);
+		rref->previousRefractiveIndex = 1/0.9;
+		rio.reflect(rref);
+
+		ASSERT_NEAR(0.707, rref->d.x, 1e-3);
+		ASSERT_NEAR(0.707, rref->d.y, 1e-3);
+		ASSERT_NEAR(0, rref->d.z, 1e-3);
 	}
 
 	/**
@@ -167,7 +296,7 @@ namespace {
 		for (int h = 80e3; h <= 200e3; h += 1000) {
 
 			Ionosphere ion;
-			Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + h), Vector2d(100e3, 3390e3 + h));
+			Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + h, 0));
 			ion.setMesh(mesh);
 			ion.layerHeight = 1000;
 			ion.setup();
@@ -178,23 +307,25 @@ namespace {
 			ASSERT_NEAR(h, ion.getAltitude(), 1);
 		}
 
-		ASSERT_NEAR(-1.5, rA.signalPower, 0.1);
+		ASSERT_NEAR(-1.5, rA.signalPower, 0.5);
 
 		// M1 layer
-//		r.signalPower = 0;
-//		for (int h = 80e3; h <= 200e3; h += 1000) {
-//			Ionosphere ion;
-//			ion.setElectronPeakDensity(100e3);
-//			ion.setPeakProductionAltitude(1e11);
-//			Line2d mesh = Line2d(Vector2d(-100e3, 3390e3 + h), Vector2d(100e3, 3390e3 + h));
-//			ion.setMesh(mesh);
-//			ion.layerHeight = 1000;
-//			ion.attenuate(&rA);
-//
-//			ASSERT_NEAR(h, ion.getAltitude(), 1);
-//		}
-//
-//		ASSERT_NEAR(-9, r.signalPower, 0.1);
+		rA.previousRefractiveIndex = 1.0;
+		rA.signalPower = 0;
+		for (int h = 80e3; h <= 200e3; h += 1000) {
+			Ionosphere ion;
+			Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + h, 0));
+			ion.setMesh(mesh);
+			ion.layerHeight = 1000;
+			ion.setup();
+			ion.setElectronPeakDensity(1e11);
+			ion.setPeakProductionAltitude(100e3);
+			ion.attenuate(&rA, ion.layerHeight);
+
+			ASSERT_NEAR(h, ion.getAltitude(), 1);
+		}
+
+		ASSERT_NEAR(-9, rA.signalPower, 0.5);
 	}
 
 	TEST_F(IonosphereTest, TEC) {
@@ -238,15 +369,15 @@ namespace {
 
 		r.phaseAdvance = 0;
 		io.phaseAdvance(&r);
-		ASSERT_NEAR(2.310, r.phaseAdvance, 0.001);
+		ASSERT_NEAR(2.310, r.phaseAdvance, 1e-3);
 
 		r.phaseAdvance = 0;
 		io2.phaseAdvance(&r);
-		ASSERT_NEAR(52.734, r.phaseAdvance, 0.001);
+		ASSERT_NEAR(52.733, r.phaseAdvance, 1e-3);
 
 		r.phaseAdvance = 0;
 		io3.phaseAdvance(&r);
-		ASSERT_NEAR(0, r.phaseAdvance, 0.001);
+		ASSERT_NEAR(0, r.phaseAdvance, 1e-3);
 	}
 
 	TEST_F(IonosphereTest, ExportDataTest) {
@@ -256,7 +387,7 @@ namespace {
 		for (int h = 50000; h<500000; h+=100) {
 			Data d;
 			d.y = h;
-			Line2d mesh = Line2d(Vector2d(0, 3390e3 + h), Vector2d(100000, 3390e3 + h));
+			Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + h, 0));
 			io.setMesh(mesh);
 			d.n_e = io.getElectronNumberDensity();
 			d.omega_p = io.getPlasmaFrequency();

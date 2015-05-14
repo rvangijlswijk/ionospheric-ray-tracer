@@ -9,7 +9,8 @@
 
 #include <list>
 #include "../core/namespace.h"
-#include "../math/Vector2d.h"
+#include "../math/Vector3d.h"
+#include "../scene/GeometryType.h"
 #include "../scene/Geometry.h"
 
 namespace raytracer {
@@ -19,19 +20,33 @@ namespace tracer {
 	using namespace math;
 	using namespace scene;
 
-	class Ray : public Vector2d {
+	class Ray {
 
 		public:
 			Ray();
 			int trace();
-			void calculateTimeOfFlight(Vector2d rayEnd);
+			void calculateTimeOfFlight(Vector3d rayEnd);
 			double getNormalAngle();
 			void setNormalAngle(double angleRad);
+
+			/**
+			 * Return a scalar value of the angle between direction vector and axis
+			 * @param double angle
+			 */
 			double getAngle();
 			void setAngle(double angleRad);
-			Ray copy();
-			Vector2d o;	// origin
-			Vector2d d;	// direction
+			void setAngle(Vector3d angle);
+			void exportData(GeometryType collisionType);
+
+			/**
+			 * Origin
+			 */
+			Vector3d o;
+
+			/**
+			 * Direction vector
+			 */
+			Vector3d d;
 			double frequency = 0.0;
 			double previousRefractiveIndex = 1.0;
 			double previousAtmosphericRefractiveIndex = 1.0;

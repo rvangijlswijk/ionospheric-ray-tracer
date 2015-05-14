@@ -7,6 +7,7 @@
 
 #include <cmath>
 #include "Atmosphere.h"
+#include "GeometryType.h"
 #include "../math/Constants.h"
 #include "../exporter/Data.h"
 #include "../core/Application.h"
@@ -19,19 +20,21 @@ namespace scene {
 
 	Atmosphere::Atmosphere() : Geometry() {
 
-		type = Geometry::atmosphere;
+		type = GeometryType::atmosphere;
 	}
 
-	Atmosphere::Atmosphere(Vector2d begin, Vector2d end) : Geometry(begin, end) {
+	Atmosphere::Atmosphere(Vector3d n, Vector3d c) : Geometry(n, c) {
 
-		type = Geometry::atmosphere;
+		type = GeometryType::atmosphere;
 	}
 
 	void Atmosphere::setup() {}
 
-	void Atmosphere::interact(Ray *r, Vector2d &hitpos) {
+	void Atmosphere::interact(Ray *r, Vector3d &hitpos) {
 
 		refract(r, hitpos);
+
+		r->o = hitpos;
 
 		exportData(r);
 	}
@@ -39,7 +42,7 @@ namespace scene {
 	/**
 	 * Refraction from ITU Recommendation P.453-6
 	 */
-	void Atmosphere::refract(Ray *r, Vector2d &hitpos) {
+	void Atmosphere::refract(Ray *r, Vector3d &hitpos) {
 
 		double refractiveIndex = getRefractiveIndex();
 		double theta_i = getIncidentAngle(r);
@@ -56,10 +59,8 @@ namespace scene {
 			beta_2 = -Constants::PI/2 + theta_r - SZA;
 		}
 		r->setAngle(beta_2);
-//		cout << "Atmo: beta_2: " << beta_2 * 57.296 << endl;
+		cout << "Atmo: beta_2: " << beta_2 * 57.296 << endl;
 
-		r->o.x = hitpos.x;
-		r->o.y = hitpos.y;
 		r->previousAtmosphericRefractiveIndex = refractiveIndex;
 	}
 
@@ -70,12 +71,13 @@ namespace scene {
 		Data d;
 		d.x = r->o.x;
 		d.y = r->o.y;
+		d.z = r->o.z;
 		d.rayNumber = r->rayNumber;
 		d.theta_0 = r->originalAngle;
 		d.frequency = r->frequency;
 		d.signalPower = r->signalPower;
 		d.timeOfFlight = r->timeOfFlight;
-		d.collisionType = Geometry::atmosphere;
+		d.collisionType = GeometryType::atmosphere;
 		Application::getInstance().addToDataset(d);
 	}
 
@@ -87,10 +89,11 @@ namespace scene {
 	 */
 	double Atmosphere::getAltitude() {
 
-		double xAvg = (mesh2d.begin.x + mesh2d.end.x)/2;
-		double yAvg = (mesh2d.begin.y + mesh2d.end.y)/2;
+		double xAvg = (mesh3d.centerpoint.x + mesh3d.centerpoint.x)/2;
+		double yAvg = (mesh3d.centerpoint.y + mesh3d.centerpoint.y)/2;
+		double zAvg = (mesh3d.centerpoint.z + mesh3d.centerpoint.z)/2;
 
-		return sqrt(pow(xAvg, 2) + pow(yAvg, 2)) - Application::getInstance().getCelestialConfig().getInt("radius");
+		return sqrt(pow(xAvg, 2) + pow(yAvg, 2) + pow(zAvg, 2)) - Application::getInstance().getCelestialConfig().getInt("radius");
 	}
 
 	/**

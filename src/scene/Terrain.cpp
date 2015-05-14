@@ -10,13 +10,22 @@
 namespace raytracer {
 namespace scene {
 
-	Terrain::Terrain() {}
+	Terrain::Terrain() : Geometry() {
 
-	Terrain::Terrain(Vector2d begin, Vector2d end) : Geometry(begin, end) {
-		type = Geometry::terrain;
+		type = GeometryType::terrain;
 	}
 
-	void Terrain::interact(Ray *r, Vector2d &hitpos) {
+	Terrain::Terrain(Plane3d mesh) : Geometry(mesh) {
+
+		type = GeometryType::terrain;
+	}
+
+	Terrain::Terrain(Vector3d n, Vector3d c) : Geometry(n, c) {
+
+		type = GeometryType::terrain;
+	}
+
+	void Terrain::interact(Ray *r, Vector3d &hitpos) {
 
 	}
 

@@ -9,8 +9,9 @@
 
 #include <stdlib.h>
 #include "Ray.h"
-#include "../math/Vector2d.h"
+#include "../math/Vector3d.h"
 #include "../scene/Geometry.h"
+#include "../scene/GeometryType.h"
 
 namespace raytracer {
 namespace tracer {
@@ -22,12 +23,10 @@ namespace tracer {
 
 		public:
 			Intersection();
-			~Intersection();
 			Ray r;
-			Geometry::object_type o = Geometry::none;
+			GeometryType o = GeometryType::none;
 			Geometry* g = (Geometry*)malloc(sizeof(Geometry));
-			Vector2d pos;
-
+			Vector3d pos;
 	};
 
 } /* namespace tracer */

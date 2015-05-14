@@ -14,6 +14,7 @@
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
+#include <boost/log/utility/setup/file.hpp>
 #include <boost/thread.hpp>
 #include "Timer.cpp"
 #include "Config.h"
@@ -46,7 +47,8 @@ namespace core {
 				static Application instance;
 				return instance;
 			}
-			void init();
+			void init(int argc, char * argv[]);
+			void parseCommandLineArgs(int argc, char * argv[]);
 			void start();
 			void run();
 			void stop();

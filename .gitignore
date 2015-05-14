@@ -1,12 +1,14 @@
 # Folders
 Debug/
 Release/
+log/
 
 # Compiled Object files
 *.slo
 *.lo
 *.o
 *.obj
+*.m~
 
 # Precompiled Headers
 *.gch

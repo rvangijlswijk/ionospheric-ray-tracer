@@ -23,48 +23,70 @@ namespace scene {
 	/**
 	 * Find which object in the scene intersects with a ray
 	 */
-	Intersection SceneManager::intersect(Ray* r, Line2d &rayLine) {
+	Intersection SceneManager::intersect(Ray * r, Line3d & rayLine) {
 
-		Vector2d pos, rayOrigin;
+		Vector3d pos;
+		Intersection finalHit;
+		finalHit.o = GeometryType::none;
 		list<Intersection> hits;
-		rayOrigin.x = r->o.x;
-		rayOrigin.y = r->o.y;
+		double epsilon = 1e-5;
 
 		for (Geometry* gp : sceneObjects) {
-			Geometry g = *gp;
-			pos = rayLine.intersect(g.getMesh());
-			double smallestY = rayLine.begin.y;
-			double biggestY = rayLine.end.y;
-			if (rayLine.end.y < rayLine.begin.y) {
-				smallestY = rayLine.end.y;
-				biggestY = rayLine.begin.y;
-			}
-			double smallestX = rayLine.begin.x;
-			double biggestX = rayLine.end.x;
-			if (rayLine.end.x < rayLine.begin.x) {
-				smallestX = rayLine.end.x;
-				biggestX = rayLine.begin.x;
-			}
+			Vector3d* cp = &(gp->mesh3d).centerpoint;
+			Vector3d* dest = &rayLine.destination;
+			Vector3d* org = &rayLine.origin;
 
-			// is it within the scene and within the limits of the ray itself?
-			double epsilon = 1e-5;
-			if (smallestY < (pos.y + epsilon) && biggestY > (pos.y - epsilon) &&
-					smallestX < (pos.x + epsilon) && biggestX > (pos.x - epsilon)) {
-				Intersection hit = Intersection();
-				hit.pos = pos;
-				hit.o = g.type;
-				hit.g = gp;
-				hits.push_back(hit);
-			}
+//			if ((r->o.x < cp->x && r->o.y < cp->y && org->x < dest->x && org->y < dest->y) ||
+//				(r->o.x > cp->x && r->o.y < cp->y && org->x > dest->x && org->y < dest->y) ||
+//				(r->o.x > cp->x && r->o.y > cp->y && org->x > dest->x && org->y > dest->y) ||
+//				(r->o.x < cp->x && r->o.y > cp->y && org->x < dest->x && org->y > dest->y)) {
+//				// this sceneobj is out of boundaries
+//			} else {
+				pos = rayLine.intersect(gp->getMesh());
+
+				if (abs(pos.x) > epsilon || abs(pos.y) > epsilon || abs(pos.z) > epsilon) {
+					double smallestX = rayLine.origin.x;
+					double biggestX = rayLine.destination.x;
+					if (rayLine.destination.x < rayLine.origin.x) {
+						smallestX = rayLine.destination.x;
+						biggestX = rayLine.origin.x;
+					}
+					double smallestY = rayLine.origin.y;
+					double biggestY = rayLine.destination.y;
+					if (rayLine.destination.y < rayLine.origin.y) {
+						smallestY = rayLine.destination.y;
+						biggestY = rayLine.origin.y;
+					}
+					double smallestZ = rayLine.origin.z;
+					double biggestZ = rayLine.destination.z;
+					if (rayLine.destination.z < rayLine.origin.z) {
+						smallestZ = rayLine.destination.z;
+						biggestZ = rayLine.origin.z;
+					}
+
+					// is it within the scene and within the limits of the ray itself?
+					if (smallestY < (pos.y + epsilon) && biggestY > (pos.y - epsilon) &&
+							smallestX < (pos.x + epsilon) && biggestX > (pos.x - epsilon) &&
+							smallestZ < (pos.z + epsilon) && biggestZ > (pos.z - epsilon)) {
+
+						Intersection hit = Intersection();
+						hit.pos = pos;
+						hit.o = gp->type;
+						hit.g = gp;
+						hits.push_back(hit);
+					}
+				}
+//			}
 		}
 
-		// evaluate which hit is closest
-		Intersection finalHit;
-		double distance = 1e9;
-		for (Intersection i : hits) {
-			if (rayOrigin.distance(i.pos) < distance && r->lastHit != i.g) {
-				finalHit = i;
-				distance = rayOrigin.distance(i.pos);
+		if (hits.size() > 0) {
+			// evaluate which hit is closest
+			double distance = 1e9;
+			for (Intersection i : hits) {
+				if (r->o.distance(i.pos) < distance && r->lastHit != i.g) {
+					finalHit = i;
+					distance = r->o.distance(i.pos);
+				}
 			}
 		}
 
@@ -93,6 +115,28 @@ namespace scene {
 	void SceneManager::removeAllFromScene() {
 
 		sceneObjects.clear();
+	}
+
+	/**
+	 * Retrieve a list of scene objects which have a possibility of
+	 * colliding with the ray. Other objects are discarded.
+	 */
+	list<Geometry*> SceneManager::getPossibleHits(Ray * r) {
+
+		list<Geometry*> possibleHits;
+
+		for (Geometry* gp : sceneObjects) {
+			Vector3d* cp = &(gp->mesh3d).centerpoint;
+
+			if ((r->o.x >= cp->x || r->o.y >= cp->y) ||
+				(r->o.x <= cp->x || r->o.y >= cp->y) ||
+				(r->o.x <= cp->x || r->o.y <= cp->y) ||
+				(r->o.x >= cp->x || r->o.y <= cp->y)) {
+				possibleHits.push_back(gp);
+			}
+		}
+
+		return possibleHits;
 	}
 
 } /* namespace scene */

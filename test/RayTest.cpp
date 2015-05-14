@@ -12,8 +12,8 @@ namespace {
 		protected:
 			void SetUp() {
 
-				r.o = Vector2d(1,1);
-				r.d = Vector2d(1,1.7320);
+				r.o = Vector3d(1,1, 0);
+				r.d = Vector3d(1,1.7320, 0);
 				r.frequency = 2.5e6;
 			}
 
@@ -25,12 +25,13 @@ namespace {
 		ASSERT_NEAR(1.047, r.getAngle(), 0.001);
 
 		Ray r2 = Ray();
-		r2.d = Vector2d(1, -1.732);
+		r2.d = Vector3d(1, -1.732, 0);
 
-		ASSERT_NEAR(-1.047, r2.getAngle(), 0.001);
+		// angle is always positive semidefinite
+		ASSERT_NEAR(1.047, r2.getAngle(), 0.001);
 
 		Ray r3 = Ray();
-		r3.d = Vector2d(-10, 10);
+		r3.d = Vector3d(-10, 10, 0);
 
 		ASSERT_NEAR(2.356, r3.getAngle(), 0.001);
 	}
@@ -70,7 +71,7 @@ namespace {
 
 		Ray r4 = Ray();
 
-		Vector2d rayEnd = Vector2d(3e6, 0);
+		Vector3d rayEnd = Vector3d(3e6, 0, 0);
 
 		r4.calculateTimeOfFlight(rayEnd);
 

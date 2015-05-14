@@ -4,7 +4,7 @@ close all;
 
 angles = 10:10:80;
 frequencies = 5e6:0.5e6:5e6;
-ang=0:0.01:2*pi;
+Radius = 3390;
 
 load ../Debug/data.dat;
 %data = data_IonosphereTest;
@@ -38,21 +38,39 @@ for f=1:length(frequencies)
     h(h == 0) = nan;
     hs = subplot(length(frequencies),1,f);
     axis equal;
-     p = get(hs, 'pos');
-     p(4) = p(4) + 0.02;
-     set(hs, 'pos', p);
-    hold on
-    plot(x'/1000,h'/1000-3390, 'Color', [0.5 0.5 0.5])
-    plot(0 + 3390*cos(ang), 3390 * sin(ang)-3390, 'r', 'LineWidth', 2)
-    plot(0 + (3390+70)*cos(ang), (3390+70) * sin(ang)-3390, 'LineStyle', '--', 'Color', 'black')
-    plot(0 + (3390+108)*cos(ang), (3390+108) * sin(ang)-3390, 'LineStyle', '--', 'Color', 'black')
-    plot(0 + (3390+200)*cos(ang), (3390+200) * sin(ang)-3390, 'LineStyle', '--', 'Color', 'black')
-    plot(0 + (3390+25)*cos(ang), (3390+25) * sin(ang)-3390, 'LineStyle', '--', 'Color', 'black')
     
-    title(['frequency: ' num2str(frequencies(f)/1e6) ' MHz']);
+    plot3(x/1e3, z/1e3, h/1e3 - Radius, '*b')
     grid on
-    xlabel('Cartesian distance [km]')
-    ylabel('altitude [km]')
-    xlim([-50 1000]);
-    ylim([-100 250]);
+    xlabel('Longitude [km] (x)')
+    ylabel('Latitude [km] (y)')
+    zlabel('Altitude above pole [km] (z)')
+    xlim([-100 1000])
+    ylim([-500 500])
+    zlim([-50 300])
+    
+    hold on
+    angxy=-0.287+pi/2:0.001:0.03+pi/2;
+    angyz=-0.12+pi/2:0.001:0.12+pi/2;
+    plot3(0 + Radius*cos(angxy), zeros(length(angxy), 1), Radius * sin(angxy)-Radius, 'r', 'LineWidth', 2);
+    plot3(zeros(length(angyz), 1), 0 + Radius*cos(angyz), Radius * sin(angyz)-Radius, 'r', 'LineWidth', 2);
+    
+    % Plot celestial sphere
+    LOD = 270;
+    [xs ys zs] = sphere(LOD);
+    xs = xs * Radius;
+    ys = ys * Radius;
+    zs = zs * Radius - Radius;
+    zs(find(zs<-100)) = NaN;
+    xs(find(xs<-100)) = NaN;
+    ys(find(ys<-300)) = NaN;
+    ys(find(ys>300)) = NaN;
+    
+    C = zeros(LOD, LOD, 3);
+    C(:,:,1) = 1;
+    C(:,:,2) = 0;
+    C(:,:,3) = 0;
+    surf(xs, ys, zs, C);
+    alpha(0.8);
+    set(gca,'xdir','reverse')
+    set(gca,'ydir','reverse')
 end

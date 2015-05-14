@@ -20,20 +20,43 @@ namespace core {
 
 	boost::threadpool::pool tp;
 
-	void Application::init() {
+	void Application::init(int argc, char * argv[]) {
 
+		parseCommandLineArgs(argc, argv);
 		start();
 		run();
+	}
+
+	void Application::parseCommandLineArgs(int argc, char * argv[]) {
+
+
+		for (int i = 0; i < argc; i++) {
+
+			if (strcmp(argv[i], "-h") == 0) {
+				std::cout 	<< "Ionospheric Ray Tracer\n\n"
+							<< "Synopsis:\n"
+							<< "\tirt [-opts] celestialConfig\n\n"
+							<< "Description: \n"
+							<< "\tPerform ionospheric ray tracing on a celestial object described by the celestialConfig json file. "
+							<< "If no config file is supplied, use a default scenario.\n\n"
+							<< "Options:\n"
+							<< "\t-a Application config file\n"
+							<< "\t-h This help.\n";
+				std::exit(0);
+			}
+		}
 	}
 
 	void Application::start() {
 
 		isRunning = true;
 		applicationConfig = Config("config/config.json");
-		celestialConfig = Config("config/scenario_LS0_SA250_DS0.json");
+		celestialConfig = Config("config/scenario_default.json");
+
+//		boost::log::add_file_log("log/sample.log");
 
 		boost::log::core::get()->set_filter(
-				boost::log::trivial::severity >= boost::log::trivial::info);
+				boost::log::trivial::severity >= boost::log::trivial::warning);
 
 		tp = boost::threadpool::pool(applicationConfig.getInt("parallelism"));
 	}
@@ -42,14 +65,14 @@ namespace core {
 
 		Timer tmr;
 
-		BOOST_LOG_TRIVIAL(info) << "Parallelism is " << applicationConfig.getInt("parallelism");
-		BOOST_LOG_TRIVIAL(info) << applicationConfig.getInt("iterations") << " iterations";
+		BOOST_LOG_TRIVIAL(warning) << "Parallelism is " << applicationConfig.getInt("parallelism");
+		BOOST_LOG_TRIVIAL(warning) << applicationConfig.getInt("iterations") << " iterations";
 
 		// trace a ray
 		int rayCounter = 0;
 		for (int iteration = 0; iteration < applicationConfig.getInt("iterations"); iteration++) {
 
-			BOOST_LOG_TRIVIAL(info) << "Iteration " << (iteration+1) << " of " << applicationConfig.getInt("iterations");
+			BOOST_LOG_TRIVIAL(warning) << "Iteration " << (iteration+1) << " of " << applicationConfig.getInt("iterations");
 
 			createScene();
 
@@ -62,7 +85,10 @@ namespace core {
 					r.signalPower = 0;
 					r.o.y = 2 + celestialConfig.getInt("radius");
 					r.originalAngle = SZA * Constants::PI / 180.0;
-					r.setNormalAngle(r.originalAngle);
+					Vector3d direction = Vector3d(cos(Constants::PI/2.0 - r.originalAngle),
+							sin(Constants::PI/2.0 - r.originalAngle),
+							tan(-4 * Constants::PI / 180));
+					r.d = direction.norm();
 
 					Worker w;
 					w.schedule(&tp, r);
@@ -71,7 +97,7 @@ namespace core {
 				}
 			}
 
-			BOOST_LOG_TRIVIAL(info) << numWorkers << " workers queued";
+			BOOST_LOG_TRIVIAL(warning) << numWorkers << " workers queued";
 
 			tp.wait();
 
@@ -100,20 +126,26 @@ namespace core {
 	 */
 	void Application::createScene() {
 
+		int numSceneObjectsCreated = 0;
 		double R = celestialConfig.getInt("radius");
+		double angularStepSize = Constants::PI/360;
 		IonosphereConfigParser plh = IonosphereConfigParser();
 
 		// terrain
-		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
-			double nextTheta = theta + Constants::PI/180;
+		for (double latitude = Constants::PI/2; latitude < Constants::PI/2 + 10*Constants::PI/180; latitude += angularStepSize) {
+			for (double theta = 0; theta < Constants::PI/2; theta += angularStepSize) {
 
-			Terrain* tr = new Terrain(Vector2d(R*cos(theta), R*sin(theta)),
-					Vector2d(R*cos(nextTheta), R*sin(nextTheta)));
+				Vector3d N = Vector3d(cos(theta), sin(theta), cos(latitude)).norm();
+				Plane3d mesh = Plane3d(N, Vector3d(R*N.x, R*N.y, R*N.z));
+				mesh.size = angularStepSize * R;
+				Terrain* tr = new Terrain(mesh);
 
-			scm.addToScene(tr);
+				numSceneObjectsCreated++;
+				scm.addToScene(tr);
+			}
 		}
 
-		int dh = 500;
+		int dh = 400;
 		const Json::Value ionosphereConfig = celestialConfig.getArray("ionosphere");
 		for (int idx = 0; idx < ionosphereConfig.size(); idx++) {
 
@@ -123,39 +155,52 @@ namespace core {
 			double peakProductionAltitude = ionosphereConfig[idx].get("peakProductionAltitude", "").asDouble();
 			Json::Value stratificationRaw = ionosphereConfig[idx].get("stratification", "");
 			const char * stratificationType = stratificationRaw.asCString();
-			for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
-				double nextTheta = theta + Constants::PI/180;
+			for (double latitude = Constants::PI/2; latitude < Constants::PI/2 + 10*Constants::PI/180; latitude += angularStepSize) {
+				for (double theta = Constants::PI/4; theta < Constants::PI/2; theta += angularStepSize) {
 
-				for (int h = hS; h < hE; h += dh) {
-					Ionosphere* io = new Ionosphere(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
-							Vector2d((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
-					io->layerHeight = dh;
-					io->setElectronPeakDensity(electronPeakDensity);
-					io->setPeakProductionAltitude(peakProductionAltitude);
+					for (int h = hS; h < hE; h += dh) {
+						Vector3d N = Vector3d(cos(theta), sin(theta), cos(latitude)).norm();
+						Plane3d mesh = Plane3d(N, Vector3d((R+h)*N.x, (R+h)*N.y, (R+h)*N.z));
+						mesh.size = angularStepSize * R;
+						Ionosphere* io = new Ionosphere(mesh);
+						io->layerHeight = dh;
+						io->setElectronPeakDensity(electronPeakDensity);
+						io->setPeakProductionAltitude(peakProductionAltitude);
 
-					scm.addToScene(io);
+						numSceneObjectsCreated++;
+						scm.addToScene(io);
 
-					dh = plh.getDh(stratificationType, h);
+						//dh = plh.getDh(stratificationType, h);
+					}
 				}
 			}
 		}
 
-		const Json::Value atmosphereConfig = celestialConfig.getObject("atmosphere");
-		int hS = atmosphereConfig.get("start", 0).asInt();
-		int hE = atmosphereConfig.get("end", 0).asInt();
-		dh = 2000;
+//		const Json::Value atmosphereConfig = celestialConfig.getObject("atmosphere");
+//		int hS = atmosphereConfig.get("start", 0).asInt();
+//		int hE = atmosphereConfig.get("end", 0).asInt();
+//		dh = 2000;
+//
+//		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
+//			double nextTheta = theta + Constants::PI/180;
+//
+//			for (int h = hS; h < hE; h += dh) {
+//				Atmosphere* atm = new Atmosphere(Vector3d(cos(theta), sin(theta), 0),Vector3d((R + h) * cos(theta), (R + h) * sin(theta), 0));
+//				atm->layerHeight = dh;
+//
+//				numSceneObjectsCreated++;
+//				scm.addToScene(atm);
+//			}
+//		}
 
-		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
-			double nextTheta = theta + Constants::PI/180;
-
-			for (int h = hS; h < hE; h += dh) {
-				Atmosphere* atm = new Atmosphere(Vector2d((R + h) * cos(theta), (R + h) * sin(theta)),
-						Vector2d((R + h) * cos(nextTheta), (R + h) * sin(nextTheta)));
-				atm->layerHeight = dh;
-
-				scm.addToScene(atm);
-			}
-		}
+		if (numSceneObjectsCreated > 1e9)
+			BOOST_LOG_TRIVIAL(warning) << setprecision(2) << numSceneObjectsCreated/1.0e9 << "G scene objects created";
+		else if (numSceneObjectsCreated > 1e6)
+			BOOST_LOG_TRIVIAL(warning) << setprecision(2) << numSceneObjectsCreated/1.0e6 << "M scene objects created";
+		else if (numSceneObjectsCreated > 1e3)
+			BOOST_LOG_TRIVIAL(warning) << setprecision(2) << numSceneObjectsCreated/1.0e3 << "K scene objects created";
+		else
+			BOOST_LOG_TRIVIAL(warning) << setprecision(2) << numSceneObjectsCreated << " scene objects created";
 	}
 
 	/**

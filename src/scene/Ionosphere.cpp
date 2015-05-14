@@ -10,6 +10,7 @@
 #include <cmath>
 #include <iostream>
 #include "Ionosphere.h"
+#include "GeometryType.h"
 #include "../math/Constants.h"
 #include "../exporter/Data.h"
 #include "../core/Application.h"
@@ -23,11 +24,19 @@ namespace scene {
 	using namespace exporter;
 	using namespace core;
 
-	Ionosphere::Ionosphere() {}
+	Ionosphere::Ionosphere() : Geometry() {
 
-	Ionosphere::Ionosphere(Vector2d begin, Vector2d end) : Geometry(begin, end) {
+		type = GeometryType::ionosphere;
+	}
 
-		type = Geometry::ionosphere;
+	Ionosphere::Ionosphere(Plane3d mesh) : Geometry(mesh) {
+
+		type = GeometryType::ionosphere;
+	}
+
+	Ionosphere::Ionosphere(Vector3d n, Vector3d c) : Geometry(n, c) {
+
+		type = GeometryType::ionosphere;
 	}
 
 	/**
@@ -43,13 +52,20 @@ namespace scene {
 	/**
 	 * Interaction between ray and ionospheric layer
 	 */
-	void Ionosphere::interact(Ray *r, Vector2d &hitpos) {
+	void Ionosphere::interact(Ray *r, Vector3d &hitpos) {
 
 		setup();
 
 		double magnitude = r->o.distance(hitpos);
+		int waveBehaviour = determineWaveBehaviour(r);
 
-		refract(r, hitpos);
+		if (waveBehaviour == Ray::wave_reflection) {
+			reflect(r);
+		} else if (waveBehaviour == Ray::wave_refraction) {
+			refract(r);
+		}
+		r->o = hitpos;
+
 		attenuate(r, magnitude);
 		rangeDelay(r);
 		phaseAdvance(r);
@@ -58,37 +74,47 @@ namespace scene {
 		exportData(r);
 	}
 
-	void Ionosphere::refract(Ray *r, Vector2d &hitpos) {
+	/**
+	 *
+	 */
+	void Ionosphere::refract(Ray *r) {
 
 		double refractiveIndex = getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
-		double SZA = getSolarZenithAngle2d();
-		double beta = atan(r->d.y/r->d.x);
 		double theta_i = getIncidentAngle(r);
-		int waveBehaviour = determineWaveBehaviour(r);
 
-		if (waveBehaviour == Ray::wave_reflection) {
-			double beta_r = - beta - 2*SZA;
-			r->setAngle(beta_r);
-//			cout << "Reflect this ray! beta_r:" << beta_r * 180 / Constants::PI << " d.x,d.y:" << r->d.x << "," << r->d.y << "\n";
-		} else if (waveBehaviour == Ray::wave_refraction) {
-			if (r->d.y < 0) {
-				theta_i = Constants::PI - theta_i;
-			}
-			double theta_r = asin((r->previousRefractiveIndex/refractiveIndex * sin(theta_i)));
-			double beta_2 = Constants::PI/2 - theta_r - SZA;
-			if (r->d.y < 0) {
-				beta_2 = -Constants::PI/2 + theta_r - SZA;
-			}
-			r->setAngle(beta_2);
-//			cout << "Bend this ray! refraction: " << refractiveIndex << " theta_i:" << theta_i * 180 / Constants::PI << ", theta_r:" << theta_r * 180 / Constants::PI << " \n";
-		} else if (waveBehaviour == Ray::wave_none) {
-			r->behaviour = Ray::wave_none;
-			cout << "Ray goes straight!\n";
-		} else {
-			cerr << "No idea what to do with this ray!";
-		}
-		r->o.x = hitpos.x;
-		r->o.y = hitpos.y;
+		double ratio = r->previousRefractiveIndex/refractiveIndex;
+		double coefficient = ratio * cos(theta_i) - sqrt(1 - pow(ratio, 2) * (1 - pow(cos(theta_i), 2)));
+		Vector3d newR = Vector3d();
+
+		if (r->d.y > 0)
+			newR = r->d * ratio - mesh3d.normal * coefficient;
+		else
+			newR = r->d * ratio + mesh3d.normal * coefficient;
+
+		BOOST_LOG_TRIVIAL(info) << std::fixed << "REFRACT Alt: " << std::setprecision(0) << getAltitude() << "\tr.d_i: " << r->d << "\tr.d_r: " << newR << "\tN: " << mesh3d.normal << "\tn1/n2: " << ratio << "\ttheta_i: " << theta_i;
+
+		r->d = newR.norm();
+		r->previousRefractiveIndex = refractiveIndex;
+	}
+
+	/**
+	 *
+	 */
+	void Ionosphere::reflect(Ray *r) {
+
+		double refractiveIndex = getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
+		double theta_i = getIncidentAngle(r);
+
+		Vector3d newR = Vector3d();
+
+		if (r->d.y > 0)
+			newR = r->d - mesh3d.normal * 2 * cos(theta_i);
+		else
+			newR = r->d + mesh3d.normal * 2 * cos(theta_i);
+
+		BOOST_LOG_TRIVIAL(info) << std::fixed << "REFLECT Alt: " << std::setprecision(0) << getAltitude() << "\tr.d_i: " << r->d << "\tr.d_r: " << newR << "\tN: " << mesh3d.normal << "\ttheta_i: " << theta_i;
+
+		r->d = newR.norm();
 		r->previousRefractiveIndex = refractiveIndex;
 	}
 
@@ -118,49 +144,17 @@ namespace scene {
 //		double loss = - abs(20 * log10(exp(1)) * ki * magnitude * abs(1 / cos(getSolarZenithAngle2d())) * cos(abs(theta_r)));
 		double loss = -1.15e-6 * (getElectronNumberDensity() * getCollisionFrequency() * magnitude) / pow(r->frequency, 2)
 				* correctionFactor;
+//		double collisionFrequency = getCollisionFrequency();
+//		double loss = ((pow(Constants::ELEMENTARY_CHARGE, 2) / (2 * Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM)))
+//				* (1 / (2 * Constants::PI * getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO) * r->frequency))
+//				* (getElectronNumberDensity() * collisionFrequency / (pow(2 * Constants::PI * r->frequency, 2) + pow(collisionFrequency, 2)))
+//				* magnitude;
 
 //		printf("magnitude: %4.2f, totalLoss: %4.2e, theta: %4.2f, alt: %4.2f ", magnitude, r->signalPower, theta_r, _altitude);
 
 //		printf("Loss: %4.2e ", loss);
 
 		r->signalPower += loss;
-	}
-
-	/**
-	 * A radio wave is attenuated by its propagation through the ionosphere.
-	 * The attenuation calculation is based on Withers, 2011. The ray frequencies
-	 * are considered intermediate frequencies with neither rayFreq << plasmaFreq and
-	 * plasmaFreq << rayFreq. Thus, the altitude w.r.t scale height depends what
-	 * attenuation factor (A) needs to be used.
-	 * Possible cases:
-	 *  A = P_lo if (z0 - zl)/H < -1
-	 *  A = minimum[P_lo, P_hi] if (z0 - zl)/H > -1
-	 * Subsequently: P = P_t / A where P is the resulting power
-	 */
-	void Ionosphere::attenuateWithers(Ray *r) {
-
-		double zL = Constants::NEUTRAL_SCALE_HEIGHT * log(Ionosphere::surfaceCollisionFrequency
-				/ (2 * Constants::PI * r->frequency));
-
-		printf("zL: %4.2e", zL);
-
-		double pLowDb = 8.69 * (1/cos(getSolarZenithAngle2d())) * ((Constants::NEUTRAL_SCALE_HEIGHT * getElectronPeakDensity())
-				/(2 * Constants::ELECTRON_MASS * Constants::C * Constants::PERMITTIVITY_VACUUM * r->frequency * 2 *Constants::PI));
-
-		pLowDb = 7.3e-10 * (1/cos(getSolarZenithAngle2d())) * Constants::NEUTRAL_SCALE_HEIGHT * 1e9 / r->frequency;
-		double pLowW =  pow(10, pLowDb/10);
-		printf("pLowDb: %4.2e, pLowW: %4.2e ", pLowDb, pLowW);
-
-		if (_peakProductionAltitude < zL - Constants::NEUTRAL_SCALE_HEIGHT) {
-			r->signalPower /= pLowDb;
-		} else {
-			double pHigh = 8.69 * (1/cos(getSolarZenithAngle2d())) * ((Constants::NEUTRAL_SCALE_HEIGHT *
-					_peakProductionAltitude * pow(Constants::ELEMENTARY_CHARGE, 2) * Ionosphere::surfaceCollisionFrequency)
-					/(2 * Constants::ELECTRON_MASS * Constants::C * pow(2 * Constants::PI * r->frequency,2)));
-			printf("pHigh: %4.2e, ", pHigh);
-			if (pLowDb < pHigh) r->signalPower /= pLowW;
-			else r->signalPower /= pHigh;
-		}
 	}
 
 	/**
@@ -198,6 +192,7 @@ namespace scene {
 		Data d;
 		d.x = r->o.x;
 		d.y = r->o.y;
+		d.z = r->o.z;
 		d.rayNumber = r->rayNumber;
 		d.mu_r_sqrt = pow(r->previousRefractiveIndex, 2);
 		d.n_e = getElectronNumberDensity();
@@ -206,7 +201,7 @@ namespace scene {
 		d.frequency = r->frequency;
 		d.signalPower = r->signalPower;
 		d.timeOfFlight = r->timeOfFlight;
-		d.collisionType = Geometry::ionosphere;
+		d.collisionType = GeometryType::ionosphere;
 		Application::getInstance().addToDataset(d);
 	}
 
@@ -239,9 +234,10 @@ namespace scene {
 	double Ionosphere::getElectronNumberDensity() {
 
 		double normalizedHeight = (_altitude - _peakProductionAltitude) / Constants::NEUTRAL_SCALE_HEIGHT;
+		double angle = mesh3d.normal.angle(Vector3d::SUBSOLAR);
 
 		return getElectronPeakDensity() *
-				exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(getSolarZenithAngle2d())) * exp(-normalizedHeight) ));
+				exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(angle)) * exp(-normalizedHeight) ));
 	}
 
 	/**
@@ -274,23 +270,23 @@ namespace scene {
 	 */
 	double Ionosphere::getAltitude() {
 
-		double xAvg = (mesh2d.begin.x + mesh2d.end.x)/2;
-		double yAvg = (mesh2d.begin.y + mesh2d.end.y)/2;
-
-		return sqrt(pow(xAvg, 2) + pow(yAvg, 2)) - Application::getInstance().getCelestialConfig().getInt("radius");
+		return sqrt(pow(mesh3d.centerpoint.x, 2) + pow(mesh3d.centerpoint.y, 2) + pow(mesh3d.centerpoint.z, 2))
+				- Application::getInstance().getCelestialConfig().getInt("radius");
 	}
 
 	/**
 	 * The incident angle of a ray with respect to the ionospheric layer. This angle depends
 	 * on the propagation angle of the ray and the angle of the layer w.r.t. the sun (SZA)
+	 * The angle is then complementary to the angle between the ray direction vector and the
+	 * normal of the plane.
 	 */
 	double Ionosphere::getIncidentAngle(Ray *r) {
 
-		double SZA = getSolarZenithAngle2d();
-		double beta = atan(r->d.y/r->d.x);
-		double theta_i = Constants::PI/2 - beta - SZA;
+//		double SZA = getSolarZenithAngle2d();
+//		double beta = atan(r->d.y/r->d.x);
+//		double theta_i = Constants::PI/2 - beta - SZA;
 
-		return theta_i;
+		return acos(abs(r->d * mesh3d.normal) / (r->d.magnitude() * mesh3d.normal.magnitude()));
 	}
 
 	/**
@@ -303,7 +299,8 @@ namespace scene {
 	}
 
 	/**
-	 * Calculate the total electron content (TEC) which this ray experiences as it passes through
+	 * Calculate the total electron content
+	 *  (TEC) which this ray experiences as it passes through
 	 * the ionosphere.
 	 */
 	double Ionosphere::getTEC() {
@@ -324,16 +321,20 @@ namespace scene {
 		double criticalAngle;
 		double refractiveIndex = getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO);
 		double incidentAngle = getIncidentAngle(r);
+		double angularFrequency = 2 * Constants::PI * r->frequency;
+		double epsilon = 1e-5;
 
 		if (incidentAngle > Constants::PI/2)
 			incidentAngle -= Constants::PI/2;
+
 
 		if (refractiveIndex <= r->previousRefractiveIndex)
 			criticalAngle = asin(refractiveIndex / r->previousRefractiveIndex);
 		else
 			criticalAngle = asin(r->previousRefractiveIndex / refractiveIndex);
 
-		if (incidentAngle >= criticalAngle)
+		if (r->previousRefractiveIndex > refractiveIndex &&
+				(incidentAngle >= criticalAngle || abs(angularFrequency - getPlasmaFrequency()) < epsilon))
 			r->behaviour = Ray::wave_reflection;
 		else
 			r->behaviour = Ray::wave_refraction;

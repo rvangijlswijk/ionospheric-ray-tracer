@@ -25,11 +25,11 @@ namespace threading {
 
 	void Worker::process(Ray r) {
 
-		BOOST_LOG_TRIVIAL(info) << "Worker started for ray " << r.rayNumber;
+		BOOST_LOG_TRIVIAL(warning) << "Worker started for ray " << r.rayNumber;
 
 		r.trace();
 
-		BOOST_LOG_TRIVIAL(info) << "Worker ended for ray " << r.rayNumber;
+		BOOST_LOG_TRIVIAL(warning) << "Worker ended for ray " << r.rayNumber;
 	}
 
 	void Worker::schedule(boost::threadpool::pool *tp, Ray r) {
