@@ -47,7 +47,8 @@ namespace core {
 				static Application instance;
 				return instance;
 			}
-			void init();
+			void init(int argc, char * argv[]);
+			void parseCommandLineArgs(int argc, char * argv[]);
 			void start();
 			void run();
 			void stop();

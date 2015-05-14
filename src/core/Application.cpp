@@ -20,10 +20,31 @@ namespace core {
 
 	boost::threadpool::pool tp;
 
-	void Application::init() {
+	void Application::init(int argc, char * argv[]) {
 
+		parseCommandLineArgs(argc, argv);
 		start();
 		run();
+	}
+
+	void Application::parseCommandLineArgs(int argc, char * argv[]) {
+
+
+		for (int i = 0; i < argc; i++) {
+
+			if (strcmp(argv[i], "-h") == 0) {
+				std::cout 	<< "Ionospheric Ray Tracer\n\n"
+							<< "Synopsis:\n"
+							<< "\tirt [-opts] celestialConfig\n\n"
+							<< "Description: \n"
+							<< "\tPerform ionospheric ray tracing on a celestial object described by the celestialConfig json file. "
+							<< "If no config file is supplied, use a default scenario.\n\n"
+							<< "Options:\n"
+							<< "\t-a Application config file\n"
+							<< "\t-h This help.\n";
+				std::exit(0);
+			}
+		}
 	}
 
 	void Application::start() {
