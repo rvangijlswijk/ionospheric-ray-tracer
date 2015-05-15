@@ -20,41 +20,42 @@ namespace {
 
 		list<Data> dataSet;
 
-		Config celestialConfig = Config("config/scenario_default.json");
+		Config celestialConfig = Config("config/scenario_LS270_SA250_DS0.json");
 
 		double SZA = 76 * Constants::PI / 180;
 		double R = 3390e3;
 
-		int dh = 400;
+		int dh = 100;
 		const Json::Value ionosphereConfig = celestialConfig.getArray("ionosphere");
-		for (int idx = 0; idx < ionosphereConfig.size(); idx++) {
+		for (int h = 50e3; h < 250e3; h += dh) {
+			Vector3d N = Vector3d(sin(SZA), cos(SZA), 0).norm();
+			Plane3d mesh = Plane3d(N, Vector3d((R+h)*N.x, (R+h)*N.y, (R+h)*N.z));
+			mesh.size = 1000;
+			Ionosphere io = Ionosphere(mesh);
+			io.layerHeight = dh;
 
-			int hS = ionosphereConfig[idx].get("start", 0).asInt();
-			int hE = ionosphereConfig[idx].get("end", 0).asInt();
-			double electronPeakDensity = atof(ionosphereConfig[idx].get("electronPeakDensity", "").asCString());
-			double peakProductionAltitude = ionosphereConfig[idx].get("peakProductionAltitude", "").asDouble();
-			Json::Value stratificationRaw = ionosphereConfig[idx].get("stratification", "");
-			const char * stratificationType = stratificationRaw.asCString();
-			for (int h = hS; h < hE; h += dh) {
-				Vector3d N = Vector3d(sin(SZA), cos(SZA), 0).norm();
-				Plane3d mesh = Plane3d(N, Vector3d((R+h)*N.x, (R+h)*N.y, (R+h)*N.z));
-				mesh.size = 1000;
-				Ionosphere io = Ionosphere(mesh);
-				io.layerHeight = dh;
-				io.setElectronPeakDensity(electronPeakDensity);
-				io.setPeakProductionAltitude(peakProductionAltitude);
+			ASSERT_NEAR(SZA, io.getMesh().normal.angle(Vector3d::SUBSOLAR), 0.001);
 
-				ASSERT_LT(0, io.getElectronPeakDensity());
-				ASSERT_LT(0, io.getPeakProductionAltitude());
-				ASSERT_LT(50e3, io.getAltitude());
-				ASSERT_LT(0, io.getElectronNumberDensity());
+			for (int idx = 0; idx < ionosphereConfig.size(); idx++) {
 
-				Data d;
-				d.x = mesh.centerpoint.x;
-				d.y = mesh.centerpoint.y;
-				d.n_e = io.getElectronNumberDensity();
-				dataSet.push_back(d);
+				double electronPeakDensity = atof(ionosphereConfig[idx].get("electronPeakDensity", "").asCString());
+				double peakProductionAltitude = ionosphereConfig[idx].get("peakProductionAltitude", "").asDouble();
+				double neutralScaleHeight = ionosphereConfig[idx].get("neutralScaleHeight", "").asDouble();
+
+				ASSERT_LT(0, electronPeakDensity);
+				ASSERT_LT(0, peakProductionAltitude);
+				ASSERT_LT(0, neutralScaleHeight);
+
+				io.superimposeElectronNumberDensity(electronPeakDensity, peakProductionAltitude, neutralScaleHeight);
+
+				ASSERT_NEAR(h, io.getAltitude(), 1);
 			}
+
+			Data d;
+			d.x = mesh.centerpoint.x;
+			d.y = mesh.centerpoint.y;
+			d.n_e = io.getElectronNumberDensity();
+			dataSet.push_back(d);
 		}
 
 		MatlabExporter me;
