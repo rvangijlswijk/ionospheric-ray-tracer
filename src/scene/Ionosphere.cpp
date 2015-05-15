@@ -206,17 +206,6 @@ namespace scene {
 	}
 
 	/**
-	 * Return a randomly distributed electron peak density. The electron peak randomly varies with a certain
-	 * standard deviation. The mean and standard deviation are based on the normal peak electron density and
-	 * delta ne as given by [Gurnett, 2009].
-	 * @unit: particles m^-3
-	 */
-	double Ionosphere::getElectronPeakDensity() {
-
-		return _electronPeakDensity;
-	}
-
-	/**
 	 * Calculate the plasma frequency which depends on the electron number density
 	 * which depends on the altitude (y). Use a chapman profile.
 	 * @unit: rad s^-1
@@ -233,11 +222,21 @@ namespace scene {
 	 */
 	double Ionosphere::getElectronNumberDensity() {
 
-		double normalizedHeight = (_altitude - _peakProductionAltitude) / Constants::NEUTRAL_SCALE_HEIGHT;
+		return _electronNumberDensity;
+	}
+
+	/**
+	 *
+	 */
+	void Ionosphere::superimposeElectronNumberDensity(double peakDensity, double peakAltitude, double neutralScaleHeight) {
+
+		double normalizedHeight = (getAltitude() - peakAltitude) / neutralScaleHeight;
 		double angle = mesh3d.normal.angle(Vector3d::SUBSOLAR);
 
-		return getElectronPeakDensity() *
+		double electronNumberDensity = peakDensity *
 				exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(angle)) * exp(-normalizedHeight) ));
+
+		_electronNumberDensity += electronNumberDensity;
 	}
 
 	/**
@@ -270,8 +269,13 @@ namespace scene {
 	 */
 	double Ionosphere::getAltitude() {
 
-		return sqrt(pow(mesh3d.centerpoint.x, 2) + pow(mesh3d.centerpoint.y, 2) + pow(mesh3d.centerpoint.z, 2))
-				- Application::getInstance().getCelestialConfig().getInt("radius");
+		if (_altitude < 1) {
+
+			_altitude = sqrt(pow(mesh3d.centerpoint.x, 2) + pow(mesh3d.centerpoint.y, 2) + pow(mesh3d.centerpoint.z, 2))
+					- Application::getInstance().getCelestialConfig().getInt("radius");
+		}
+
+		return _altitude;
 	}
 
 	/**
@@ -340,16 +344,6 @@ namespace scene {
 			r->behaviour = Ray::wave_refraction;
 
 		return r->behaviour;
-	}
-
-	void Ionosphere::setPeakProductionAltitude(double p) {
-
-		_peakProductionAltitude = p;
-	}
-
-	void Ionosphere::setElectronPeakDensity(double e) {
-
-		_electronPeakDensity = e;
 	}
 
 } /* namespace scene */

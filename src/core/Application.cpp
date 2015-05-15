@@ -153,6 +153,7 @@ namespace core {
 			int hE = ionosphereConfig[idx].get("end", 0).asInt();
 			double electronPeakDensity = atof(ionosphereConfig[idx].get("electronPeakDensity", "").asCString());
 			double peakProductionAltitude = ionosphereConfig[idx].get("peakProductionAltitude", "").asDouble();
+			double neutralScaleHeight = ionosphereConfig[idx].get("neutralScaleHeight", 11.1e3).asDouble();
 			Json::Value stratificationRaw = ionosphereConfig[idx].get("stratification", "");
 			const char * stratificationType = stratificationRaw.asCString();
 			for (double latitude = Constants::PI/2; latitude < Constants::PI/2 + 10*Constants::PI/180; latitude += angularStepSize) {
@@ -164,8 +165,7 @@ namespace core {
 						mesh.size = angularStepSize * R;
 						Ionosphere* io = new Ionosphere(mesh);
 						io->layerHeight = dh;
-						io->setElectronPeakDensity(electronPeakDensity);
-						io->setPeakProductionAltitude(peakProductionAltitude);
+						io->superimposeElectronNumberDensity(electronPeakDensity, peakProductionAltitude, neutralScaleHeight);
 
 						numSceneObjectsCreated++;
 						scm.addToScene(io);

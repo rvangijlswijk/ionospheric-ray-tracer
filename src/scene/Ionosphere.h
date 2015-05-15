@@ -37,15 +37,13 @@ namespace scene {
 			void timeDelay(Ray *r);
 			void exportData(Ray *r);
 			double getPlasmaFrequency();
-			double getElectronPeakDensity();
+			void superimposeElectronNumberDensity(double peakDensity, double peakAltitude, double neutralScaleHeight);
 			double getElectronNumberDensity();
 			double getRefractiveIndex(Ray *r, refractiveMethod m);
 			double getAltitude();
 			double getIncidentAngle(Ray *r);
 			double getCollisionFrequency();
 			double getTEC();
-			void setPeakProductionAltitude(double p);
-			void setElectronPeakDensity(double e);
 			int determineWaveBehaviour(Ray *r);
 			double layerHeight = 0;
 			double electronDensityVariability = 0;
@@ -53,8 +51,7 @@ namespace scene {
 
 		private:
 			double _altitude = 0;
-			double _peakProductionAltitude = 0;	// m
-			double _electronPeakDensity = 0;		// m^-3
+			double _electronNumberDensity = 0;	// m^-3
 	};
 
 } /* namespace scene */

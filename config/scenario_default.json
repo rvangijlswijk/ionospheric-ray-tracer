@@ -10,9 +10,8 @@
     "ionosphere": [{
         "name" : "M2 Layer",
         "stratification": "constant",
-        "start": 70000,
-        "end": 250000,
         "peakProductionAltitude": 125000,
-        "electronPeakDensity": "2.5e11"
+        "electronPeakDensity": "2.5e11",
+        "neutralScaleHeight": 11100
     }]
 }

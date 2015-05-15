@@ -14,15 +14,17 @@
         "stratification": "chapman",
         "start": 108000,
         "end": 200000,
-        "peakProductionAltitude": 125000,
-        "electronPeakDensity": "2.5e11"
+        "peakProductionAltitude": 117000,
+        "electronPeakDensity": "1.7e11",
+        "neutralScaleHeight": 13000
     },{
         "name" : "M1 Layer",
         "model": "chapman",
         "stratification": "chapman",
         "start": 70000,
         "end": 108000,
-        "peakProductionAltitude": 100000,
-        "electronPeakDensity": "1.0e11"
+        "peakProductionAltitude": 95000,
+        "electronPeakDensity": "6.0e10",
+        "neutralScaleHeight": 7600
     }]
 }

@@ -28,21 +28,18 @@ namespace {
 				io.setMesh(mesh);
 				io.setup();
 				io.layerHeight = 1000;
-				io.setElectronPeakDensity(2.5e11);
-				io.setPeakProductionAltitude(125e3);
+				io.superimposeElectronNumberDensity(2.5e11, 125e3, 11.1e3);
 				// a layer with an SZA angle of 1 degree
 				Plane3d mesh2 = Plane3d(Vector3d(0.0175, 1, 0), Vector3d(49204, 3514.3e3, 0));
 				io2.setMesh(mesh2);
 				io2.setup();
 				io2.layerHeight = 1000;
-				io2.setElectronPeakDensity(2.5e11);
-				io2.setPeakProductionAltitude(125e3);
+				io2.superimposeElectronNumberDensity(2.5e11, 125e3, 11.1e3);
 				Plane3d mesh3 = Plane3d(Vector3d(1, 0, 0), Vector3d(3390e3 + 100e3, 0, 0));
 				io3.setMesh(mesh3);
 				io3.setup();
 				io3.layerHeight = 1000;
-				io3.setElectronPeakDensity(2.5e11);
-				io3.setPeakProductionAltitude(125e3);
+				io3.superimposeElectronNumberDensity(2.5e11, 125e3, 11.1e3);
 
 				r.originalAngle = 30 * Constants::PI / 180.0; // SZA = 30 deg
 				r.previousRefractiveIndex = 1.0;
@@ -60,11 +57,6 @@ namespace {
 			Ray r, r2;
 			Config conf;
 	};
-
-	TEST_F(IonosphereTest, ElectronPeakDensity) {
-
-		ASSERT_EQ(2.5e11, io.getElectronPeakDensity());
-	}
 
 	TEST_F(IonosphereTest, SolarZenithAngle) {
 
@@ -164,8 +156,7 @@ namespace {
 		Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 100, 0));
 		rio.setMesh(mesh);
 		rio.setup();
-		rio.setElectronPeakDensity(1);
-		rio.setPeakProductionAltitude(125e3);
+		rio.superimposeElectronNumberDensity(1, 125e3, 11.1e3);
 
 		Ray* rref = new Ray;
 		rref->frequency = 5e6;
@@ -221,8 +212,7 @@ namespace {
 		Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 100, 0));
 		rio.setMesh(mesh);
 		rio.setup();
-		rio.setElectronPeakDensity(1);
-		rio.setPeakProductionAltitude(125e3);
+		rio.superimposeElectronNumberDensity(1, 125e3, 11.1e3);
 
 		Ray* rref = new Ray;
 		rref->frequency = 5e6;
@@ -257,8 +247,7 @@ namespace {
 		Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 100, 0));
 		rio.setMesh(mesh);
 		rio.setup();
-		rio.setElectronPeakDensity(1);
-		rio.setPeakProductionAltitude(125e3);
+		rio.superimposeElectronNumberDensity(1, 125e3, 11.1e3);
 
 		Ray* rref = new Ray;
 		rref->frequency = 5e6;
@@ -300,8 +289,7 @@ namespace {
 			ion.setMesh(mesh);
 			ion.layerHeight = 1000;
 			ion.setup();
-			ion.setElectronPeakDensity(2.5e11);
-			ion.setPeakProductionAltitude(125e3);
+			ion.superimposeElectronNumberDensity(2.5e11, 125e3, 11.1e3);
 			ion.attenuate(&rA, ion.layerHeight);
 
 			ASSERT_NEAR(h, ion.getAltitude(), 1);
@@ -318,8 +306,7 @@ namespace {
 			ion.setMesh(mesh);
 			ion.layerHeight = 1000;
 			ion.setup();
-			ion.setElectronPeakDensity(1e11);
-			ion.setPeakProductionAltitude(100e3);
+			ion.superimposeElectronNumberDensity(1e11, 100e3, 11.1e3);
 			ion.attenuate(&rA, ion.layerHeight);
 
 			ASSERT_NEAR(h, ion.getAltitude(), 1);
