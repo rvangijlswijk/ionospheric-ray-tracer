@@ -74,6 +74,8 @@ namespace core {
 			const char * _applicationConfigFile = "config/config.json";
 			const char * _celestialConfigFile = "";
 			int _verbosity = boost::log::trivial::warning;
+			int _parallelism = 0;
+			int _iterations = 0;
 
 	};
 

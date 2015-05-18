@@ -45,7 +45,9 @@ namespace core {
 							<< "If no config file is supplied, use a default scenario.\n\n"
 							<< "Options:\n"
 							<< "\t-c | --config\t Application config file\n"
+							<< "\t-i | --iterations\t The number of consecutive times every ray option should be run.\n"
 							<< "\t-h | --help\t This help.\n"
+							<< "\t-p | --parallelism\t Multithreading indicator.\n"
 							<< "\t-v | --verbose\t Verbose, display log output\n"
 							<< "\t-vv \t\t Very verbose, display log and debug output\n";
 				std::exit(0);
@@ -55,6 +57,12 @@ namespace core {
 
 			} else if (strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--config") == 0) {
 				_applicationConfigFile = argv[i+1];
+
+			} else if (strcmp(argv[i], "-p") == 0 || strcmp(argv[i], "--parallelism") == 0) {
+				_parallelism = atoi(argv[i+1]);
+
+			} else if (strcmp(argv[i], "-i") == 0 || strcmp(argv[i], "--iterations") == 0) {
+				_iterations = atoi(argv[i+1]);
 
 			} else if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--verbose") == 0) {
 				_verbosity = boost::log::trivial::info;
@@ -71,15 +79,23 @@ namespace core {
 	void Application::start() {
 
 		_isRunning = true;
+
 		_applicationConfig = Config(_applicationConfigFile);
 		_celestialConfig = Config(_celestialConfigFile);
+
+		if (_parallelism < 1) {
+			_parallelism = _applicationConfig.getInt("parallelism");
+		}
+		if (_iterations < 1) {
+			_iterations = _applicationConfig.getInt("iterations");
+		}
 
 //		boost::log::add_file_log("log/sample.log");
 
 		boost::log::core::get()->set_filter(
 				boost::log::trivial::severity >= _verbosity);
 
-		tp = boost::threadpool::pool(_applicationConfig.getInt("parallelism"));
+		tp = boost::threadpool::pool(_parallelism);
 	}
 
 	void Application::run() {
