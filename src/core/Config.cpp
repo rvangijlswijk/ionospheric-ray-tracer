@@ -5,10 +5,12 @@
  *      Author: rian
  */
 
+#include "Config.h"
 #include <iostream>
 #include <fstream>
-#include "Config.h"
 #include <string>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
 #include "../../contrib/jsoncpp/reader.h"
 
 namespace raytracer {
@@ -30,7 +32,8 @@ namespace core {
 		bool success = r.parse(test, _doc, false);
 		if ( !success ) {
 			// report to the user the failure and their locations in the document.
-			std::cout  << r.getFormatedErrorMessages() << "\n";
+			BOOST_LOG_TRIVIAL(fatal) << "Formatting error in config file!\n" << r.getFormattedErrorMessages();
+			std::exit(0);
 		}
 	}
 

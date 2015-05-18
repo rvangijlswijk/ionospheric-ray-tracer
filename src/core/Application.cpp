@@ -5,6 +5,10 @@
 //============================================================================
 
 #include "Application.h"
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/utility/setup/file.hpp>
 
 namespace raytracer {
 namespace core {
@@ -35,65 +39,88 @@ namespace core {
 			if (strcmp(argv[i], "-h") == 0) {
 				std::cout 	<< "Ionospheric Ray Tracer\n\n"
 							<< "Synopsis:\n"
-							<< "\tirt [-opts] celestialConfig\n\n"
+							<< "\tirt [-opts] scenarioConfig\n\n"
 							<< "Description: \n"
-							<< "\tPerform ionospheric ray tracing on a celestial object described by the celestialConfig json file. "
+							<< "\tPerform ionospheric ray tracing on a celestial object described by the _celestialConfig json file. "
 							<< "If no config file is supplied, use a default scenario.\n\n"
 							<< "Options:\n"
-							<< "\t-a Application config file\n"
-							<< "\t-h This help.\n";
+							<< "\t-c | --config\t Application config file\n"
+							<< "\t-h | --help\t This help.\n"
+							<< "\t-v | --verbose\t Verbose, display log output\n"
+							<< "\t-vv \t\t Very verbose, display log and debug output\n";
 				std::exit(0);
+
+			} else if (strcmp(argv[i], "-s") == 0 || strcmp(argv[i], "--scenario") == 0) {
+				_celestialConfigFile = argv[i+1];
+
+			} else if (strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--config") == 0) {
+				_applicationConfigFile = argv[i+1];
+
+			} else if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--verbose") == 0) {
+				_verbosity = boost::log::trivial::info;
+
+			} else if (strcmp(argv[i], "-vv") == 0) {
+				_verbosity = boost::log::trivial::debug;
 			}
 		}
+
+		// load scenario config file. Must be given.
+		_celestialConfigFile = argv[argc-1];
 	}
 
 	void Application::start() {
 
-		isRunning = true;
-		applicationConfig = Config("config/config.json");
-		celestialConfig = Config("config/scenario_default.json");
+		_isRunning = true;
+		_applicationConfig = Config(_applicationConfigFile);
+		_celestialConfig = Config(_celestialConfigFile);
 
 //		boost::log::add_file_log("log/sample.log");
 
 		boost::log::core::get()->set_filter(
-				boost::log::trivial::severity >= boost::log::trivial::warning);
+				boost::log::trivial::severity >= _verbosity);
 
-		tp = boost::threadpool::pool(applicationConfig.getInt("parallelism"));
+		tp = boost::threadpool::pool(_applicationConfig.getInt("parallelism"));
 	}
 
 	void Application::run() {
 
 		Timer tmr;
 
-		BOOST_LOG_TRIVIAL(warning) << "Parallelism is " << applicationConfig.getInt("parallelism");
-		BOOST_LOG_TRIVIAL(warning) << applicationConfig.getInt("iterations") << " iterations";
+		BOOST_LOG_TRIVIAL(info) << "Parallelism is " << _applicationConfig.getInt("parallelism");
+		BOOST_LOG_TRIVIAL(warning) << _applicationConfig.getInt("iterations") << " iterations";
 
 		// trace a ray
 		int rayCounter = 0;
-		for (int iteration = 0; iteration < applicationConfig.getInt("iterations"); iteration++) {
+		for (int iteration = 0; iteration < _applicationConfig.getInt("iterations"); iteration++) {
 
-			BOOST_LOG_TRIVIAL(warning) << "Iteration " << (iteration+1) << " of " << applicationConfig.getInt("iterations");
+			BOOST_LOG_TRIVIAL(warning) << "Iteration " << (iteration+1) << " of " << _applicationConfig.getInt("iterations");
 
 			createScene();
 
 			int numWorkers = 0;
-			for (double freq = 5e6; freq <= 5e6; freq += 0.5e6) {
+			double fmin = _applicationConfig.getObject("frequencies")["min"].asInt();
+			double fstep = _applicationConfig.getObject("frequencies")["step"].asInt();
+			double fmax = _applicationConfig.getObject("frequencies")["max"].asInt();
+
+			BOOST_LOG_TRIVIAL(info) << "Scanning frequencies " << fmin << " Hz to " << fmax << "Hz with steps of " << fstep << "Hz";
+
+			for (double freq = fmin; freq <= fmax; freq += fstep) {
 				for (double SZA = 10; SZA <= 80; SZA += 10) {
-					Ray r;
-					r.rayNumber = ++rayCounter;
-					r.frequency = freq;
-					r.signalPower = 0;
-					r.o.y = 2 + celestialConfig.getInt("radius");
-					r.originalAngle = SZA * Constants::PI / 180.0;
-					Vector3d direction = Vector3d(cos(Constants::PI/2.0 - r.originalAngle),
-							sin(Constants::PI/2.0 - r.originalAngle),
-							tan(-4 * Constants::PI / 180));
-					r.d = direction.norm();
+						Ray r;
+						r.rayNumber = ++rayCounter;
+						r.frequency = freq;
+						r.signalPower = 0;
+						r.o.y = 2 + _celestialConfig.getInt("radius");
+						r.originalAngle = SZA * Constants::PI / 180.0;
+						Vector3d direction = Vector3d(cos(Constants::PI/2.0 - r.originalAngle),
+								sin(Constants::PI/2.0 - r.originalAngle),
+								tan(-4 * Constants::PI / 180));
+						r.d = direction.norm();
 
-					Worker w;
-					w.schedule(&tp, r);
+						Worker w;
+						w.schedule(&tp, r);
 
-					numWorkers++;
+						numWorkers++;
 				}
 			}
 
@@ -107,8 +134,8 @@ namespace core {
 		stop();
 
 		double t = tmr.elapsed();
-		double tracingsPerSec = numTracings / t;
-	    printf("Elapsed: %5.2f sec. %d tracings done. %5.2f tracings/sec", t, numTracings, tracingsPerSec);
+		double tracingsPerSec = _numTracings / t;
+	    printf("Elapsed: %5.2f sec. %d tracings done. %5.2f tracings/sec", t, _numTracings, tracingsPerSec);
 
 		//CsvExporter ce;
 		//ce.dump("Debug/data.csv", dataSet);
@@ -118,7 +145,7 @@ namespace core {
 
 	void Application::stop() {
 
-		isRunning = false;
+		_isRunning = false;
 	}
 
 	/**
@@ -127,7 +154,7 @@ namespace core {
 	void Application::createScene() {
 
 		int numSceneObjectsCreated = 0;
-		double R = celestialConfig.getInt("radius");
+		double R = _celestialConfig.getInt("radius");
 		double angularStepSize = Constants::PI/360;
 		IonosphereConfigParser plh = IonosphereConfigParser();
 
@@ -141,16 +168,14 @@ namespace core {
 				Terrain* tr = new Terrain(mesh);
 
 				numSceneObjectsCreated++;
-				scm.addToScene(tr);
+				_scm.addToScene(tr);
 			}
 		}
 
 		int dh = 400;
-		const Json::Value ionosphereConfig = celestialConfig.getArray("ionosphere");
+		const Json::Value ionosphereConfig = _celestialConfig.getArray("ionosphere");
 		for (int idx = 0; idx < ionosphereConfig.size(); idx++) {
 
-			int hS = ionosphereConfig[idx].get("start", 0).asInt();
-			int hE = ionosphereConfig[idx].get("end", 0).asInt();
 			double electronPeakDensity = atof(ionosphereConfig[idx].get("electronPeakDensity", "").asCString());
 			double peakProductionAltitude = ionosphereConfig[idx].get("peakProductionAltitude", "").asDouble();
 			double neutralScaleHeight = ionosphereConfig[idx].get("neutralScaleHeight", 11.1e3).asDouble();
@@ -159,7 +184,7 @@ namespace core {
 			for (double latitude = Constants::PI/2; latitude < Constants::PI/2 + 10*Constants::PI/180; latitude += angularStepSize) {
 				for (double theta = Constants::PI/4; theta < Constants::PI/2; theta += angularStepSize) {
 
-					for (int h = hS; h < hE; h += dh) {
+					for (int h = 50e3; h < 250e3; h += dh) {
 						Vector3d N = Vector3d(cos(theta), sin(theta), cos(latitude)).norm();
 						Plane3d mesh = Plane3d(N, Vector3d((R+h)*N.x, (R+h)*N.y, (R+h)*N.z));
 						mesh.size = angularStepSize * R;
@@ -168,7 +193,7 @@ namespace core {
 						io->superimposeElectronNumberDensity(electronPeakDensity, peakProductionAltitude, neutralScaleHeight);
 
 						numSceneObjectsCreated++;
-						scm.addToScene(io);
+						_scm.addToScene(io);
 
 						//dh = plh.getDh(stratificationType, h);
 					}
@@ -176,7 +201,7 @@ namespace core {
 			}
 		}
 
-//		const Json::Value atmosphereConfig = celestialConfig.getObject("atmosphere");
+//		const Json::Value atmosphereConfig = _celestialConfig.getObject("atmosphere");
 //		int hS = atmosphereConfig.get("start", 0).asInt();
 //		int hE = atmosphereConfig.get("end", 0).asInt();
 //		dh = 2000;
@@ -189,18 +214,18 @@ namespace core {
 //				atm->layerHeight = dh;
 //
 //				numSceneObjectsCreated++;
-//				scm.addToScene(atm);
+//				_scm.addToScene(atm);
 //			}
 //		}
 
 		if (numSceneObjectsCreated > 1e9)
-			BOOST_LOG_TRIVIAL(warning) << setprecision(2) << numSceneObjectsCreated/1.0e9 << "G scene objects created";
+			BOOST_LOG_TRIVIAL(info) << setprecision(3) << numSceneObjectsCreated/1.0e9 << "G scene objects created";
 		else if (numSceneObjectsCreated > 1e6)
-			BOOST_LOG_TRIVIAL(warning) << setprecision(2) << numSceneObjectsCreated/1.0e6 << "M scene objects created";
+			BOOST_LOG_TRIVIAL(info) << setprecision(3) << numSceneObjectsCreated/1.0e6 << "M scene objects created";
 		else if (numSceneObjectsCreated > 1e3)
-			BOOST_LOG_TRIVIAL(warning) << setprecision(2) << numSceneObjectsCreated/1.0e3 << "K scene objects created";
+			BOOST_LOG_TRIVIAL(info) << setprecision(3) << numSceneObjectsCreated/1.0e3 << "K scene objects created";
 		else
-			BOOST_LOG_TRIVIAL(warning) << setprecision(2) << numSceneObjectsCreated << " scene objects created";
+			BOOST_LOG_TRIVIAL(info) << setprecision(3) << numSceneObjectsCreated << " scene objects created";
 	}
 
 	/**
@@ -208,7 +233,7 @@ namespace core {
 	 */
 	void Application::flushScene() {
 
-		scm.removeAllFromScene();
+		_scm.removeAllFromScene();
 	}
 
 	void Application::addToDataset(Data dat) {
@@ -221,28 +246,28 @@ namespace core {
 	void Application::incrementTracing() {
 
 		tracingIncMutex.lock();
-		numTracings++;
+		_numTracings++;
 		tracingIncMutex.unlock();
 	}
 
 	SceneManager Application::getSceneManager() {
 
-		return scm;
+		return _scm;
 	}
 
 	Config Application::getApplicationConfig() {
 
-		return applicationConfig;
+		return _applicationConfig;
 	}
 
 	Config Application::getCelestialConfig() {
 
-		return celestialConfig;
+		return _celestialConfig;
 	}
 
 	void Application::setCelestialConfig(Config conf) {
 
-		celestialConfig = conf;
+		_celestialConfig = conf;
 	}
 
 } /* namespace core */

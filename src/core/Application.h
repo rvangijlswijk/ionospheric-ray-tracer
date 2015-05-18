@@ -11,10 +11,6 @@
 #include <iostream>
 #include <list>
 #include <stdlib.h>
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/utility/setup/file.hpp>
 #include <boost/thread.hpp>
 #include "Timer.cpp"
 #include "Config.h"
@@ -63,18 +59,21 @@ namespace core {
 
 		private:
 			Application() {
-				isRunning = false;
-				numTracings = 0;
+				_isRunning = false;
+				_numTracings = 0;
 			}
 			Application(Application const&);      // Don't Implement.
 			void operator = (Application const&); // Don't implement
 			void createScene();
 			void flushScene();
-			bool isRunning;
-			SceneManager scm;
-			int numTracings;
-			Config celestialConfig;
-			Config applicationConfig;
+			bool _isRunning;
+			SceneManager _scm;
+			int _numTracings;
+			Config _celestialConfig;
+			Config _applicationConfig;
+			const char * _applicationConfigFile = "config/config.json";
+			const char * _celestialConfigFile = "";
+			int _verbosity = boost::log::trivial::warning;
 
 	};
 

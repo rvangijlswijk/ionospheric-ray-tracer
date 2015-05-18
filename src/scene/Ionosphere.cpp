@@ -91,7 +91,7 @@ namespace scene {
 		else
 			newR = r->d * ratio + mesh3d.normal * coefficient;
 
-		BOOST_LOG_TRIVIAL(info) << std::fixed << "REFRACT Alt: " << std::setprecision(0) << getAltitude() << "\tr.d_i: " << r->d << "\tr.d_r: " << newR << "\tN: " << mesh3d.normal << "\tn1/n2: " << ratio << "\ttheta_i: " << theta_i;
+		BOOST_LOG_TRIVIAL(debug) << std::fixed << "REFRACT Alt: " << std::setprecision(0) << getAltitude() << "\tr.d_i: " << r->d << "\tr.d_r: " << newR << "\tN: " << mesh3d.normal << "\tn1/n2: " << ratio << "\ttheta_i: " << theta_i;
 
 		r->d = newR.norm();
 		r->previousRefractiveIndex = refractiveIndex;
@@ -112,7 +112,7 @@ namespace scene {
 		else
 			newR = r->d + mesh3d.normal * 2 * cos(theta_i);
 
-		BOOST_LOG_TRIVIAL(info) << std::fixed << "REFLECT Alt: " << std::setprecision(0) << getAltitude() << "\tr.d_i: " << r->d << "\tr.d_r: " << newR << "\tN: " << mesh3d.normal << "\ttheta_i: " << theta_i;
+		BOOST_LOG_TRIVIAL(debug) << std::fixed << "REFLECT Alt: " << std::setprecision(0) << getAltitude() << "\tr.d_i: " << r->d << "\tr.d_r: " << newR << "\tN: " << mesh3d.normal << "\ttheta_i: " << theta_i;
 
 		r->d = newR.norm();
 		r->previousRefractiveIndex = refractiveIndex;
