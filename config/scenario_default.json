@@ -7,11 +7,16 @@
     	"start": 1000,
     	"end": 40000
     },
-    "ionosphere": [{
-        "name" : "M2 Layer",
-        "stratification": "constant",
-        "peakProductionAltitude": 125000,
-        "electronPeakDensity": "2.5e11",
-        "neutralScaleHeight": 11100
-    }]
+    "ionosphere": {
+    	"start": 70000,
+    	"step": 1000,
+    	"end": 250000,
+	    "layers": [{
+	        "name" : "M2 Layer",
+	        "stratification": "constant",
+	        "peakProductionAltitude": 125000,
+	        "electronPeakDensity": "2.5e11",
+	        "neutralScaleHeight": 11100
+	    }]
+    }
 }

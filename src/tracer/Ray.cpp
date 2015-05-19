@@ -59,12 +59,12 @@ namespace tracer {
 
 		// limit the simulation to avoid unnecessary calculations
 		if (rayLine.origin.distance(Vector3d(0,0,0)) > Application::getInstance().getCelestialConfig().getInt("radius") + 250e3) {
-			BOOST_LOG_TRIVIAL(error) << "Out of scene bounds!";
+			BOOST_LOG_TRIVIAL(error) << "Ray " << rayNumber << " result: Out of scene bounds!";
 
 			return 0;
 		}
 		if (tracings >= Application::getInstance().getApplicationConfig().getInt("tracingLimit")) {
-			BOOST_LOG_TRIVIAL(error) << "Tracing limit exceeded!";
+			BOOST_LOG_TRIVIAL(error) << "Ray " << rayNumber << " result: Tracing limit exceeded!";
 			return 0;
 		}
 

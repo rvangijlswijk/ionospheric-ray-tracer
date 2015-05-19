@@ -8,17 +8,22 @@
     	"end": 40000,
     	"duststorm": 0
     },
-    "ionosphere": [{
-        "name" : "M2 Layer",
-        "stratification": "constant",
-        "peakProductionAltitude": 121000,
-        "electronPeakDensity": "1.7e11",
-        "neutralScaleHeight": 13000
-    },{
-        "name" : "M1 Layer",
-        "stratification": "constant",
-        "peakProductionAltitude": 95000,
-        "electronPeakDensity": "6.0e10",
-        "neutralScaleHeight": 7600
-    }]
+    "ionosphere": {
+    	"start": 70000,
+    	"step": 400,
+    	"end": 250000,
+	    "layers": [{
+	        "name" : "M2 Layer",
+	        "stratification": "constant",
+	        "peakProductionAltitude": 121000,
+	        "electronPeakDensity": "1.7e11",
+	        "neutralScaleHeight": 13000
+	    },{
+	        "name" : "M1 Layer",
+	        "stratification": "constant",
+	        "peakProductionAltitude": 95000,
+	        "electronPeakDensity": "6.0e10",
+	        "neutralScaleHeight": 7600
+	    }]
+    }
 }

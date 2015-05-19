@@ -22,11 +22,11 @@ namespace {
 
 		Config celestialConfig = Config("config/scenario_LS180_SA75_DS0.json");
 
-		double SZA = 85 * Constants::PI / 180;
+		double SZA = 71 * Constants::PI / 180;
 		double R = 3390e3;
 
 		int dh = 100;
-		const Json::Value ionosphereConfig = celestialConfig.getArray("ionosphere");
+		const Json::Value ionosphereConfig = celestialConfig.getObject("ionosphere")["layers"];
 		for (int h = 50e3; h < 250e3; h += dh) {
 			Vector3d N = Vector3d(sin(SZA), cos(SZA), 0).norm();
 			Plane3d mesh = Plane3d(N, Vector3d((R+h)*N.x, (R+h)*N.y, (R+h)*N.z));
@@ -59,7 +59,7 @@ namespace {
 		}
 
 		MatlabExporter me;
-		me.dump("Debug/data_LS180_SA75_DS0_SZA85.dat", dataSet);
+		me.dump("Debug/data_LS180_SA75_DS0_SZA71.dat", dataSet);
 	}
 
 	TEST_F(ValidationTest, ElectronDensityProfilesScanSZA) {
@@ -71,7 +71,7 @@ namespace {
 		double R = 3390e3;
 
 		int dh = 100;
-		const Json::Value ionosphereConfig = celestialConfig.getArray("ionosphere");
+		const Json::Value ionosphereConfig = celestialConfig.getObject("ionosphere")["layers"];
 		for (double SZA = 0; SZA < Constants::PI/2; SZA += Constants::PI/180) {
 			for (int h = 50e3; h < 250e3; h += dh) {
 				Vector3d N = Vector3d(sin(SZA), cos(SZA), 0).norm();

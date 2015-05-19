@@ -193,12 +193,14 @@ namespace core {
 			}
 		}
 
-		int dh = 400;
-		const Json::Value ionosphereConfig = _celestialConfig.getArray("ionosphere");
+		const Json::Value ionosphereConfig = _celestialConfig.getObject("ionosphere");
+		int start = ionosphereConfig["start"].asInt();
+		int dh = ionosphereConfig["step"].asInt();
+		int end =ionosphereConfig["end"].asInt();
 
 		for (double latitude = Constants::PI/2; latitude < Constants::PI/2 + 10*Constants::PI/180; latitude += angularStepSize) {
 			for (double theta = Constants::PI/4; theta < Constants::PI/2; theta += angularStepSize) {
-				for (int h = 80e3; h < 250e3; h += dh) {
+				for (int h = start; h < end; h += dh) {
 
 					Vector3d N = Vector3d(cos(theta), sin(theta), cos(latitude)).norm();
 					Plane3d mesh = Plane3d(N, Vector3d((R+h)*N.x, (R+h)*N.y, (R+h)*N.z));
@@ -206,13 +208,11 @@ namespace core {
 					Ionosphere* io = new Ionosphere(mesh);
 					io->layerHeight = dh;
 
-					for (int idx = 0; idx < ionosphereConfig.size(); idx++) {
+					for (int idx = 0; idx < ionosphereConfig["layers"].size(); idx++) {
 
-						double electronPeakDensity = atof(ionosphereConfig[idx].get("electronPeakDensity", "").asCString());
-						double peakProductionAltitude = ionosphereConfig[idx].get("peakProductionAltitude", "").asDouble();
-						double neutralScaleHeight = ionosphereConfig[idx].get("neutralScaleHeight", 11.1e3).asDouble();
-						Json::Value stratificationRaw = ionosphereConfig[idx].get("stratification", "");
-						const char * stratificationType = stratificationRaw.asCString();
+						double electronPeakDensity = atof(ionosphereConfig["layers"][idx].get("electronPeakDensity", "").asCString());
+						double peakProductionAltitude = ionosphereConfig["layers"][idx].get("peakProductionAltitude", "").asDouble();
+						double neutralScaleHeight = ionosphereConfig["layers"][idx].get("neutralScaleHeight", 11.1e3).asDouble();
 
 						io->superimposeElectronNumberDensity(electronPeakDensity, peakProductionAltitude, neutralScaleHeight);
 					}
