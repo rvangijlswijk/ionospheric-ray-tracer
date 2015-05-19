@@ -122,11 +122,15 @@ namespace core {
 			double fmin = _applicationConfig.getObject("frequencies")["min"].asDouble();
 			double fstep = _applicationConfig.getObject("frequencies")["step"].asDouble();
 			double fmax = _applicationConfig.getObject("frequencies")["max"].asDouble();
+			double SZAmin = _applicationConfig.getObject("SZA")["min"].asDouble();
+			double SZAstep = _applicationConfig.getObject("SZA")["step"].asDouble();
+			double SZAmax = _applicationConfig.getObject("SZA")["max"].asDouble();
 
 			BOOST_LOG_TRIVIAL(info) << "Scanning frequencies " << fmin << " Hz to " << fmax << "Hz with steps of " << fstep << "Hz";
+			BOOST_LOG_TRIVIAL(info) << "Scanning SZA " << SZAmin << " deg to " << SZAmax << " deg with steps of " << SZAstep << " deg";
 
 			for (double freq = fmin; freq <= fmax; freq += fstep) {
-				for (double SZA = 10; SZA <= 80; SZA += 10) {
+				for (double SZA = SZAmin; SZA <= SZAmax; SZA += SZAstep) {
 						Ray r;
 						r.rayNumber = ++rayCounter;
 						r.frequency = freq;
@@ -135,7 +139,7 @@ namespace core {
 						r.originalAngle = SZA * Constants::PI / 180.0;
 						Vector3d direction = Vector3d(cos(Constants::PI/2.0 - r.originalAngle),
 								sin(Constants::PI/2.0 - r.originalAngle),
-								tan(-4 * Constants::PI / 180));
+								0);
 						r.d = direction.norm();
 
 						Worker w;
