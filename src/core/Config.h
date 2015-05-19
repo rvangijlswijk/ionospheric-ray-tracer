@@ -23,6 +23,11 @@ namespace core {
 			Json::Value getArray(const char * path);
 			Json::Value getObject(const char * path);
 
+			friend std::ostream& operator<<(std::ostream &strm, const raytracer::core::Config &c) {
+
+				return strm << c._doc.toStyledString();
+			}
+
 		private:
 			Json::Value _doc;
 
