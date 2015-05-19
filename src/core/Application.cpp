@@ -47,6 +47,7 @@ namespace core {
 							<< "\t-c | --config\t Application config file\n"
 							<< "\t-i | --iterations\t The number of consecutive times every ray option should be run.\n"
 							<< "\t-h | --help\t This help.\n"
+							<< "\t-o | --output\t Path where output file should be stored.\n"
 							<< "\t-p | --parallelism\t Multithreading indicator.\n"
 							<< "\t-v | --verbose\t Verbose, display log output\n"
 							<< "\t-vv \t\t Very verbose, display log and debug output\n";
@@ -60,6 +61,9 @@ namespace core {
 
 			} else if (strcmp(argv[i], "-p") == 0 || strcmp(argv[i], "--parallelism") == 0) {
 				_parallelism = atoi(argv[i+1]);
+
+			} else if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--output") == 0) {
+				_outputFile = argv[i+1];
 
 			} else if (strcmp(argv[i], "-i") == 0 || strcmp(argv[i], "--iterations") == 0) {
 				_iterations = atoi(argv[i+1]);
@@ -160,12 +164,17 @@ namespace core {
 
 		double t = tmr.elapsed();
 		double tracingsPerSec = _numTracings / t;
-	    printf("Elapsed: %5.2f sec. %d tracings done. %5.2f tracings/sec", t, _numTracings, tracingsPerSec);
+		char buffer[80];
+	    sprintf(buffer, "Elapsed: %5.2f sec. %d tracings done. %5.2f tracings/sec",
+	    		t, _numTracings, tracingsPerSec);
+	    BOOST_LOG_TRIVIAL(warning) << buffer;
 
 		//CsvExporter ce;
 		//ce.dump("Debug/data.csv", dataSet);
 		MatlabExporter me;
-		me.dump("Debug/data.dat", dataSet);
+		me.dump(_outputFile, dataSet);
+
+	    BOOST_LOG_TRIVIAL(warning) << "Results stored at: " << _outputFile;
 	}
 
 	void Application::stop() {
