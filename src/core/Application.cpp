@@ -5,6 +5,8 @@
 //============================================================================
 
 #include "Application.h"
+#include <string>
+#include <regex>
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
@@ -77,6 +79,11 @@ namespace core {
 		}
 
 		// load scenario config file. Must be given.
+		std::cout << argv[argc-1] << endl;
+		if (!std::regex_match (argv[argc-1], std::regex("[A-Za-z0-9_/]+\.json") )) {
+			BOOST_LOG_TRIVIAL(fatal) << "No scenario file given! Exiting.";
+			std::exit(0);
+		}
 		_celestialConfigFile = argv[argc-1];
 	}
 
