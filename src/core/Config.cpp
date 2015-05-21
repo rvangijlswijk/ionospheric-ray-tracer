@@ -43,7 +43,7 @@ namespace core {
 			cerr << path << " does not exist!" << endl;
 		}
 
-		return _doc.get(path, "UTF-32").asInt();
+		return _doc.get(path, "").asInt();
 	}
 
 	double Config::getDouble(const char * path) {
@@ -52,7 +52,7 @@ namespace core {
 			cerr << path << " does not exist!" << endl;
 		}
 
-		return _doc.get(path, "UTF-32").asDouble();
+		return atof(_doc.get(path, "").asCString());
 	}
 
 	Json::Value Config::getArray(const char * path) {
@@ -61,7 +61,7 @@ namespace core {
 			cerr << path << " does not exist!" << endl;
 		}
 
-		if (!_doc.get(path, "UTF-32").isArray()) {
+		if (!_doc.get(path, "").isArray()) {
 			cerr << path << " is not an array!" << endl;
 		}
 
