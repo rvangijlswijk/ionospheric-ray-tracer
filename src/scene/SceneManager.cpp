@@ -49,8 +49,8 @@ namespace scene {
 
 			Plane3d mesh = gp->getMesh();
 
-			double dx = r.o.x - mesh.centerpoint.x;
-			double dy = r.o.y - mesh.centerpoint.y;
+			double dx = mesh.centerpoint.x - r.o.x;
+			double dy = mesh.centerpoint.y - r.o.y;
 
 			if (dx < 0 && dy < 0 && quadrant == 1)
 				continue;
