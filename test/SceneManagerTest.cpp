@@ -47,7 +47,7 @@ namespace {
 
 		Line3d rayLine = Line3d(Vector3d(0, 0, 0), Vector3d(100e3, 3390e3 + 101e3, 0));
 
-		Intersection is = sm.intersect(&r, rayLine);
+		Intersection is = sm.intersect(r, rayLine);
 		Plane3d mesh = (*is.g).mesh3d;
 
 		ASSERT_NE(GeometryType::none, is.o);
@@ -65,7 +65,7 @@ namespace {
 
 		Line3d rayLine = Line3d(Vector3d(0, 0, 0), Vector3d(100e3, 3390e3 + 99e3, 0));
 
-		Intersection is = sm.intersect(&r, rayLine);
+		Intersection is = sm.intersect(r, rayLine);
 
 		ASSERT_EQ(GeometryType::none, is.o);
 	}
@@ -83,7 +83,7 @@ namespace {
 		rayLine.destination.x = 100e3 / tan(angle) + 100e3 - offset;
 		rayLine.destination.y = 200e3 + 3390e3;
 
-		Intersection is = sm.intersect(&r, rayLine);
+		Intersection is = sm.intersect(r, rayLine);
 		Plane3d mesh = (*is.g).mesh3d;
 
 		ASSERT_NEAR((rayLine.destination.y - rayLine.origin.y) / (rayLine.destination.x - rayLine.origin.x), tan(angle), 1e-3);
@@ -97,7 +97,7 @@ namespace {
 		rayLine.origin.x -= 1e3;
 		rayLine.destination.x -= 1e3;
 
-		is = sm.intersect(&r, rayLine);
+		is = sm.intersect(r, rayLine);
 		ASSERT_EQ(GeometryType::none, is.o);
 	}
 
@@ -129,7 +129,7 @@ namespace {
 
 		Line3d rayLine = Line3d(Vector3d(0, 0, 0), Vector3d(100e3, 3390e3 + 105e3, 0));
 
-		Intersection is = sm.intersect(&r, rayLine);
+		Intersection is = sm.intersect(r, rayLine);
 		Plane3d mesh2 = (*is.g).mesh3d;
 
 		ASSERT_NE(GeometryType::none, is.o);

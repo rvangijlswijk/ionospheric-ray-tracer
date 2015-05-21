@@ -79,7 +79,6 @@ namespace core {
 		}
 
 		// load scenario config file. Must be given.
-		std::cout << argv[argc-1] << endl;
 		if (!std::regex_match (argv[argc-1], std::regex("[A-Za-z0-9_/]+\.json") )) {
 			BOOST_LOG_TRIVIAL(fatal) << "No scenario file given! Exiting.";
 			std::exit(0);
@@ -219,7 +218,7 @@ namespace core {
 		int end =ionosphereConfig["end"].asInt();
 
 		for (double latitude = Constants::PI/2; latitude < Constants::PI/2 + 10*Constants::PI/180; latitude += angularStepSize) {
-			for (double theta = Constants::PI/4; theta < Constants::PI/2; theta += angularStepSize) {
+			for (double theta = 0; theta < Constants::PI/2; theta += angularStepSize) {
 				for (int h = start; h < end; h += dh) {
 
 					Vector3d N = Vector3d(cos(theta), sin(theta), cos(latitude)).norm();

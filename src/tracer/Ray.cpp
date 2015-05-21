@@ -69,7 +69,7 @@ namespace tracer {
 		}
 
 		// find intersection
-		Intersection hit = Application::getInstance().getSceneManager().intersect(this, rayLine);
+		Intersection hit = Application::getInstance().getSceneManager().intersect(*this, rayLine);
 		this->lastHit = hit.g;
 //		printf("Hit: %6.3f, %6.3f \n", hit.pos.x, hit.pos.y);
 

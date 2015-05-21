@@ -9,6 +9,7 @@
 #define SCENEMANAGER_H_
 
 #include <list>
+#include <vector> // the general-purpose vector container
 #include "../math/Line2d.h"
 #include "../math/Line3d.h"
 #include "../tracer/Ray.h"
@@ -29,7 +30,7 @@ namespace scene {
 			/**
 			 * Find which object in the scene intersects with a ray
 			 */
-			Intersection intersect(Ray* r, Line3d &rayLine);
+			Intersection intersect(Ray &r, Line3d &rayLine);
 
 			/**
 			 * Add an object to the scene
@@ -52,9 +53,11 @@ namespace scene {
 			 * Retrieve a list of scene objects which have a possibility of
 			 * colliding with the ray. Other objects are discarded.
 			 */
-			list<Geometry*> getPossibleHits(Ray * r);
+			std::vector<Geometry*> getPossibleHits(Ray &r, Line3d & rayLine);
+			bool isInvalid(Geometry* g);
 
-			list<Geometry*> sceneObjects;
+			list<Geometry*> sceneObjectsList;
+			std::vector<Geometry*> _sceneObjectsVector;
 	};
 
 } /* namespace scene */
