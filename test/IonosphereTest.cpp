@@ -290,7 +290,7 @@ namespace {
 			ion.layerHeight = 1000;
 			ion.setup();
 			ion.superimposeElectronNumberDensity(2.5e11, 125e3, 11.1e3);
-			ion.attenuate(&rA, ion.layerHeight);
+			ion.attenuate(&rA);
 
 			ASSERT_NEAR(h, ion.getAltitude(), 1);
 		}
@@ -307,7 +307,7 @@ namespace {
 			ion.layerHeight = 1000;
 			ion.setup();
 			ion.superimposeElectronNumberDensity(1e11, 100e3, 11.1e3);
-			ion.attenuate(&rA, ion.layerHeight);
+			ion.attenuate(&rA);
 
 			ASSERT_NEAR(h, ion.getAltitude(), 1);
 		}

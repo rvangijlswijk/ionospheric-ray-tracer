@@ -30,7 +30,7 @@ namespace scene {
 			void interact(Ray *r, Vector3d &hitpos);
 			void refract(Ray *r);
 			void reflect(Ray *r);
-			void attenuate(Ray *r, double magnitude);
+			void attenuate(Ray *r);
 			void attenuateWithers(Ray *r);
 			void rangeDelay(Ray *r);
 			void phaseAdvance(Ray *r);
@@ -47,7 +47,7 @@ namespace scene {
 			int determineWaveBehaviour(Ray *r);
 			double layerHeight = 0;
 			double electronDensityVariability = 0;
-			static constexpr double surfaceCollisionFrequency = 2.8e10;	// s^-1
+			static constexpr double surfaceCollisionFrequency = 4.5e10;	// s^-1
 
 		private:
 			double _altitude = 0;

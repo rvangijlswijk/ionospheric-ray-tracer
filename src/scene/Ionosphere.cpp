@@ -56,7 +56,6 @@ namespace scene {
 
 		setup();
 
-		double magnitude = r->o.distance(hitpos);
 		int waveBehaviour = determineWaveBehaviour(r);
 
 		if (waveBehaviour == Ray::wave_reflection) {
@@ -66,7 +65,7 @@ namespace scene {
 		}
 		r->o = hitpos;
 
-		attenuate(r, magnitude);
+		attenuate(r);
 		rangeDelay(r);
 		phaseAdvance(r);
 		timeDelay(r);
@@ -128,27 +127,27 @@ namespace scene {
 	 * A ray with a higher SZA will travel a longer path through the layer and
 	 * thus face more attenuation.
 	 */
-	void Ionosphere::attenuate(Ray *r, double magnitude) {
+	void Ionosphere::attenuate(Ray *r) {
 
+		double m3tocm3 = 1e-6;
+		double theta_r = getMesh().normal.angle(r->d);
+		double magnitude = layerHeight * cos(theta_r);
 		double correctionFactor = 1e-2;
 
 //		double theta_r = r->getAngle() - Constants::PI/2 + getSolarZenithAngle2d();
 //
-//		double mu_r = sqrt(1 - pow(getPlasmaFrequency(), 2) / pow(2 * Constants::PI * r->frequency, 2));
-//
 //		double ki = (-pow(getPlasmaFrequency(), 2) / (2 * Constants::C * mu_r))
 //				* getCollisionFrequency() / (pow(2 * Constants::PI * r->frequency, 2) + pow(getCollisionFrequency(), 2));
 
-//		printf("wp: %4.2e, f: %4.2e, mu_r: %4.2e, colFreq: %4.2e ", getPlasmaFrequency(), r->frequency, mu_r, getCollisionFrequency());
+//		printf("wp: %4.2e, f: %4.2e, colFreq: %4.2e ", getPlasmaFrequency(), r->frequency, getCollisionFrequency());
 
 //		double loss = - abs(20 * log10(exp(1)) * ki * magnitude * abs(1 / cos(getSolarZenithAngle2d())) * cos(abs(theta_r)));
-		double loss = -1.15e-6 * (getElectronNumberDensity() * getCollisionFrequency() * magnitude) / pow(r->frequency, 2)
-				* correctionFactor;
-//		double collisionFrequency = getCollisionFrequency();
-//		double loss = ((pow(Constants::ELEMENTARY_CHARGE, 2) / (2 * Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM)))
-//				* (1 / (2 * Constants::PI * getRefractiveIndex(r, Ionosphere::REFRACTION_KELSO) * r->frequency))
-//				* (getElectronNumberDensity() * collisionFrequency / (pow(2 * Constants::PI * r->frequency, 2) + pow(collisionFrequency, 2)))
-//				* magnitude;
+//		double loss = -1.15e-6 * (getElectronNumberDensity() * getCollisionFrequency() * magnitude) / pow(r->frequency, 2)
+//				* correctionFactor;
+		double collisionFrequency = getCollisionFrequency();
+		double loss = -4.6e-6
+				* (getElectronNumberDensity() * collisionFrequency / (pow(2 * Constants::PI * r->frequency, 2) + pow(collisionFrequency, 2)))
+				* magnitude;
 
 //		printf("magnitude: %4.2f, totalLoss: %4.2e, theta: %4.2f, alt: %4.2f ", magnitude, r->signalPower, theta_r, _altitude);
 
@@ -230,11 +229,12 @@ namespace scene {
 	 */
 	void Ionosphere::superimposeElectronNumberDensity(double peakDensity, double peakAltitude, double neutralScaleHeight) {
 
+		double SZA = mesh3d.normal.angle(Vector3d::SUBSOLAR);
+		double correctedPeakAltitude = peakAltitude + 1e4 * log(1/cos(SZA));
 		double normalizedHeight = (getAltitude() - peakAltitude) / neutralScaleHeight;
-		double angle = mesh3d.normal.angle(Vector3d::SUBSOLAR);
 
-		double electronNumberDensity = peakDensity *
-				exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(angle)) * exp(-normalizedHeight) ));
+		double electronNumberDensity = peakDensity * cos(SZA) *
+				exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(SZA)) * exp(-normalizedHeight) ));
 
 		_electronNumberDensity += electronNumberDensity;
 	}
@@ -294,12 +294,14 @@ namespace scene {
 	}
 
 	/**
-	 * Model the collision frequency according to Nielsen 2007, figure 4. This is an interpolated
-	 * approximation and therefore only valid between 30 and 200km altitude.
+	 * Model the collision frequency
+	 * @unit Hz
 	 */
 	double Ionosphere::getCollisionFrequency() {
 
-		return Ionosphere::surfaceCollisionFrequency * exp(-_altitude / Constants::NEUTRAL_SCALE_HEIGHT);
+		//return Ionosphere::surfaceCollisionFrequency * exp(-_altitude / Constants::NEUTRAL_SCALE_HEIGHT);
+		double nCO2 = 2.8e17 * exp(-_altitude / Constants::NEUTRAL_SCALE_HEIGHT);
+		return 1.0436e-07 * nCO2;
 	}
 
 	/**

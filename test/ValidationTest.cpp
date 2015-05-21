@@ -109,4 +109,71 @@ namespace {
 		MatlabExporter me;
 		me.dump("Debug/data_LS180_SA75_DS0_ScanSZA.dat", dataSet);
 	}
+
+	TEST_F(ValidationTest, Nielsen2007AbsorptionScanSZA) {
+
+		list<Data> dataSet;
+
+		Config celestialConfig = Config("config/scenario_nielsen2007.json");
+
+		double R = 3390e3;
+		double angularStepSize = Constants::PI/180;
+
+		int dh = 1000;
+		int numRay = 0;
+
+		const Json::Value ionosphereConfig = celestialConfig.getObject("ionosphere")["layers"];
+		for (double f = 3e6; f <= 4e6; f += 2e5) {
+			for (double SZA = 0; SZA < Constants::PI/2; SZA += angularStepSize) {
+
+				Ray r;
+				r.rayNumber = ++numRay;
+				r.frequency = f;
+				r.o = Vector3d(0, 0, 0);
+				//r.d = Vector3d(sin(SZA), cos(SZA), 0).norm();
+				r.setAngle(Constants::PI/2 - SZA);
+				Vector3d N = Vector3d(sin(SZA), cos(SZA), 0).norm();
+
+				for (int h = 90e3; h < 300e3; h += dh) {
+					Plane3d mesh = Plane3d(N, Vector3d((R+h)*N.x, (R+h)*N.y, (R+h)*N.z));
+					mesh.size = 1000;
+					Ionosphere io = Ionosphere(mesh);
+					io.layerHeight = dh;
+
+					ASSERT_NEAR(SZA, io.getMesh().normal.angle(Vector3d::SUBSOLAR), 0.001);
+
+					for (int idx = 0; idx < ionosphereConfig.size(); idx++) {
+
+						double electronPeakDensity = atof(ionosphereConfig[idx].get("electronPeakDensity", "").asCString());
+						double peakProductionAltitude = ionosphereConfig[idx].get("peakProductionAltitude", "").asDouble();
+						double neutralScaleHeight = ionosphereConfig[idx].get("neutralScaleHeight", "").asDouble();
+
+						ASSERT_LT(0, electronPeakDensity);
+						ASSERT_LT(0, peakProductionAltitude);
+						ASSERT_LT(0, neutralScaleHeight);
+
+						io.superimposeElectronNumberDensity(electronPeakDensity, peakProductionAltitude, neutralScaleHeight);
+
+						ASSERT_NEAR(h, io.getAltitude(), 1);
+					}
+
+					if (io.determineWaveBehaviour(&r) == Ray::wave_refraction) {
+						io.attenuate(&r);
+					} else {
+						r.signalPower = 0;
+					}
+				}
+
+				Data d;
+				d.rayNumber = r.rayNumber;
+				d.frequency = r.frequency;
+				d.signalPower = r.signalPower;
+				d.theta_0 = SZA;
+				dataSet.push_back(d);
+			}
+		}
+
+		MatlabExporter me;
+		me.dump("Debug/data_nielsen2007absorption.dat", dataSet);
+	}
 }

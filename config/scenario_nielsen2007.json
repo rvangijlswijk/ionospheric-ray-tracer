@@ -1,0 +1,24 @@
+{
+    "name": "Mars",
+    "solarLongitude": 180,
+    "solarActivity": 70,
+    "radius": 3390000,
+    "surfaceNCO2": "2.8e17",
+    "atmosphere": {
+    	"start": 1000,
+    	"end": 40000,
+    	"duststorm": 0
+    },
+    "ionosphere": {
+    	"start": 90000,
+    	"step": 400,
+    	"end": 300000,
+	    "layers": [{
+	        "name" : "M2 Layer",
+	        "stratification": "constant",
+	        "peakProductionAltitude": 120000,
+	        "electronPeakDensity": "1.65e11",
+	        "neutralScaleHeight": 9445
+	    }]
+    }
+}
