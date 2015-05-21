@@ -1,6 +1,7 @@
 {
     "name": "Mars",
     "radius": 3390000,
+    "surfaceNCO2": "2.8e17",
     "atmosphere": {
     	"start": 1000,
     	"end": 40000

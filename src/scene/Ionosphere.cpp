@@ -129,29 +129,13 @@ namespace scene {
 	 */
 	void Ionosphere::attenuate(Ray *r) {
 
-		double m3tocm3 = 1e-6;
 		double theta_r = getMesh().normal.angle(r->d);
 		double magnitude = layerHeight * cos(theta_r);
-		double correctionFactor = 1e-2;
-
-//		double theta_r = r->getAngle() - Constants::PI/2 + getSolarZenithAngle2d();
-//
-//		double ki = (-pow(getPlasmaFrequency(), 2) / (2 * Constants::C * mu_r))
-//				* getCollisionFrequency() / (pow(2 * Constants::PI * r->frequency, 2) + pow(getCollisionFrequency(), 2));
-
-//		printf("wp: %4.2e, f: %4.2e, colFreq: %4.2e ", getPlasmaFrequency(), r->frequency, getCollisionFrequency());
-
-//		double loss = - abs(20 * log10(exp(1)) * ki * magnitude * abs(1 / cos(getSolarZenithAngle2d())) * cos(abs(theta_r)));
-//		double loss = -1.15e-6 * (getElectronNumberDensity() * getCollisionFrequency() * magnitude) / pow(r->frequency, 2)
-//				* correctionFactor;
 		double collisionFrequency = getCollisionFrequency();
-		double loss = -4.6e-6
+
+		double loss = -4.6e-5
 				* (getElectronNumberDensity() * collisionFrequency / (pow(2 * Constants::PI * r->frequency, 2) + pow(collisionFrequency, 2)))
 				* magnitude;
-
-//		printf("magnitude: %4.2f, totalLoss: %4.2e, theta: %4.2f, alt: %4.2f ", magnitude, r->signalPower, theta_r, _altitude);
-
-//		printf("Loss: %4.2e ", loss);
 
 		r->signalPower += loss;
 	}
@@ -230,10 +214,10 @@ namespace scene {
 	void Ionosphere::superimposeElectronNumberDensity(double peakDensity, double peakAltitude, double neutralScaleHeight) {
 
 		double SZA = mesh3d.normal.angle(Vector3d::SUBSOLAR);
-		double correctedPeakAltitude = peakAltitude + 1e4 * log(1/cos(SZA));
-		double normalizedHeight = (getAltitude() - peakAltitude) / neutralScaleHeight;
+		double correctedPeakAltitude = peakAltitude + 1e4 * log10(1/cos(SZA));
+		double normalizedHeight = (getAltitude() - correctedPeakAltitude) / neutralScaleHeight;
 
-		double electronNumberDensity = peakDensity * cos(SZA) *
+		double electronNumberDensity = peakDensity *
 				exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(SZA)) * exp(-normalizedHeight) ));
 
 		_electronNumberDensity += electronNumberDensity;
@@ -286,10 +270,6 @@ namespace scene {
 	 */
 	double Ionosphere::getIncidentAngle(Ray *r) {
 
-//		double SZA = getSolarZenithAngle2d();
-//		double beta = atan(r->d.y/r->d.x);
-//		double theta_i = Constants::PI/2 - beta - SZA;
-
 		return acos(abs(r->d * mesh3d.normal) / (r->d.magnitude() * mesh3d.normal.magnitude()));
 	}
 
@@ -299,9 +279,9 @@ namespace scene {
 	 */
 	double Ionosphere::getCollisionFrequency() {
 
-		return Ionosphere::surfaceCollisionFrequency * exp(-_altitude / Constants::NEUTRAL_SCALE_HEIGHT);
-//		double nCO2 = 2.8e17 * exp(-_altitude / Constants::NEUTRAL_SCALE_HEIGHT);
-//		return 1.0436e-07 * nCO2;
+		double nCO2 = Application::getInstance().getCelestialConfig().getDouble("surfaceNCO2")
+				* exp(-_altitude / Constants::NEUTRAL_SCALE_HEIGHT);
+		return 1.0436e-07 * nCO2;
 	}
 
 	/**

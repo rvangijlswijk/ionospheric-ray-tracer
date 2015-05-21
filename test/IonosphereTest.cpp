@@ -144,10 +144,10 @@ namespace {
 		cio4.setMesh(mesh);
 		cio4.setup();
 
-		ASSERT_NEAR(3.424e6, cio.getCollisionFrequency(), 1e4);
-		ASSERT_NEAR(3.787e4, cio2.getCollisionFrequency(), 1e2);
-		ASSERT_NEAR(418.8, cio3.getCollisionFrequency(), 4);
-		ASSERT_NEAR(2.075e7, cio4.getCollisionFrequency(), 1e5);
+		ASSERT_NEAR(7.37e5, cio.getCollisionFrequency(), 1e3);
+		ASSERT_NEAR(3702, cio2.getCollisionFrequency(), 40);
+		ASSERT_NEAR(18.5, cio3.getCollisionFrequency(), 0.2);
+		ASSERT_NEAR(6.12e6, cio4.getCollisionFrequency(), 1e4);
 	}
 
 	TEST_F(IonosphereTest, Refract) {
