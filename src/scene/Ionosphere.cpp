@@ -299,9 +299,9 @@ namespace scene {
 	 */
 	double Ionosphere::getCollisionFrequency() {
 
-		//return Ionosphere::surfaceCollisionFrequency * exp(-_altitude / Constants::NEUTRAL_SCALE_HEIGHT);
-		double nCO2 = 2.8e17 * exp(-_altitude / Constants::NEUTRAL_SCALE_HEIGHT);
-		return 1.0436e-07 * nCO2;
+		return Ionosphere::surfaceCollisionFrequency * exp(-_altitude / Constants::NEUTRAL_SCALE_HEIGHT);
+//		double nCO2 = 2.8e17 * exp(-_altitude / Constants::NEUTRAL_SCALE_HEIGHT);
+//		return 1.0436e-07 * nCO2;
 	}
 
 	/**
