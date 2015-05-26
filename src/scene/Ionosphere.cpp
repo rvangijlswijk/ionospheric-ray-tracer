@@ -130,6 +130,9 @@ namespace scene {
 	void Ionosphere::attenuate(Ray *r) {
 
 		double theta_r = getMesh().normal.angle(r->d);
+		if (theta_r > Constants::PI/2) {
+			theta_r -= Constants::PI/2;
+		}
 		double magnitude = layerHeight * cos(theta_r);
 		double collisionFrequency = getCollisionFrequency();
 
