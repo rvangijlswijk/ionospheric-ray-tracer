@@ -45,8 +45,6 @@ namespace scene {
 	 * of photochemical reactions (discussion with Cyril Simon Wedlund)
 	 */
 	void Ionosphere::setup() {
-
-		_altitude = getAltitude();
 	}
 
 	/**
@@ -249,23 +247,6 @@ namespace scene {
 	}
 
 	/**
-	 * Interpolate the altitude of this ionospheric layer. Throw an exception
-	 * if the difference between the y-components of the edges of the mesh is
-	 * too large, for this would imply the ionospheric layer is under an angle
-	 * which does not make sense.
-	 */
-	double Ionosphere::getAltitude() {
-
-		if (_altitude < 1) {
-
-			_altitude = sqrt(pow(mesh3d.centerpoint.x, 2) + pow(mesh3d.centerpoint.y, 2) + pow(mesh3d.centerpoint.z, 2))
-					- Application::getInstance().getCelestialConfig().getInt("radius");
-		}
-
-		return _altitude;
-	}
-
-	/**
 	 * The incident angle of a ray with respect to the ionospheric layer. This angle depends
 	 * on the propagation angle of the ray and the angle of the layer w.r.t. the sun (SZA)
 	 * The angle is then complementary to the angle between the ray direction vector and the
@@ -283,7 +264,7 @@ namespace scene {
 	double Ionosphere::getCollisionFrequency() {
 
 		double nCO2 = Application::getInstance().getCelestialConfig().getDouble("surfaceNCO2")
-				* exp(-_altitude / Constants::NEUTRAL_SCALE_HEIGHT);
+				* exp(-getAltitude() / Constants::NEUTRAL_SCALE_HEIGHT);
 		return 1.0436e-07 * nCO2;
 	}
 

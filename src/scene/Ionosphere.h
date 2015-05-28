@@ -40,7 +40,6 @@ namespace scene {
 			void superimposeElectronNumberDensity(double peakDensity, double peakAltitude, double neutralScaleHeight);
 			double getElectronNumberDensity();
 			double getRefractiveIndex(Ray *r, refractiveMethod m);
-			double getAltitude();
 			double getIncidentAngle(Ray *r);
 			double getCollisionFrequency();
 			double getTEC();
@@ -50,7 +49,6 @@ namespace scene {
 			static constexpr double surfaceCollisionFrequency = 4.5e10;	// s^-1
 
 		private:
-			double _altitude = 0;
 			double _electronNumberDensity = 0;	// m^-3
 	};
 
