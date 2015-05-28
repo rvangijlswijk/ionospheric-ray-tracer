@@ -37,6 +37,7 @@ namespace tracer {
 			void setAngle(double angleRad);
 			void setAngle(Vector3d angle);
 			void exportData(GeometryType collisionType);
+			void updateAltitude();
 
 			/**
 			 * Origin
@@ -58,6 +59,7 @@ namespace tracer {
 			double rangeDelay = 0.0;
 			double timeDelay = 0.0;
 			double phaseAdvance = 0.0;
+			double altitude = 0.0;
 			Geometry* lastHit;
 			enum waveBehaviour {
 				wave_reflection = 1,

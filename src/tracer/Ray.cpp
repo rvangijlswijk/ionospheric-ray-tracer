@@ -69,6 +69,7 @@ namespace tracer {
 		}
 
 		// find intersection
+		updateAltitude();
 		Intersection hit = Application::getInstance().getSceneManager().intersect(*this, rayLine);
 		this->lastHit = hit.g;
 //		printf("Hit: %6.3f, %6.3f \n", hit.pos.x, hit.pos.y);
@@ -151,6 +152,11 @@ namespace tracer {
 		double magnitude = o.distance(rayEnd);
 
 		timeOfFlight += magnitude / Constants::C;
+	}
+
+	void Ray::updateAltitude() {
+
+		altitude = o.distance(Vector3d(0,0,0)) - Application::getInstance().getCelestialConfig().getInt("radius");
 	}
 
 	void Ray::exportData(GeometryType collisionType) {
