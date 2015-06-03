@@ -210,12 +210,14 @@ namespace scene {
 	}
 
 	/**
-	 *
+	 * Add electrons with a certain density to the electron density already available in this layer.
+	 * This approach allows the superposition of multiple ionospheric profiles into one layer.
+	 * The electron density at the layer is assumed to follow a chapman profile for the daytime.
 	 */
 	void Ionosphere::superimposeElectronNumberDensity(double peakDensity, double peakAltitude, double neutralScaleHeight) {
 
 		double SZA = mesh3d.normal.angle(Vector3d::SUBSOLAR);
-		double correctedPeakAltitude = peakAltitude + 1e4 * log10(1/cos(SZA));
+		double correctedPeakAltitude = peakAltitude + 1e4 * log(1/cos(SZA));
 		double normalizedHeight = (getAltitude() - correctedPeakAltitude) / neutralScaleHeight;
 
 		double electronNumberDensity = peakDensity *
