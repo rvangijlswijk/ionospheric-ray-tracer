@@ -39,5 +39,14 @@ namespace math {
 		return x*v2.x + y*v2.y;
 	}
 
+	/**
+	 * Return the angle theta between two vectors A and B where
+	 * theta = acos(A*B / (A.magnitude()*B.magnitude()))
+	 */
+	double Vector2d::angle(Vector2d v2) {
+
+		return acos(this->dotProduct(v2) / (this->magnitude() * v2.magnitude()));
+	}
+
 } /* namespace math */
 } /* namespace raytracer */
