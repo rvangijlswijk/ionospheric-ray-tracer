@@ -22,7 +22,8 @@ class Vector3d {
 
 		static Vector3d EQUINOX,
 						SUBSOLAR,
-						POLAR;
+						POLAR,
+						CENTER;
 		double x, y, z;
 
 		/**
