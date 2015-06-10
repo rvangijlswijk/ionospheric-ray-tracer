@@ -11,19 +11,19 @@
     },
     "ionosphere": {
     	"start": 70000,
-    	"step": 400,
+    	"step": 100,
     	"end": 250000,
 	    "layers": [{
 	        "name" : "M2 Layer",
 	        "stratification": "constant",
-	        "peakProductionAltitude": 121000,
-	        "electronPeakDensity": "1.7e11",
-	        "neutralScaleHeight": 9500
+	        "peakProductionAltitude": 130000,
+	        "electronPeakDensity": "1.8e11",
+	        "neutralScaleHeight": 11000
 	    },{
 	        "name" : "M1 Layer",
 	        "stratification": "constant",
-	        "peakProductionAltitude": 95000,
-	        "electronPeakDensity": "6.0e10",
+	        "peakProductionAltitude": 110000,
+	        "electronPeakDensity": "9.0e10",
 	        "neutralScaleHeight": 7600
 	    }]
     }

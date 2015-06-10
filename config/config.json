@@ -1,19 +1,20 @@
 {
-	"parallelism": 4,
-	"iterations": 1,
-	"tracingLimit": 5000,
-	"frequencies": {
-		"min": 5000000,
-		"step": 500000,
-		"max": 5000000
-	},
-	"SZA": {
-		"min": 25.0,
-		"step": 0.1,
-		"max": 75.0
+    "parallelism": 1,
+    "iterations": 1,
+    "tracingLimit": 5000,
+    "angularStepSize": "8.726389e-3",
+    "frequencies": {
+        "min": 4500000,
+        "step": 500000,
+        "max": 4500000
+    },
+    "SZA": {
+		"min": 30.0,
+		"step": 5,
+		"max": 30.0
 	},
     "layerHeight": {
-    	"constant": 500,
+    	"constant": 1000,
     	"chapman": {
     			"dhnmin": 300,
     			"dhnmax": 2500
