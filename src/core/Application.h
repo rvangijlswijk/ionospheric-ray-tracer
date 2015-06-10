@@ -12,7 +12,6 @@
 #include <list>
 #include <stdlib.h>
 #include <boost/thread.hpp>
-#include "Timer.cpp"
 #include "Config.h"
 #include "../scene/SceneManager.h"
 #include "../scene/Ionosphere.h"
@@ -56,6 +55,7 @@ namespace core {
 			Config getApplicationConfig();
 			Config getCelestialConfig();
 			void setCelestialConfig(Config conf);
+			void setApplicationConfig(Config conf);
 
 		private:
 			Application() {

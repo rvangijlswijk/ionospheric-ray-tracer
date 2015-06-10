@@ -71,7 +71,7 @@ namespace tracer {
 				wave_tracing_limit_exceeded = 7
 			};
 			waveBehaviour behaviour;
-			static constexpr double magnitude = 10e3;
+			static constexpr double magnitude = 100;
 			static constexpr double powerTransmitted = 10.0; 	// [W]
 	};
 

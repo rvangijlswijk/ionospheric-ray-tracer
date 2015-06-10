@@ -88,7 +88,8 @@ namespace scene {
 		else
 			newR = r->d * ratio + mesh3d.normal * coefficient;
 
-		BOOST_LOG_TRIVIAL(debug) << std::fixed << "REFRACT Alt: " << std::setprecision(0) << getAltitude() << "\tr.d_i: " << r->d << "\tr.d_r: " << newR << "\tN: " << mesh3d.normal << "\tn1/n2: " << ratio << "\ttheta_i: " << theta_i;
+		BOOST_LOG_TRIVIAL(debug) << std::fixed << "REFRACT Alt: " << std::setprecision(0) << getAltitude() << "\tr.d_i: " << r->d << "\tr.d_r: " << newR;
+		BOOST_LOG_TRIVIAL(debug) << "N: " << mesh3d.normal << "\tn1/n2: " << ratio << "\ttheta_i: " << theta_i*180/Constants::PI << "\ttheta_r: " << newR.angle(mesh3d.normal) * 180 / Constants::PI;
 
 		r->d = newR.norm();
 		r->previousRefractiveIndex = refractiveIndex;
@@ -256,7 +257,7 @@ namespace scene {
 	 */
 	double Ionosphere::getIncidentAngle(Ray *r) {
 
-		return acos(abs(r->d * mesh3d.normal) / (r->d.magnitude() * mesh3d.normal.magnitude()));
+		return r->d.angle(mesh3d.normal);
 	}
 
 	/**

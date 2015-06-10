@@ -45,10 +45,14 @@ namespace scene {
 			/**
 			 * Return a list of all objects in the scene
 			 */
-			list<Geometry*> getScene();
+			std::vector<Geometry*> getScene();
+
+			/**
+			 * Sort all the objects in the scene by altitude for easier lookup
+			 */
+			void sortScene();
 
 		private:
-
 			/**
 			 * Retrieve a list of scene objects which have a possibility of
 			 * colliding with the ray. Other objects are discarded.
@@ -56,8 +60,13 @@ namespace scene {
 			std::vector<Geometry*> getPossibleHits(Ray &r, Line3d & rayLine);
 			bool isInvalid(Geometry* g);
 
-			list<Geometry*> sceneObjectsList;
 			std::vector<Geometry*> _sceneObjectsVector;
+
+			double dh;
+			double minH;
+			double maxH;
+			double R;
+			double angularStepSize;
 	};
 
 } /* namespace scene */
