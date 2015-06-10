@@ -257,7 +257,8 @@ namespace scene {
 	 */
 	double Ionosphere::getIncidentAngle(Ray *r) {
 
-		return r->d.angle(mesh3d.normal);
+		// note: the ABSOLUTE angle. Angle between vectors doesnt work.
+		return acos(abs(r->d * mesh3d.normal) / (r->d.magnitude() * mesh3d.normal.magnitude()));
 	}
 
 	/**
