@@ -33,6 +33,11 @@ namespace scene {
 			Intersection intersect(Ray &r, Line3d &rayLine);
 
 			/**
+			 *  Load celestial and application configuration values
+			 */
+			void loadStaticEnvironment();
+
+			/**
 			 * Add an object to the scene
 			 */
 			void addToScene(Geometry* obj);

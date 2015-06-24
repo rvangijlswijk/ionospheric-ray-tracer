@@ -29,6 +29,8 @@ namespace core {
 
 	void Application::init(int argc, char * argv[]) {
 
+		BOOST_LOG_TRIVIAL(debug) << "Init application";
+
 		parseCommandLineArgs(argc, argv);
 		start();
 		run();
@@ -36,6 +38,7 @@ namespace core {
 
 	void Application::parseCommandLineArgs(int argc, char * argv[]) {
 
+		BOOST_LOG_TRIVIAL(debug) << "parseCommandLineArgs";
 
 		for (int i = 0; i < argc; i++) {
 
@@ -89,6 +92,8 @@ namespace core {
 
 	void Application::start() {
 
+		BOOST_LOG_TRIVIAL(debug) << "Start application";
+
 		_isRunning = true;
 
 		_applicationConfig = Config(_applicationConfigFile);
@@ -112,9 +117,13 @@ namespace core {
 				<< _applicationConfig << endl
 				<< "celestialConfig:" << _celestialConfigFile << endl
 				<< _celestialConfig;
+
+		_me = MatlabExporter();
 	}
 
 	void Application::run() {
+
+		BOOST_LOG_TRIVIAL(debug) << "Run application";
 
 		Timer tmr;
 
@@ -178,8 +187,7 @@ namespace core {
 
 		//CsvExporter ce;
 		//ce.dump("Debug/data.csv", dataSet);
-		MatlabExporter me;
-		me.dump(_outputFile, dataSet);
+		_me.dump(_outputFile, dataSet);
 
 	    BOOST_LOG_TRIVIAL(warning) << "Results stored at: " << _outputFile;
 	}
@@ -193,6 +201,9 @@ namespace core {
 	 * Add geometries to the scenemanager
 	 */
 	void Application::createScene() {
+
+		_scm = SceneManager();
+		_scm.loadStaticEnvironment();
 
 		int numSceneObjectsCreated = 0;
 		double R = _celestialConfig.getInt("radius");
@@ -282,6 +293,10 @@ namespace core {
 
 		datasetMutex.lock();
 		dataSet.push_back(dat);
+//		if (dataSet.size() > Data::MAX_DATASET_SIZE) {
+//			_me.dump(_outputFile, dataSet);
+//			dataSet.clear();
+//		}
 		datasetMutex.unlock();
 	}
 

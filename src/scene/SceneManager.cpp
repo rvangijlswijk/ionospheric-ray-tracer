@@ -20,7 +20,12 @@ namespace scene {
 	using namespace std;
 	using namespace core;
 
-	SceneManager::SceneManager() {
+	SceneManager::SceneManager() {}
+
+	/**
+	 *  Load celestial and application configuration values
+	 */
+	void SceneManager::loadStaticEnvironment() {
 		BOOST_LOG_TRIVIAL(debug) << "test SceneManager";
 
 		//const Json::Value ionosphereConfig = Application::getInstance().getCelestialConfig().getObject("ionosphere");
@@ -31,6 +36,9 @@ namespace scene {
 		angularStepSize = Constants::PI/360;//Application::getInstance().getApplicationConfig().getDouble("angularStepSize");
 	}
 
+	/**
+	 * Find which object in the scene intersects with a ray
+	 */
 	Intersection SceneManager::intersect(Ray &r, Line3d & rayLine) {
 
 		static int foo = 0;
