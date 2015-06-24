@@ -52,7 +52,7 @@ namespace tracer {
 		rayEnd.z = o.z + Ray::magnitude * d.z;
 		rayLine.destination = rayEnd;
 
-		printf("Tracing ray: %6.3f %6.3f %6.3f %6.3f theta: %4.2f\n", o.x, o.y, d.x, d.y, angle * 57.296);
+//		printf("Tracing ray: %6.3f %6.3f %6.3f %6.3f theta: %4.2f\n", o.x, o.y, d.x, d.y, angle * 57.296);
 
 		BOOST_LOG_TRIVIAL(debug) << "rayline: (" << rayLine.destination.x << "," << rayLine.destination.y << ") \n";
 //		cout << "previndex: " << previousRefractiveIndex << "\n";

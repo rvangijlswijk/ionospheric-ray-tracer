@@ -254,6 +254,7 @@ namespace scene {
 	 * on the propagation angle of the ray and the angle of the layer w.r.t. the sun (SZA)
 	 * The angle is then complementary to the angle between the ray direction vector and the
 	 * normal of the plane.
+	 * @bugfix 296d831
 	 */
 	double Ionosphere::getIncidentAngle(Ray *r) {
 

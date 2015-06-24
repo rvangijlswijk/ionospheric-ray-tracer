@@ -24,7 +24,7 @@ namespace scene {
 		BOOST_LOG_TRIVIAL(debug) << "test SceneManager";
 
 		//const Json::Value ionosphereConfig = Application::getInstance().getCelestialConfig().getObject("ionosphere");
-		dh = 100;//ionosphereConfig["step"].asInt();
+		dh = 50;//ionosphereConfig["step"].asInt();
 		minH = 70000;//ionosphereConfig["start"].asInt();
 		maxH = 250000;//ionosphereConfig["end"].asInt();
 		R = 3390e3;//Application::getInstance().getCelestialConfig().getInt("radius");
@@ -46,7 +46,7 @@ namespace scene {
 		if (goingUp) {
 			nextAlt = rayLine.origin.distance(Vector3d::CENTER) - R + dh;
 		} else {
-			nextAlt = rayLine.destination.distance(Vector3d::CENTER) - R - dh;
+			nextAlt = rayLine.origin.distance(Vector3d::CENTER) - R - dh;
 		}
 
 		Vector3d oldNormal;
@@ -57,6 +57,7 @@ namespace scene {
 		}
 
 		BOOST_LOG_TRIVIAL(debug) << "Rayline intercept: " << rayLine.getVector() << ", old normal: " << oldNormal << ", colType: " << r.lastHit->type;
+		BOOST_LOG_TRIVIAL(debug) << "curAlt: " << r.altitude << ", nextAlt:" << nextAlt;
 
 		if (nextAlt >= minH && nextAlt <= maxH) {
 			foo++;
@@ -76,7 +77,7 @@ namespace scene {
 			}
 			Vector3d dRv = r.o + r.d * dR;
 			BOOST_LOG_TRIVIAL(debug) << "dRv: " << dRv;
-			BOOST_LOG_TRIVIAL(debug) << "DA: " << DA << ", DB: " << DB << ", curAlt: " << r.altitude << ", nextAlt:" << nextAlt;
+			BOOST_LOG_TRIVIAL(debug) << "DA: " << DA << ", DB: " << DB;
 			// construct new normal
 			Vector3d n = dRv.norm();//Vector3d(sin(gamma2), cos(gamma2), 0).norm();
 
@@ -108,41 +109,11 @@ namespace scene {
 			BOOST_LOG_TRIVIAL(debug) << "Use collision detection approach";
 			Vector3d pos;
 			list<Intersection> hits;
-
-			int quadrant = 2;
-			Vector3d rt = rayLine.getVector();
-			if (rt.x > 0) {
-				if(rt.y < 0)
-					quadrant = 4;
-				else
-					quadrant = 1;
-			} else {
-				if(rt.y < 0)
-					quadrant = 3;
-			}
-
 			double epsilon = 1e-5;
 
 			for (Geometry* gp : _sceneObjectsVector) {
 
-				// skip unnecessary portions of vector
-	//			if ((gp->altitude < r.altitude && r.o.y > 0) || (gp->altitude > r.altitude && r.o.y < 0))
-	//				continue;
-
 				Plane3d mesh = gp->getMesh();
-
-				double dx = mesh.centerpoint.x - r.o.x;
-				double dy = mesh.centerpoint.y - r.o.y;
-
-				if (dx < 0 && dy < 0 && quadrant == 1)
-					continue;
-				if (dx > 0 && dy < 0 && quadrant == 2)
-					continue;
-				if (dx > 0 && dy > 0 && quadrant == 3)
-					continue;
-				if (dx < 0 && dy > 0 && quadrant == 4)
-					continue;
-
 				pos = rayLine.intersect(mesh);
 
 				if (abs(pos.x) > epsilon || abs(pos.y) > epsilon || abs(pos.z) > epsilon) {
