@@ -118,7 +118,7 @@ namespace core {
 				<< "celestialConfig:" << _celestialConfigFile << endl
 				<< _celestialConfig;
 
-		_me = MatlabExporter();
+		_me = MatlabExporter(_outputFile);
 	}
 
 	void Application::run() {
@@ -293,10 +293,10 @@ namespace core {
 
 		datasetMutex.lock();
 		dataSet.push_back(dat);
-//		if (dataSet.size() > Data::MAX_DATASET_SIZE) {
-//			_me.dump(_outputFile, dataSet);
-//			dataSet.clear();
-//		}
+		if (dataSet.size() > Data::MAX_DATASET_SIZE) {
+			_me.dump(_outputFile, dataSet);
+			dataSet.clear();
+		}
 		datasetMutex.unlock();
 	}
 

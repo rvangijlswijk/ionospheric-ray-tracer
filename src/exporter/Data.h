@@ -29,6 +29,8 @@ namespace exporter {
 			double signalPower = 0;
 			double timeOfFlight = 0;
 			scene::GeometryType collisionType = scene::GeometryType::none;
+
+			static constexpr int MAX_DATASET_SIZE = 3;
 	};
 
 } /* namespace exporter */
