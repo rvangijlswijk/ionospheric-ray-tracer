@@ -25,6 +25,21 @@ namespace tracer {
 		public:
 			Intersection();
 			~Intersection();
+			Intersection(const Intersection& copy) {
+				r = copy.r;
+				o = copy.o;
+				pos = copy.pos;
+				memcpy(g, copy.g, sizeof(g));
+			}
+			Intersection& operator=(const Intersection& rhs) {
+				if (this != &rhs) {
+					r = rhs.r;
+					o = rhs.o;
+					pos = rhs.pos;
+					memcpy(g, rhs.g,sizeof(g));
+				}
+				return *this;
+			}
 			Ray r;
 			GeometryType o = GeometryType::none;
 			Geometry* g;

@@ -44,9 +44,8 @@ namespace scene {
 		static int foo = 0;
 
 		Intersection finalHit;
+		//finalHit.g = new Geometry();//(Geometry*)malloc(sizeof(Geometry));
 		finalHit.o = GeometryType::none;
-		finalHit.g = new Geometry();
-		finalHit.g->type = GeometryType::none;
 		bool goingUp = rayLine.origin.distance(Vector3d::CENTER) < rayLine.destination.distance(Vector3d::CENTER);
 
 		double nextAlt;
@@ -58,13 +57,13 @@ namespace scene {
 		}
 
 		Vector3d oldNormal;
-		if (r.lastHit->type == GeometryType::none) {
+		if (r.lastHitType == GeometryType::none) {
 			oldNormal = r.o.norm();
 		} else {
-			oldNormal = r.lastHit->mesh3d.normal;
+			oldNormal = r.lastHitNormal;
 		}
 
-		BOOST_LOG_TRIVIAL(debug) << "Rayline intercept: " << rayLine.getVector() << ", old normal: " << oldNormal << ", colType: " << r.lastHit->type;
+		BOOST_LOG_TRIVIAL(debug) << "Rayline intercept: " << rayLine.getVector() << ", old normal: " << oldNormal << ", colType: " << r.lastHitType;
 		BOOST_LOG_TRIVIAL(debug) << "curAlt: " << r.altitude << ", nextAlt:" << nextAlt;
 
 		if (nextAlt >= minH && nextAlt <= maxH) {
@@ -95,7 +94,7 @@ namespace scene {
 			// construct new ionosphere object
 			Plane3d mesh = Plane3d(n, Vector3d(dRv.x, dRv.y, dRv.z));
 			mesh.size = angularStepSize * R;
-			delete r.lastHit;
+//			delete r.lastHit;
 			Ionosphere* io = new Ionosphere(mesh);
 			io->layerHeight = dh;
 
@@ -109,13 +108,14 @@ namespace scene {
 				io->superimposeElectronNumberDensity(electronPeakDensity, peakProductionAltitude, neutralScaleHeight);
 			}
 			BOOST_LOG_TRIVIAL(debug) << "Object created: " << io->mesh3d.centerpoint << " with alt: " << io->mesh3d.centerpoint.distance(Vector3d::CENTER) - R;
-			delete finalHit.g;
+
 			finalHit.g = io;
 			finalHit.pos = io->mesh3d.centerpoint;
 			finalHit.o = GeometryType::ionosphere;
 			if (foo == 6) {
 //				std::exit(0);
 			}
+			io = nullptr;
 
 		} else {
 			BOOST_LOG_TRIVIAL(debug) << "Use collision detection approach";
@@ -153,26 +153,25 @@ namespace scene {
 							smallestX < (pos.x + epsilon) && biggestX > (pos.x - epsilon) &&
 							smallestZ < (pos.z + epsilon) && biggestZ > (pos.z - epsilon)) {
 
-						Intersection hit = Intersection();
-						hit.pos = pos;
-						hit.o = gp->type;
-						hit.g = gp;
-						hits.push_back(hit);
+						finalHit.pos = pos;
+						finalHit.o = gp->type;
+						finalHit.g = gp;
+//						hits.push_back(hit);
 					}
 				}
 			}
 
-			if (hits.size() > 0) {
-				// evaluate which hit is closest
-				double distance = 1e9;
-				delete finalHit.g;
-				for (Intersection i : hits) {
-					if (r.o.distance(i.pos) < distance && r.lastHit != i.g) {
-						finalHit = i;
-						distance = r.o.distance(i.pos);
-					}
-				}
-			}
+//			if (hits.size() > 0) {
+//				// evaluate which hit is closest
+//				double distance = 1e9;
+//
+//				for (Intersection i : hits) {
+//					if (r.o.distance(i.pos) < distance && r.lastHit != i.g) {
+//						finalHit = i;
+//						distance = r.o.distance(i.pos);
+//					}
+//				}
+//			}
 		}
 
 		BOOST_LOG_TRIVIAL(debug) << finalHit.o << "\t" << finalHit.pos << "\t";

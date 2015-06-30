@@ -7,6 +7,7 @@
 #ifndef RAY_H_
 #define RAY_H_
 
+#include <cstring>
 #include <list>
 #include "../core/namespace.h"
 #include "../math/Vector3d.h"
@@ -24,6 +25,7 @@ namespace tracer {
 
 		public:
 			Ray();
+			~Ray();
 			int trace();
 			void calculateTimeOfFlight(Vector3d rayEnd);
 			double getNormalAngle();
@@ -38,6 +40,12 @@ namespace tracer {
 			void setAngle(Vector3d angle);
 			void exportData(GeometryType collisionType);
 			void updateAltitude();
+//			Ray& operator=(const Ray& rhs) {
+//				if (this != &rhs) {
+//					memcpy(lastHit, rhs.lastHit, sizeof(lastHit));
+//				}
+//				return *this;
+//			}
 
 			/**
 			 * Origin
@@ -60,7 +68,8 @@ namespace tracer {
 			double timeDelay = 0.0;
 			double phaseAdvance = 0.0;
 			double altitude = 0.0;
-			Geometry* lastHit;
+			GeometryType lastHitType;
+			Vector3d lastHitNormal;
 			enum waveBehaviour {
 				wave_reflection = 1,
 				wave_refraction = 2,

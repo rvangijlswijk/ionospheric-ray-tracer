@@ -11,9 +11,13 @@ namespace raytracer {
 namespace tracer {
 
 	Intersection::Intersection() {
+
+		g = new Geometry();
 	}
 
 	Intersection::~Intersection() {
+
+		delete g;
 	}
 
 

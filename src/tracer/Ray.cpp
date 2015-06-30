@@ -27,8 +27,9 @@ namespace tracer {
 
 	Ray::Ray() {
 		behaviour = Ray::wave_none;
-		lastHit = new Geometry();
 	}
+
+	Ray::~Ray() {}
 
 	/**
 	 * Trace a ray recursively using the whitted-style raytracing algorithm.
@@ -71,7 +72,8 @@ namespace tracer {
 		// find intersection
 		updateAltitude();
 		Intersection hit = Application::getInstance().getSceneManager().intersect(*this, rayLine);
-		lastHit = hit.g;
+		lastHitType = hit.g->type;
+		lastHitNormal = hit.g->mesh3d.normal;
 //		printf("Hit: %6.3f, %6.3f \n", hit.pos.x, hit.pos.y);
 
 		// calculate time-of-flight
