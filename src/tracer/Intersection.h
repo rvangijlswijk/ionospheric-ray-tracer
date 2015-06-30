@@ -7,6 +7,7 @@
 #ifndef INTERSECTION_H_
 #define INTERSECTION_H_
 
+#include <cstring>
 #include <stdlib.h>
 #include "Ray.h"
 #include "../math/Vector3d.h"
@@ -23,9 +24,10 @@ namespace tracer {
 
 		public:
 			Intersection();
+			~Intersection();
 			Ray r;
 			GeometryType o = GeometryType::none;
-			Geometry* g = (Geometry*)malloc(sizeof(Geometry));
+			Geometry* g;
 			Vector3d pos;
 	};
 

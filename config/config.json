@@ -1,17 +1,17 @@
 {
     "parallelism": 1,
     "iterations": 1,
-    "tracingLimit": 5000,
+    "tracingLimit": 10000,
     "angularStepSize": "8.726389e-3",
     "frequencies": {
-        "min": 4500000,
-        "step": 500000,
-        "max": 4500000
+        "min": 5000000,
+        "step": 25000,
+        "max": 5000000
     },
     "SZA": {
-		"min": 30.0,
+		"min": 15.0,
 		"step": 5,
-		"max": 30.0
+		"max": 75.0
 	},
     "layerHeight": {
     	"constant": 1000,

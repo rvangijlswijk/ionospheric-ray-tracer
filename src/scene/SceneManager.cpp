@@ -28,12 +28,12 @@ namespace scene {
 	void SceneManager::loadStaticEnvironment() {
 		BOOST_LOG_TRIVIAL(debug) << "test SceneManager";
 
-		//const Json::Value ionosphereConfig = Application::getInstance().getCelestialConfig().getObject("ionosphere");
-		dh = 50;//ionosphereConfig["step"].asInt();
-		minH = 70000;//ionosphereConfig["start"].asInt();
-		maxH = 250000;//ionosphereConfig["end"].asInt();
-		R = 3390e3;//Application::getInstance().getCelestialConfig().getInt("radius");
-		angularStepSize = Constants::PI/360;//Application::getInstance().getApplicationConfig().getDouble("angularStepSize");
+		const Json::Value ionosphereConfig = Application::getInstance().getCelestialConfig().getObject("ionosphere");
+		dh = ionosphereConfig["step"].asInt();
+		minH = 70000;ionosphereConfig["start"].asInt();
+		maxH = ionosphereConfig["end"].asInt();
+		R = Application::getInstance().getCelestialConfig().getInt("radius");
+		angularStepSize = Application::getInstance().getApplicationConfig().getDouble("angularStepSize");
 	}
 
 	/**
@@ -90,11 +90,12 @@ namespace scene {
 			Vector3d n = dRv.norm();//Vector3d(sin(gamma2), cos(gamma2), 0).norm();
 
 			BOOST_LOG_TRIVIAL(debug) << "normal created: " << n;
-			BOOST_LOG_TRIVIAL(debug) << "r.d: " << r.d << " -> theta_i: " << r.d.angle(n) * 180 / Constants::PI;
+			BOOST_LOG_TRIVIAL(debug) << "r.d: " << r.d << " -> theta_i: " << r.d.angle(n) * 180.0 / Constants::PI;
 
 			// construct new ionosphere object
-			Plane3d mesh = Plane3d(n, Vector3d(dRv.x, dRv.y, 0));
+			Plane3d mesh = Plane3d(n, Vector3d(dRv.x, dRv.y, dRv.z));
 			mesh.size = angularStepSize * R;
+			delete r.lastHit;
 			Ionosphere* io = new Ionosphere(mesh);
 			io->layerHeight = dh;
 
@@ -107,12 +108,15 @@ namespace scene {
 
 				io->superimposeElectronNumberDensity(electronPeakDensity, peakProductionAltitude, neutralScaleHeight);
 			}
-			BOOST_LOG_TRIVIAL(debug) << "Object created: " << io->mesh3d.centerpoint << " with alt: " << io->mesh3d.centerpoint.distance(Vector3d::CENTER) - 3390e3;
+			BOOST_LOG_TRIVIAL(debug) << "Object created: " << io->mesh3d.centerpoint << " with alt: " << io->mesh3d.centerpoint.distance(Vector3d::CENTER) - R;
+			delete finalHit.g;
 			finalHit.g = io;
 			finalHit.pos = io->mesh3d.centerpoint;
 			finalHit.o = GeometryType::ionosphere;
-//			if (foo == 4)
+			if (foo == 6) {
 //				std::exit(0);
+			}
+
 		} else {
 			BOOST_LOG_TRIVIAL(debug) << "Use collision detection approach";
 			Vector3d pos;
@@ -161,6 +165,7 @@ namespace scene {
 			if (hits.size() > 0) {
 				// evaluate which hit is closest
 				double distance = 1e9;
+				delete finalHit.g;
 				for (Intersection i : hits) {
 					if (r.o.distance(i.pos) < distance && r.lastHit != i.g) {
 						finalHit = i;

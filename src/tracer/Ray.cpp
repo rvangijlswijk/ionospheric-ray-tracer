@@ -27,7 +27,7 @@ namespace tracer {
 
 	Ray::Ray() {
 		behaviour = Ray::wave_none;
-		lastHit = (Geometry*)malloc(sizeof(Geometry));
+		lastHit = new Geometry();
 	}
 
 	/**
@@ -63,7 +63,7 @@ namespace tracer {
 
 			return 0;
 		}
-		if (tracings >= Application::getInstance().getApplicationConfig().getInt("tracingLimit")) {
+		if (tracings >= 5000) {
 			BOOST_LOG_TRIVIAL(error) << "Ray " << rayNumber << " result: Tracing limit exceeded!";
 			return 0;
 		}
@@ -71,7 +71,7 @@ namespace tracer {
 		// find intersection
 		updateAltitude();
 		Intersection hit = Application::getInstance().getSceneManager().intersect(*this, rayLine);
-		this->lastHit = hit.g;
+		lastHit = hit.g;
 //		printf("Hit: %6.3f, %6.3f \n", hit.pos.x, hit.pos.y);
 
 		// calculate time-of-flight

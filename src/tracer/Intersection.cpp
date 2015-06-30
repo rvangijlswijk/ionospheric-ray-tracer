@@ -10,7 +10,11 @@
 namespace raytracer {
 namespace tracer {
 
-	Intersection::Intersection() {}
+	Intersection::Intersection() {
+	}
+
+	Intersection::~Intersection() {
+	}
 
 
 } /* namespace engine */

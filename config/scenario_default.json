@@ -10,7 +10,7 @@
     },
     "ionosphere": {
     	"start": 70000,
-    	"step": 100,
+    	"step": 1000,
     	"end": 250000,
 	    "layers": [{
 	        "name" : "M2 Layer",

@@ -52,6 +52,8 @@ namespace scene {
 	 */
 	void Ionosphere::interact(Ray *r, Vector3d &hitpos) {
 
+		BOOST_LOG_TRIVIAL(debug) << "Interact with ionosphere at alt " << r->altitude;
+
 		setup();
 
 		int waveBehaviour = determineWaveBehaviour(r);

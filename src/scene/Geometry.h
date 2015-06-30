@@ -44,7 +44,7 @@ namespace scene {
 			 */
 			void calculateAltitude();
 			double getAltitude();
-			virtual void interact(Ray *r, Vector3d &hitpos);
+			virtual void interact(Ray *r, Vector3d &hitpos) {}
 			GeometryType type = none;
 			Plane3d mesh3d;
 			double altitude = -1;
