@@ -24,6 +24,7 @@ class Vector2d : Vector {
 		double magnitude();
 		double dotProduct(Vector2d v2);
 		double distance(Vector2d v2);
+		double angle(Vector2d v2);
 };
 
 } /* namespace math */

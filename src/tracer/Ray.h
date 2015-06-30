@@ -7,6 +7,7 @@
 #ifndef RAY_H_
 #define RAY_H_
 
+#include <cstring>
 #include <list>
 #include "../core/namespace.h"
 #include "../math/Vector3d.h"
@@ -24,6 +25,7 @@ namespace tracer {
 
 		public:
 			Ray();
+			~Ray();
 			int trace();
 			void calculateTimeOfFlight(Vector3d rayEnd);
 			double getNormalAngle();
@@ -60,7 +62,8 @@ namespace tracer {
 			double timeDelay = 0.0;
 			double phaseAdvance = 0.0;
 			double altitude = 0.0;
-			Geometry* lastHit;
+			GeometryType lastHitType;
+			Vector3d lastHitNormal;
 			enum waveBehaviour {
 				wave_reflection = 1,
 				wave_refraction = 2,
@@ -71,7 +74,7 @@ namespace tracer {
 				wave_tracing_limit_exceeded = 7
 			};
 			waveBehaviour behaviour;
-			static constexpr double magnitude = 10e3;
+			static constexpr double magnitude = 1000;
 			static constexpr double powerTransmitted = 10.0; 	// [W]
 	};
 

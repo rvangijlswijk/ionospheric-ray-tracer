@@ -52,6 +52,8 @@ namespace scene {
 	 */
 	void Ionosphere::interact(Ray *r, Vector3d &hitpos) {
 
+		BOOST_LOG_TRIVIAL(debug) << "Interact with ionosphere at alt " << r->altitude;
+
 		setup();
 
 		int waveBehaviour = determineWaveBehaviour(r);
@@ -88,7 +90,8 @@ namespace scene {
 		else
 			newR = r->d * ratio + mesh3d.normal * coefficient;
 
-		BOOST_LOG_TRIVIAL(debug) << std::fixed << "REFRACT Alt: " << std::setprecision(0) << getAltitude() << "\tr.d_i: " << r->d << "\tr.d_r: " << newR << "\tN: " << mesh3d.normal << "\tn1/n2: " << ratio << "\ttheta_i: " << theta_i;
+		BOOST_LOG_TRIVIAL(debug) << std::fixed << "REFRACT Alt: " << std::setprecision(0) << getAltitude() << "\tr.d_i: " << r->d << "\tr.d_r: " << newR;
+		BOOST_LOG_TRIVIAL(debug) << "N: " << mesh3d.normal << "\tn1/n2: " << ratio << "\ttheta_i: " << theta_i*180/Constants::PI << "\ttheta_r: " << newR.angle(mesh3d.normal) * 180 / Constants::PI;
 
 		r->d = newR.norm();
 		r->previousRefractiveIndex = refractiveIndex;
@@ -253,9 +256,11 @@ namespace scene {
 	 * on the propagation angle of the ray and the angle of the layer w.r.t. the sun (SZA)
 	 * The angle is then complementary to the angle between the ray direction vector and the
 	 * normal of the plane.
+	 * @bugfix 296d831
 	 */
 	double Ionosphere::getIncidentAngle(Ray *r) {
 
+		// note: the ABSOLUTE angle. Angle between vectors doesnt work.
 		return acos(abs(r->d * mesh3d.normal) / (r->d.magnitude() * mesh3d.normal.magnitude()));
 	}
 

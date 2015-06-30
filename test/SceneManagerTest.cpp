@@ -4,6 +4,8 @@
 #include "../src/tracer/Ray.h"
 #include "../src/math/Vector3d.h"
 #include "../src/math/Line3d.h"
+#include "../src/core/Config.h"
+#include "../src/core/Application.h"
 
 namespace {
 
@@ -14,6 +16,11 @@ namespace {
 
 		protected:
 			void SetUp() {
+
+				conf = Config("config/scenario_test.json");
+				Application::getInstance().setCelestialConfig(conf);
+				appConf = Config("config/config.json");
+				Application::getInstance().setApplicationConfig(conf);
 
 				sm = SceneManager();
 				io = Ionosphere();
@@ -26,6 +33,7 @@ namespace {
 
 			SceneManager sm;
 			Ionosphere io;
+			Config conf, appConf;
 	};
 
 	TEST_F(SceneManagerTest, MeshIsSet) {
@@ -48,7 +56,7 @@ namespace {
 		Line3d rayLine = Line3d(Vector3d(0, 0, 0), Vector3d(100e3, 3390e3 + 101e3, 0));
 
 		Intersection is = sm.intersect(r, rayLine);
-		Plane3d mesh = (*is.g).mesh3d;
+		Plane3d mesh = is.g.mesh3d;
 
 		ASSERT_NE(GeometryType::none, is.o);
 		ASSERT_NEAR((mesh.centerpoint.y / rayLine.destination.y) * mesh.centerpoint.x, is.pos.x, 10);
@@ -56,6 +64,39 @@ namespace {
 		ASSERT_NEAR(100e3, mesh.centerpoint.x, 10);
 		ASSERT_NEAR(3390e3 + 100e3, mesh.centerpoint.y, 10);
 		ASSERT_NEAR(0, mesh.centerpoint.z, 10);
+	}
+
+	TEST_F(SceneManagerTest, SortScene) {
+
+		SceneManager scm2 = SceneManager();
+
+		Plane3d mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 10, 0));
+		Geometry g1 = Geometry(mesh);
+		mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 13, 0));
+		Geometry g2 = Geometry(mesh);
+		mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 14, 0));
+		Geometry g3 = Geometry(mesh);
+		mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 12, 0));
+		Geometry g4 = Geometry(mesh);
+		mesh = Plane3d(Vector3d(0, 1, 0), Vector3d(0, 3390e3 + 11, 0));
+		Geometry g5 = Geometry(mesh);
+
+		scm2.addToScene(&g1);
+		scm2.addToScene(&g2);
+		scm2.addToScene(&g3);
+		scm2.addToScene(&g4);
+		scm2.addToScene(&g5);
+
+		scm2.sortScene();
+
+		double lastAlt = 0;
+		for (Geometry* g : scm2.getScene()) {
+
+			ASSERT_GT(g->altitude, 0);
+			ASSERT_GT(g->altitude, lastAlt);
+			lastAlt = g->altitude;
+			ASSERT_GT(lastAlt, 0);
+		}
 	}
 
 	TEST_F(SceneManagerTest, IntersectionOutOfBounds) {
@@ -84,7 +125,7 @@ namespace {
 		rayLine.destination.y = 200e3 + 3390e3;
 
 		Intersection is = sm.intersect(r, rayLine);
-		Plane3d mesh = (*is.g).mesh3d;
+		Plane3d mesh = is.g.mesh3d;
 
 		ASSERT_NEAR((rayLine.destination.y - rayLine.origin.y) / (rayLine.destination.x - rayLine.origin.x), tan(angle), 1e-3);
 		ASSERT_EQ(GeometryType::ionosphere, is.o);
@@ -130,7 +171,7 @@ namespace {
 		Line3d rayLine = Line3d(Vector3d(0, 0, 0), Vector3d(100e3, 3390e3 + 105e3, 0));
 
 		Intersection is = sm.intersect(r, rayLine);
-		Plane3d mesh2 = (*is.g).mesh3d;
+		Plane3d mesh2 = is.g.mesh3d;
 
 		ASSERT_NE(GeometryType::none, is.o);
 		ASSERT_NEAR((mesh2.centerpoint.y / rayLine.destination.y) * mesh2.centerpoint.x, is.pos.x, 10);

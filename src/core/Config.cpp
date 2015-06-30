@@ -32,7 +32,9 @@ namespace core {
 		bool success = r.parse(test, _doc, false);
 		if ( !success ) {
 			// report to the user the failure and their locations in the document.
-			BOOST_LOG_TRIVIAL(fatal) << "Formatting error in config file!\n" << r.getFormattedErrorMessages();
+			BOOST_LOG_TRIVIAL(fatal) << "Formatting error in config file "
+					<< filepath
+					<< "!\n" << r.getFormattedErrorMessages();
 			std::exit(0);
 		}
 	}

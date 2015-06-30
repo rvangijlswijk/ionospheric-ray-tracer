@@ -19,10 +19,17 @@ namespace exporter {
 		// TODO Auto-generated constructor stub
 	}
 
-	void MatlabExporter::dump(const char *filepath, list<Data> dataset) {
+	MatlabExporter::MatlabExporter(const char *filepath) {
 
 		ofstream data;
 		data.open(filepath);
+		data.close();
+	}
+
+	void MatlabExporter::dump(const char *filepath, list<Data> dataset) {
+
+		ofstream data;
+		data.open(filepath, fstream::app);
 		while (!dataset.empty()) {
 			data << std::fixed << std::setprecision(1) << dataset.front().rayNumber << ","
 				<< std::setprecision(2) << dataset.front().x << ","

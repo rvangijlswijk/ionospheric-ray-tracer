@@ -139,6 +139,7 @@ namespace math {
 	Vector3d Vector3d::EQUINOX = Vector3d(1, 0, 0);
 	Vector3d Vector3d::SUBSOLAR = Vector3d(0, 1, 0);
 	Vector3d Vector3d::POLAR = Vector3d(0, 0, 1);
+	Vector3d Vector3d::CENTER = Vector3d(0, 0, 0);
 
 } /* namespace math */
 } /* namespace raytracer */

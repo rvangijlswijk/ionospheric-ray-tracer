@@ -27,8 +27,9 @@ namespace tracer {
 
 	Ray::Ray() {
 		behaviour = Ray::wave_none;
-		lastHit = (Geometry*)malloc(sizeof(Geometry));
 	}
+
+	Ray::~Ray() {}
 
 	/**
 	 * Trace a ray recursively using the whitted-style raytracing algorithm.
@@ -54,7 +55,7 @@ namespace tracer {
 
 //		printf("Tracing ray: %6.3f %6.3f %6.3f %6.3f theta: %4.2f\n", o.x, o.y, d.x, d.y, angle * 57.296);
 
-//		cout << "rayline: (" << rayLine.destination.x << "," << rayLine.destination.y << ") \n";
+		BOOST_LOG_TRIVIAL(debug) << "rayline: (" << rayLine.destination.x << "," << rayLine.destination.y << ") \n";
 //		cout << "previndex: " << previousRefractiveIndex << "\n";
 
 		// limit the simulation to avoid unnecessary calculations
@@ -63,7 +64,7 @@ namespace tracer {
 
 			return 0;
 		}
-		if (tracings >= Application::getInstance().getApplicationConfig().getInt("tracingLimit")) {
+		if (tracings >= 5000) {
 			BOOST_LOG_TRIVIAL(error) << "Ray " << rayNumber << " result: Tracing limit exceeded!";
 			return 0;
 		}
@@ -71,7 +72,8 @@ namespace tracer {
 		// find intersection
 		updateAltitude();
 		Intersection hit = Application::getInstance().getSceneManager().intersect(*this, rayLine);
-		this->lastHit = hit.g;
+		lastHitType = hit.g->type;
+		lastHitNormal = hit.g->mesh3d.normal;
 //		printf("Hit: %6.3f, %6.3f \n", hit.pos.x, hit.pos.y);
 
 		// calculate time-of-flight
@@ -88,6 +90,7 @@ namespace tracer {
 		// intersection with an ionospheric or atmospheric layer
 		if (hit.o == GeometryType::ionosphere || hit.o == GeometryType::atmosphere) {
 			hit.g->interact(this, hit.pos);
+			delete hit.g;
 			if (behaviour == Ray::wave_no_propagation) {
 				return 0;
 			} else {
@@ -102,6 +105,7 @@ namespace tracer {
 			return 0;
 		} else if (hit.o == GeometryType::none) {
 			o = rayLine.destination;
+			delete hit.g;
 			exportData(GeometryType::none);
 			return trace();
 		}

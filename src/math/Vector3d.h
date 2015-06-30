@@ -22,7 +22,8 @@ class Vector3d {
 
 		static Vector3d EQUINOX,
 						SUBSOLAR,
-						POLAR;
+						POLAR,
+						CENTER;
 		double x, y, z;
 
 		/**
@@ -47,6 +48,12 @@ class Vector3d {
 		 * vector result = s1i + s2j + s3k = u × v
 		 */
 		Vector3d cross(Vector3d v2);
+
+		/**
+		 * Return the angle theta between two vectors A and B where
+		 * theta = acos(A*B / (A.magnitude()*B.magnitude()))
+		 */
+		double angle(Vector3d v2);
 
 		/**
 		 * Dot product between this vector and another vector v2
@@ -88,11 +95,10 @@ class Vector3d {
 			return substract(v2);
 		}
 
-		/**
-		 * Return the angle theta between two vectors A and B where
-		 * theta = acos(A*B / (A.magnitude()*B.magnitude()))
-		 */
-		double angle(Vector3d v2);
+		bool operator!=(const Vector3d rhs) {
+
+			return x != rhs.x || y != rhs.y || z != rhs.z;
+		}
 
 		friend std::ostream& operator<<(std::ostream &strm, const raytracer::math::Vector3d &v) {
 

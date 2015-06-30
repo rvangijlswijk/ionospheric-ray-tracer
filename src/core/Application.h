@@ -12,7 +12,6 @@
 #include <list>
 #include <stdlib.h>
 #include <boost/thread.hpp>
-#include "Timer.cpp"
 #include "Config.h"
 #include "../scene/SceneManager.h"
 #include "../scene/Ionosphere.h"
@@ -56,6 +55,7 @@ namespace core {
 			Config getApplicationConfig();
 			Config getCelestialConfig();
 			void setCelestialConfig(Config conf);
+			void setApplicationConfig(Config conf);
 
 		private:
 			Application() {
@@ -67,7 +67,6 @@ namespace core {
 			void createScene();
 			void flushScene();
 			bool _isRunning;
-			SceneManager _scm;
 			int _numTracings;
 			Config _celestialConfig;
 			Config _applicationConfig;
@@ -77,6 +76,8 @@ namespace core {
 			int _verbosity = boost::log::trivial::warning;
 			int _parallelism = 0;
 			int _iterations = 0;
+			SceneManager _scm;
+			MatlabExporter _me;
 
 	};
 

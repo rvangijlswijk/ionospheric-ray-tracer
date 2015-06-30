@@ -19,6 +19,7 @@ namespace exporter {
 
 		public:
 			IExporter() {}
+			IExporter(const char *filepath);
 			virtual ~IExporter() {}
 			virtual void dump(const char *filepath, list<Data> dataset) = 0;
 

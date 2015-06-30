@@ -7,6 +7,7 @@
 #include "Application.h"
 #include <string>
 #include <regex>
+#include "Timer.cpp"
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
@@ -28,6 +29,8 @@ namespace core {
 
 	void Application::init(int argc, char * argv[]) {
 
+		BOOST_LOG_TRIVIAL(debug) << "Init application";
+
 		parseCommandLineArgs(argc, argv);
 		start();
 		run();
@@ -35,6 +38,7 @@ namespace core {
 
 	void Application::parseCommandLineArgs(int argc, char * argv[]) {
 
+		BOOST_LOG_TRIVIAL(debug) << "parseCommandLineArgs";
 
 		for (int i = 0; i < argc; i++) {
 
@@ -88,6 +92,8 @@ namespace core {
 
 	void Application::start() {
 
+		BOOST_LOG_TRIVIAL(debug) << "Start application";
+
 		_isRunning = true;
 
 		_applicationConfig = Config(_applicationConfigFile);
@@ -111,9 +117,13 @@ namespace core {
 				<< _applicationConfig << endl
 				<< "celestialConfig:" << _celestialConfigFile << endl
 				<< _celestialConfig;
+
+		_me = MatlabExporter(_outputFile);
 	}
 
 	void Application::run() {
+
+		BOOST_LOG_TRIVIAL(debug) << "Run application";
 
 		Timer tmr;
 
@@ -141,21 +151,21 @@ namespace core {
 
 			for (double freq = fmin; freq <= fmax; freq += fstep) {
 				for (double SZA = SZAmin; SZA <= SZAmax; SZA += SZAstep) {
-						Ray r;
-						r.rayNumber = ++rayCounter;
-						r.frequency = freq;
-						r.signalPower = 0;
-						r.o.y = 2 + _celestialConfig.getInt("radius");
-						r.originalAngle = SZA * Constants::PI / 180.0;
-						Vector3d direction = Vector3d(cos(Constants::PI/2.0 - r.originalAngle),
-								sin(Constants::PI/2.0 - r.originalAngle),
-								0);
-						r.d = direction.norm();
+					Ray r;
+					r.rayNumber = ++rayCounter;
+					r.frequency = freq;
+					r.signalPower = 0;
+					r.o.y = 2 + _celestialConfig.getInt("radius");
+					r.originalAngle = SZA * Constants::PI / 180.0;
+					Vector3d direction = Vector3d(cos(Constants::PI/2.0 - r.originalAngle),
+							sin(Constants::PI/2.0 - r.originalAngle),
+							0);
+					r.d = direction.norm();
 
-						Worker w;
-						w.schedule(&tp, r);
+					Worker w;
+					w.schedule(&tp, r);
 
-						numWorkers++;
+					numWorkers++;
 				}
 			}
 
@@ -177,8 +187,7 @@ namespace core {
 
 		//CsvExporter ce;
 		//ce.dump("Debug/data.csv", dataSet);
-		MatlabExporter me;
-		me.dump(_outputFile, dataSet);
+		_me.dump(_outputFile, dataSet);
 
 	    BOOST_LOG_TRIVIAL(warning) << "Results stored at: " << _outputFile;
 	}
@@ -193,9 +202,12 @@ namespace core {
 	 */
 	void Application::createScene() {
 
+		_scm = SceneManager();
+		_scm.loadStaticEnvironment();
+
 		int numSceneObjectsCreated = 0;
 		double R = _celestialConfig.getInt("radius");
-		double angularStepSize = Constants::PI/360;
+		double angularStepSize = _applicationConfig.getDouble("angularStepSize");
 		IonosphereConfigParser plh = IonosphereConfigParser();
 
 		// terrain
@@ -212,35 +224,35 @@ namespace core {
 			}
 		}
 
-		const Json::Value ionosphereConfig = _celestialConfig.getObject("ionosphere");
-		int start = ionosphereConfig["start"].asInt();
-		int dh = ionosphereConfig["step"].asInt();
-		int end =ionosphereConfig["end"].asInt();
-
-		for (double latitude = Constants::PI/2; latitude < Constants::PI/2 + 10*Constants::PI/180; latitude += angularStepSize) {
-			for (double theta = 0; theta < Constants::PI/2; theta += angularStepSize) {
-				for (int h = start; h < end; h += dh) {
-
-					Vector3d N = Vector3d(cos(theta), sin(theta), cos(latitude)).norm();
-					Plane3d mesh = Plane3d(N, Vector3d((R+h)*N.x, (R+h)*N.y, (R+h)*N.z));
-					mesh.size = angularStepSize * R;
-					Ionosphere* io = new Ionosphere(mesh);
-					io->layerHeight = dh;
-
-					for (int idx = 0; idx < ionosphereConfig["layers"].size(); idx++) {
-
-						double electronPeakDensity = atof(ionosphereConfig["layers"][idx].get("electronPeakDensity", "").asCString());
-						double peakProductionAltitude = ionosphereConfig["layers"][idx].get("peakProductionAltitude", "").asDouble();
-						double neutralScaleHeight = ionosphereConfig["layers"][idx].get("neutralScaleHeight", 11.1e3).asDouble();
-
-						io->superimposeElectronNumberDensity(electronPeakDensity, peakProductionAltitude, neutralScaleHeight);
-					}
-
-					numSceneObjectsCreated++;
-					_scm.addToScene(io);
-				}
-			}
-		}
+//		const Json::Value ionosphereConfig = _celestialConfig.getObject("ionosphere");
+//		int start = ionosphereConfig["start"].asInt();
+//		int dh = ionosphereConfig["step"].asInt();
+//		int end =ionosphereConfig["end"].asInt();
+//
+//		for (double latitude = Constants::PI/2; latitude < Constants::PI/2 + 1*Constants::PI/180; latitude += angularStepSize) {
+//			for (double theta = 0; theta < Constants::PI/2; theta += angularStepSize) {
+//				for (int h = start; h < end; h += dh) {
+//
+//					Vector3d N = Vector3d(cos(theta), sin(theta), cos(latitude)).norm();
+//					Plane3d mesh = Plane3d(N, Vector3d((R+h)*N.x, (R+h)*N.y, (R+h)*N.z));
+//					mesh.size = angularStepSize * R;
+//					Ionosphere* io = new Ionosphere(mesh);
+//					io->layerHeight = dh;
+//
+//					for (int idx = 0; idx < ionosphereConfig["layers"].size(); idx++) {
+//
+//						double electronPeakDensity = atof(ionosphereConfig["layers"][idx].get("electronPeakDensity", "").asCString());
+//						double peakProductionAltitude = ionosphereConfig["layers"][idx].get("peakProductionAltitude", "").asDouble();
+//						double neutralScaleHeight = ionosphereConfig["layers"][idx].get("neutralScaleHeight", 11.1e3).asDouble();
+//
+//						io->superimposeElectronNumberDensity(electronPeakDensity, peakProductionAltitude, neutralScaleHeight);
+//					}
+//
+//					numSceneObjectsCreated++;
+//					_scm.addToScene(io);
+//				}
+//			}
+//		}
 
 //		const Json::Value atmosphereConfig = _celestialConfig.getObject("atmosphere");
 //		int hS = atmosphereConfig.get("start", 0).asInt();
@@ -281,6 +293,10 @@ namespace core {
 
 		datasetMutex.lock();
 		dataSet.push_back(dat);
+		if (dataSet.size() > Data::MAX_DATASET_SIZE) {
+			_me.dump(_outputFile, dataSet);
+			dataSet.clear();
+		}
 		datasetMutex.unlock();
 	}
 
@@ -309,6 +325,11 @@ namespace core {
 	void Application::setCelestialConfig(Config conf) {
 
 		_celestialConfig = conf;
+	}
+
+	void Application::setApplicationConfig(Config conf) {
+
+		_applicationConfig = conf;
 	}
 
 } /* namespace core */

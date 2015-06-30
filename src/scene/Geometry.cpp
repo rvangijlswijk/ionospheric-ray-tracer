@@ -49,10 +49,6 @@ namespace scene {
 		calculateAltitude();
 	}
 
-	void Geometry::interact(Ray *r, Vector3d &hitpos) {
-		cout << "Geometry::interact" << endl;
-	}
-
 	/**
 	 * Interpolate the altitude of this object.
 	 */
