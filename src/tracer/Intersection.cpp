@@ -17,7 +17,7 @@ namespace tracer {
 
 	Intersection::~Intersection() {
 
-		delete g;
+//		delete g;
 	}
 
 

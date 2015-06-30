@@ -94,7 +94,6 @@ namespace scene {
 			// construct new ionosphere object
 			Plane3d mesh = Plane3d(n, Vector3d(dRv.x, dRv.y, dRv.z));
 			mesh.size = angularStepSize * R;
-//			delete r.lastHit;
 			Ionosphere* io = new Ionosphere(mesh);
 			io->layerHeight = dh;
 
@@ -109,8 +108,8 @@ namespace scene {
 			}
 			BOOST_LOG_TRIVIAL(debug) << "Object created: " << io->mesh3d.centerpoint << " with alt: " << io->mesh3d.centerpoint.distance(Vector3d::CENTER) - R;
 
-			finalHit.g = io;
 			finalHit.pos = io->mesh3d.centerpoint;
+			finalHit.g = io;
 			finalHit.o = GeometryType::ionosphere;
 			if (foo == 6) {
 //				std::exit(0);

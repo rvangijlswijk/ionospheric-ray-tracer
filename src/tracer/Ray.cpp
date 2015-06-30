@@ -90,6 +90,7 @@ namespace tracer {
 		// intersection with an ionospheric or atmospheric layer
 		if (hit.o == GeometryType::ionosphere || hit.o == GeometryType::atmosphere) {
 			hit.g->interact(this, hit.pos);
+			delete hit.g;
 			if (behaviour == Ray::wave_no_propagation) {
 				return 0;
 			} else {
@@ -104,6 +105,7 @@ namespace tracer {
 			return 0;
 		} else if (hit.o == GeometryType::none) {
 			o = rayLine.destination;
+			delete hit.g;
 			exportData(GeometryType::none);
 			return trace();
 		}
