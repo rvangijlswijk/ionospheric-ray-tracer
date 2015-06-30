@@ -40,12 +40,6 @@ namespace tracer {
 			void setAngle(Vector3d angle);
 			void exportData(GeometryType collisionType);
 			void updateAltitude();
-//			Ray& operator=(const Ray& rhs) {
-//				if (this != &rhs) {
-//					memcpy(lastHit, rhs.lastHit, sizeof(lastHit));
-//				}
-//				return *this;
-//			}
 
 			/**
 			 * Origin
@@ -80,7 +74,7 @@ namespace tracer {
 				wave_tracing_limit_exceeded = 7
 			};
 			waveBehaviour behaviour;
-			static constexpr double magnitude = 50;
+			static constexpr double magnitude = 1000;
 			static constexpr double powerTransmitted = 10.0; 	// [W]
 	};
 

@@ -15,13 +15,11 @@
     	"end": 250000,
 	    "layers": [{
 	        "name" : "M2 Layer",
-	        "stratification": "constant",
 	        "peakProductionAltitude": 130000,
 	        "electronPeakDensity": "1.8e11",
 	        "neutralScaleHeight": 11000
 	    },{
 	        "name" : "M1 Layer",
-	        "stratification": "constant",
 	        "peakProductionAltitude": 110000,
 	        "electronPeakDensity": "9.0e10",
 	        "neutralScaleHeight": 7600

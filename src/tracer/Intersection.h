@@ -25,18 +25,18 @@ namespace tracer {
 		public:
 			Intersection();
 			~Intersection();
-			Intersection(const Intersection& copy) {
+			Intersection(Intersection const& copy) {
 				r = copy.r;
 				o = copy.o;
 				pos = copy.pos;
-				memcpy(g, copy.g, sizeof(g));
+				memcpy(g, copy.g, sizeof g);
 			}
 			Intersection& operator=(const Intersection& rhs) {
 				if (this != &rhs) {
 					r = rhs.r;
 					o = rhs.o;
 					pos = rhs.pos;
-					memcpy(g, rhs.g,sizeof(g));
+					memcpy(g, rhs.g, sizeof g);
 				}
 				return *this;
 			}

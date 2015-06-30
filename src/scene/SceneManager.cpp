@@ -119,7 +119,7 @@ namespace scene {
 		} else {
 			BOOST_LOG_TRIVIAL(debug) << "Use collision detection approach";
 			Vector3d pos;
-			list<Intersection> hits;
+			list<Intersection*> hits = list<Intersection*>();
 			double epsilon = 1e-5;
 
 			for (Geometry* gp : _sceneObjectsVector) {
@@ -152,25 +152,26 @@ namespace scene {
 							smallestX < (pos.x + epsilon) && biggestX > (pos.x - epsilon) &&
 							smallestZ < (pos.z + epsilon) && biggestZ > (pos.z - epsilon)) {
 
-						finalHit.pos = pos;
-						finalHit.o = gp->type;
-						finalHit.g = gp;
-//						hits.push_back(hit);
+						Intersection* hit = new Intersection();
+						hit->pos = pos;
+						hit->o = gp->type;
+						hit->g = gp;
+						hits.push_back(hit);
 					}
 				}
 			}
 
-//			if (hits.size() > 0) {
-//				// evaluate which hit is closest
-//				double distance = 1e9;
-//
-//				for (Intersection i : hits) {
-//					if (r.o.distance(i.pos) < distance && r.lastHit != i.g) {
-//						finalHit = i;
-//						distance = r.o.distance(i.pos);
-//					}
-//				}
-//			}
+			if (hits.size() > 0) {
+				// evaluate which hit is closest
+				double distance = 1e9;
+
+				for (Intersection* i : hits) {
+					if (r.o.distance(i->pos) < distance && r.lastHitNormal != i->g->mesh3d.normal) {
+						finalHit = *i;
+						distance = r.o.distance(i->pos);
+					}
+				}
+			}
 		}
 
 		BOOST_LOG_TRIVIAL(debug) << finalHit.o << "\t" << finalHit.pos << "\t";
