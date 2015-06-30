@@ -5,7 +5,11 @@
  *      Author: rian
  */
 
+#include <cmath>
+#include <boost/log/trivial.hpp>
 #include "Worker.h"
+#include "../core/Application.h"
+#include "../core/CommandLine.h"
 
 namespace raytracer {
 namespace threading {
@@ -25,11 +29,18 @@ namespace threading {
 
 	void Worker::process(Ray r) {
 
-		BOOST_LOG_TRIVIAL(warning) << "Worker started for ray " << r.rayNumber;
+		BOOST_LOG_TRIVIAL(info) << "Worker started for ray " << r.rayNumber;
 
 		r.trace();
 
-		BOOST_LOG_TRIVIAL(warning) << "Worker ended for ray " << r.rayNumber;
+		BOOST_LOG_TRIVIAL(info) << "Worker ended for ray " << r.rayNumber;
+
+		if (Application::getInstance().getVerbosity() > boost::log::trivial::info) {
+			char buffer[80];
+			sprintf(buffer, "Progress: %d/%d (%d\%)", r.rayNumber, Application::getInstance().numWorkers,
+					(int)round(100*r.rayNumber/Application::getInstance().numWorkers));
+			CommandLine::getInstance().updateBody(buffer);
+		}
 	}
 
 	void Worker::schedule(boost::threadpool::pool *tp, Ray r) {

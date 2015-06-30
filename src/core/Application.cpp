@@ -7,11 +7,12 @@
 #include "Application.h"
 #include <string>
 #include <regex>
-#include "Timer.cpp"
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/utility/setup/file.hpp>
+#include "Timer.cpp"
+#include "CommandLine.h"
 
 namespace raytracer {
 namespace core {
@@ -128,17 +129,21 @@ namespace core {
 		Timer tmr;
 
 		BOOST_LOG_TRIVIAL(info) << "Parallelism is " << _applicationConfig.getInt("parallelism");
-		BOOST_LOG_TRIVIAL(warning) << _applicationConfig.getInt("iterations") << " iterations";
+		if (_verbosity > boost::log::trivial::info) {
+			std::ostringstream stringStream;
+			stringStream << "Parallelism is " << _applicationConfig.getInt("parallelism");
+			CommandLine::getInstance().addToHeader(stringStream.str().c_str());
+		}
+		BOOST_LOG_TRIVIAL(info) << _applicationConfig.getInt("iterations") << " iterations";
 
 		// trace a ray
 		int rayCounter = 0;
 		for (int iteration = 0; iteration < _applicationConfig.getInt("iterations"); iteration++) {
 
-			BOOST_LOG_TRIVIAL(warning) << "Iteration " << (iteration+1) << " of " << _applicationConfig.getInt("iterations");
+			BOOST_LOG_TRIVIAL(info) << "Iteration " << (iteration+1) << " of " << _applicationConfig.getInt("iterations");
 
 			createScene();
 
-			int numWorkers = 0;
 			double fmin = _applicationConfig.getObject("frequencies")["min"].asDouble();
 			double fstep = _applicationConfig.getObject("frequencies")["step"].asDouble();
 			double fmax = _applicationConfig.getObject("frequencies")["max"].asDouble();
@@ -148,6 +153,14 @@ namespace core {
 
 			BOOST_LOG_TRIVIAL(info) << "Scanning frequencies " << fmin << " Hz to " << fmax << "Hz with steps of " << fstep << "Hz";
 			BOOST_LOG_TRIVIAL(info) << "Scanning SZA " << SZAmin << " deg to " << SZAmax << " deg with steps of " << SZAstep << " deg";
+
+			if (_verbosity > boost::log::trivial::info) {
+				std::ostringstream stringStream;
+				stringStream << "Scanning frequencies " << fmin << " Hz to " << fmax
+						<< "Hz with steps of " << fstep << "Hz\n" << "Scanning SZA " << SZAmin << " deg to "
+						<< SZAmax << " deg with steps of " << SZAstep << " deg";
+						CommandLine::getInstance().addToHeader(stringStream.str().c_str());
+			}
 
 			for (double freq = fmin; freq <= fmax; freq += fstep) {
 				for (double SZA = SZAmin; SZA <= SZAmax; SZA += SZAstep) {
@@ -169,7 +182,12 @@ namespace core {
 				}
 			}
 
-			BOOST_LOG_TRIVIAL(warning) << numWorkers << " workers queued";
+			BOOST_LOG_TRIVIAL(info) << numWorkers << " workers queued";
+			if (_verbosity > boost::log::trivial::info) {
+				std::ostringstream stringStream;
+				stringStream << numWorkers << " workers queued";
+				CommandLine::getInstance().addToHeader(stringStream.str().c_str());
+			}
 
 			tp.wait();
 
@@ -181,6 +199,7 @@ namespace core {
 		double t = tmr.elapsed();
 		double tracingsPerSec = _numTracings / t;
 		char buffer[80];
+		CommandLine::getInstance().updateBody("\n");
 	    sprintf(buffer, "Elapsed: %5.2f sec. %d tracings done. %5.2f tracings/sec",
 	    		t, _numTracings, tracingsPerSec);
 	    BOOST_LOG_TRIVIAL(warning) << buffer;
@@ -330,6 +349,11 @@ namespace core {
 	void Application::setApplicationConfig(Config conf) {
 
 		_applicationConfig = conf;
+	}
+
+	int Application::getVerbosity() {
+
+		return _verbosity;
 	}
 
 } /* namespace core */

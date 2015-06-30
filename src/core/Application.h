@@ -56,6 +56,8 @@ namespace core {
 			Config getCelestialConfig();
 			void setCelestialConfig(Config conf);
 			void setApplicationConfig(Config conf);
+			int getVerbosity();
+			int numWorkers = 0;
 
 		private:
 			Application() {
