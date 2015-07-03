@@ -60,6 +60,14 @@ namespace scene {
 			double getPlasmaFrequency();
 
 			/**
+			 * Calculate the plasma frequency at the layer maximum, which depends on the
+			 * peak electron number density. The peak density for the layer with the highest
+			 * electron number density is used.
+			 * @unit: rad s^-1
+			 */
+			double getPeakPlasmaFrequency();
+
+			/**
 			 * Add electrons with a certain density to the electron density already available in this layer.
 			 * This approach allows the superposition of multiple ionospheric profiles into one layer.
 			 * The electron density at the layer is assumed to follow a chapman profile for the daytime.
@@ -108,6 +116,7 @@ namespace scene {
 
 		private:
 			double _electronNumberDensity = 0;	// m^-3
+			double _peakElectronDensity = 0;	// m^-3
 	};
 
 } /* namespace scene */

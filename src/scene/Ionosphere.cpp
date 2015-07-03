@@ -204,6 +204,18 @@ namespace scene {
 	}
 
 	/**
+	 * Calculate the plasma frequency at the layer maximum, which depends on the
+	 * peak electron number density. The peak density for the layer with the highest
+	 * electron number density is used.
+	 * @unit: rad s^-1
+	 */
+	double Ionosphere::getPeakPlasmaFrequency() {
+
+		return sqrt(_peakElectronDensity * pow(Constants::ELEMENTARY_CHARGE, 2)
+				/ (Constants::ELECTRON_MASS * Constants::PERMITTIVITY_VACUUM));
+	}
+
+	/**
 	 * Use a chapmanProfile to calculate the electron number density
 	 * @unit: particles m^-3
 	 */
@@ -222,6 +234,10 @@ namespace scene {
 		double SZA = mesh3d.normal.angle(Vector3d::SUBSOLAR);
 		double correctedPeakAltitude = peakAltitude + 1e4 * log(1/cos(SZA));
 		double normalizedHeight = (getAltitude() - correctedPeakAltitude) / neutralScaleHeight;
+
+		if (peakDensity > _peakElectronDensity) {
+			_peakElectronDensity = peakDensity;
+		}
 
 		double electronNumberDensity = peakDensity *
 				exp(0.5f * (1.0f - normalizedHeight - (1.0 / cos(SZA)) * exp(-normalizedHeight) ));
@@ -301,9 +317,11 @@ namespace scene {
 		double angularFrequency = 2 * Constants::PI * r->frequency;
 		double epsilon = 1e-5;
 
+		if (angularFrequency < getPeakPlasmaFrequency())
+			return Ray::wave_no_propagation;
+
 		if (incidentAngle > Constants::PI/2)
 			incidentAngle -= Constants::PI/2;
-
 
 		if (refractiveIndex <= r->previousRefractiveIndex)
 			criticalAngle = asin(refractiveIndex / r->previousRefractiveIndex);
