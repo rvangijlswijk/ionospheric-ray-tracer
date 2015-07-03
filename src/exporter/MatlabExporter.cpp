@@ -40,7 +40,7 @@ namespace exporter {
 				<< std::setprecision(6) << dataset.front().mu_r_sqrt << ","
 				<< std::setprecision(4) << dataset.front().theta_0 << ","
 				<< std::setprecision(1) << dataset.front().frequency << ","
-				<< std::setprecision(6) << dataset.front().signalPower << ","
+				<< std::setprecision(12) << dataset.front().signalPower << ","
 				<< std::setprecision(10) << dataset.front().timeOfFlight << ","
 				<< std::setprecision(1) << dataset.front().collisionType << "\n";
 			dataset.pop_front();

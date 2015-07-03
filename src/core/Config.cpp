@@ -76,7 +76,7 @@ namespace core {
 			cerr << path << " does not exist!" << endl;
 		}
 
-		if (!_doc.get(path, "UTF-32").isObject()) {
+		if (!_doc.get(path, "").isObject()) {
 			cerr << path << " is not an object!" << endl;
 		}
 
