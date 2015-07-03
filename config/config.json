@@ -4,13 +4,13 @@
     "tracingLimit": 10000,
     "angularStepSize": "8.726389e-3",
     "frequencies": {
-        "min": 5000000,
+        "min": 3000000,
         "step": 25000,
-        "max": 5000000
+        "max": 8000000
     },
     "SZA": {
 		"min": 15.0,
-		"step": 0.1,
+		"step": 0.5,
 		"max": 75.0
 	},
     "layerHeight": {
