@@ -317,22 +317,24 @@ namespace scene {
 		double angularFrequency = 2 * Constants::PI * r->frequency;
 		double epsilon = 1e-5;
 
-		if (angularFrequency < getPeakPlasmaFrequency())
-			return Ray::wave_no_propagation;
-
 		if (incidentAngle > Constants::PI/2)
 			incidentAngle -= Constants::PI/2;
 
-		if (refractiveIndex <= r->previousRefractiveIndex)
-			criticalAngle = asin(refractiveIndex / r->previousRefractiveIndex);
-		else
-			criticalAngle = asin(r->previousRefractiveIndex / refractiveIndex);
+		if (angularFrequency / cos(r->originalAngle) < getPeakPlasmaFrequency())
+			r->behaviour = Ray::wave_no_propagation;
+		else {
 
-		if (r->previousRefractiveIndex > refractiveIndex &&
-				(incidentAngle >= criticalAngle || abs(angularFrequency - getPlasmaFrequency()) < epsilon))
-			r->behaviour = Ray::wave_reflection;
-		else
-			r->behaviour = Ray::wave_refraction;
+			if (refractiveIndex <= r->previousRefractiveIndex)
+				criticalAngle = asin(refractiveIndex / r->previousRefractiveIndex);
+			else
+				criticalAngle = asin(r->previousRefractiveIndex / refractiveIndex);
+
+			if (r->previousRefractiveIndex > refractiveIndex &&
+					(incidentAngle >= criticalAngle || abs(angularFrequency - getPlasmaFrequency()) < epsilon))
+				r->behaviour = Ray::wave_reflection;
+			else
+				r->behaviour = Ray::wave_refraction;
+		}
 
 		return r->behaviour;
 	}

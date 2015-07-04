@@ -92,6 +92,7 @@ namespace tracer {
 			hit.g->interact(this, hit.pos);
 			delete hit.g;
 			if (behaviour == Ray::wave_no_propagation) {
+				BOOST_LOG_TRIVIAL(info) << "Ray " << rayNumber << " result: no propagation";
 				return 0;
 			} else {
 				return trace();

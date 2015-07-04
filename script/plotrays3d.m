@@ -39,7 +39,7 @@ for f=1:length(frequencies)
     hs = subplot(length(frequencies),1,f);
     axis equal;
     
-    plot3(x/1e3, z/1e3, h/1e3 - Radius, '*b')
+    plot3(x/1e3, z/1e3, h/1e3 - Radius, '.','MarkerSize', 5,  'Color', [0.5 0.5 0.5])
     grid on
     xlabel('Longitude [km] (x)')
     ylabel('Latitude [km] (y)')
