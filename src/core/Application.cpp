@@ -137,6 +137,18 @@ namespace core {
 		}
 		BOOST_LOG_TRIVIAL(info) << _applicationConfig.getInt("iterations") << " iterations";
 
+		// load config values
+		double fmin = _applicationConfig.getObject("frequencies")["min"].asDouble();
+		double fstep = _applicationConfig.getObject("frequencies")["step"].asDouble();
+		double fmax = _applicationConfig.getObject("frequencies")["max"].asDouble();
+		double SZAmin = _applicationConfig.getObject("SZA")["min"].asDouble();
+		double SZAstep = _applicationConfig.getObject("SZA")["step"].asDouble();
+		double SZAmax = _applicationConfig.getObject("SZA")["max"].asDouble();
+		double azimuthMin = _applicationConfig.getObject("azimuth")["min"].asDouble() * Constants::PI / 180;
+		double azimuthStep = _applicationConfig.getObject("azimuth")["step"].asDouble() * Constants::PI / 180;
+		double azimuthMax = _applicationConfig.getObject("azimuth")["max"].asDouble() * Constants::PI / 180;
+		const Json::Value beacons = _applicationConfig.getArray("beacons");
+
 		// trace a ray
 		int rayCounter = 0;
 		for (int iteration = 0; iteration < _applicationConfig.getInt("iterations"); iteration++) {
@@ -144,14 +156,6 @@ namespace core {
 			BOOST_LOG_TRIVIAL(info) << "Iteration " << (iteration+1) << " of " << _applicationConfig.getInt("iterations");
 
 			createScene();
-
-			double fmin = _applicationConfig.getObject("frequencies")["min"].asDouble();
-			double fstep = _applicationConfig.getObject("frequencies")["step"].asDouble();
-			double fmax = _applicationConfig.getObject("frequencies")["max"].asDouble();
-			double SZAmin = _applicationConfig.getObject("SZA")["min"].asDouble();
-			double SZAstep = _applicationConfig.getObject("SZA")["step"].asDouble();
-			double SZAmax = _applicationConfig.getObject("SZA")["max"].asDouble();
-			const Json::Value beacons = _applicationConfig.getArray("beacons");
 
 			BOOST_LOG_TRIVIAL(info) << "Scanning frequencies " << fmin << " Hz to " << fmax << "Hz with steps of " << fstep << "Hz";
 			BOOST_LOG_TRIVIAL(info) << "Scanning SZA " << SZAmin << " deg to " << SZAmax << " deg with steps of " << SZAstep << " deg";
@@ -167,27 +171,29 @@ namespace core {
 			for(int b = 0; b < beacons.size(); b++) {
 				for (double freq = fmin; freq <= fmax; freq += fstep) {
 					for (double startAngle = SZAmin; startAngle <= SZAmax; startAngle += SZAstep) {
+						for(double azimuth = azimuthMin; azimuth <= azimuthMax; azimuth += azimuthStep) {
 
-						double latitudeOffset = beacons[b].get("latitudeOffset", "").asDouble();
-						double longitudeOffset = beacons[b].get("longitudeOffset", "").asDouble();
+							double latitudeOffset = beacons[b].get("latitudeOffset", "").asDouble();
+							double longitudeOffset = beacons[b].get("longitudeOffset", "").asDouble();
 
-						Ray r;
-						r.rayNumber = ++rayCounter;
-						r.frequency = freq;
-						r.signalPower = 0;
-						r.o.x = sin(longitudeOffset * Constants::PI / 180.0) * radius;
-						r.o.y = cos(longitudeOffset * Constants::PI / 180.0) * (radius + 2);
-						r.o.z = 0;
-						r.originalAngle = startAngle * Constants::PI / 180.0;
-						Vector3d direction = Vector3d(cos(Constants::PI/2.0 - r.originalAngle),
-								sin(Constants::PI/2.0 - r.originalAngle),
-								0);
-						r.d = direction.norm();
+							Ray r;
+							r.rayNumber = ++rayCounter;
+							r.frequency = freq;
+							r.signalPower = 0;
+							r.o.x = sin(longitudeOffset * Constants::PI / 180.0) * radius;
+							r.o.y = cos(longitudeOffset * Constants::PI / 180.0) * (radius + 2);
+							r.o.z = sin(latitudeOffset) * radius;
+							r.originalAngle = startAngle * Constants::PI / 180.0;
+							Vector3d direction = Vector3d(cos(Constants::PI/2.0 - r.originalAngle),
+									sin(Constants::PI/2.0 - r.originalAngle),
+									azimuth);
+							r.d = direction.norm();
 
-						Worker w;
-						w.schedule(&tp, r);
+							Worker w;
+							w.schedule(&tp, r);
 
-						numWorkers++;
+							numWorkers++;
+						}
 					}
 				}
 			}
@@ -237,10 +243,9 @@ namespace core {
 		int numSceneObjectsCreated = 0;
 		double R = _celestialConfig.getInt("radius");
 		double angularStepSize = _applicationConfig.getDouble("angularStepSize");
-		IonosphereConfigParser plh = IonosphereConfigParser();
 
 		// terrain
-		for (double latitude = Constants::PI/2; latitude < Constants::PI/2 + 10*Constants::PI/180; latitude += angularStepSize) {
+		for (double latitude = Constants::PI/2 - 45*Constants::PI/180; latitude < Constants::PI/2 + 45*Constants::PI/180; latitude += angularStepSize) {
 			for (double theta = 0; theta < Constants::PI/2; theta += angularStepSize) {
 
 				Vector3d N = Vector3d(cos(theta), sin(theta), cos(latitude)).norm();
@@ -252,53 +257,6 @@ namespace core {
 				_scm.addToScene(tr);
 			}
 		}
-
-//		const Json::Value ionosphereConfig = _celestialConfig.getObject("ionosphere");
-//		int start = ionosphereConfig["start"].asInt();
-//		int dh = ionosphereConfig["step"].asInt();
-//		int end =ionosphereConfig["end"].asInt();
-//
-//		for (double latitude = Constants::PI/2; latitude < Constants::PI/2 + 1*Constants::PI/180; latitude += angularStepSize) {
-//			for (double theta = 0; theta < Constants::PI/2; theta += angularStepSize) {
-//				for (int h = start; h < end; h += dh) {
-//
-//					Vector3d N = Vector3d(cos(theta), sin(theta), cos(latitude)).norm();
-//					Plane3d mesh = Plane3d(N, Vector3d((R+h)*N.x, (R+h)*N.y, (R+h)*N.z));
-//					mesh.size = angularStepSize * R;
-//					Ionosphere* io = new Ionosphere(mesh);
-//					io->layerHeight = dh;
-//
-//					for (int idx = 0; idx < ionosphereConfig["layers"].size(); idx++) {
-//
-//						double electronPeakDensity = atof(ionosphereConfig["layers"][idx].get("electronPeakDensity", "").asCString());
-//						double peakProductionAltitude = ionosphereConfig["layers"][idx].get("peakProductionAltitude", "").asDouble();
-//						double neutralScaleHeight = ionosphereConfig["layers"][idx].get("neutralScaleHeight", 11.1e3).asDouble();
-//
-//						io->superimposeElectronNumberDensity(electronPeakDensity, peakProductionAltitude, neutralScaleHeight);
-//					}
-//
-//					numSceneObjectsCreated++;
-//					_scm.addToScene(io);
-//				}
-//			}
-//		}
-
-//		const Json::Value atmosphereConfig = _celestialConfig.getObject("atmosphere");
-//		int hS = atmosphereConfig.get("start", 0).asInt();
-//		int hE = atmosphereConfig.get("end", 0).asInt();
-//		dh = 2000;
-//
-//		for (double theta = 0; theta < 2*Constants::PI; theta += Constants::PI/180) {
-//			double nextTheta = theta + Constants::PI/180;
-//
-//			for (int h = hS; h < hE; h += dh) {
-//				Atmosphere* atm = new Atmosphere(Vector3d(cos(theta), sin(theta), 0),Vector3d((R + h) * cos(theta), (R + h) * sin(theta), 0));
-//				atm->layerHeight = dh;
-//
-//				numSceneObjectsCreated++;
-//				_scm.addToScene(atm);
-//			}
-//		}
 
 		if (numSceneObjectsCreated > 1e9)
 			BOOST_LOG_TRIVIAL(info) << setprecision(3) << numSceneObjectsCreated/1.0e9 << "G scene objects created";
