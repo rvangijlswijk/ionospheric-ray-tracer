@@ -127,6 +127,7 @@ namespace core {
 		BOOST_LOG_TRIVIAL(debug) << "Run application";
 
 		Timer tmr;
+		int radius = _celestialConfig.getInt("radius");
 
 		BOOST_LOG_TRIVIAL(info) << "Parallelism is " << _applicationConfig.getInt("parallelism");
 		if (_verbosity > boost::log::trivial::info) {
@@ -150,6 +151,7 @@ namespace core {
 			double SZAmin = _applicationConfig.getObject("SZA")["min"].asDouble();
 			double SZAstep = _applicationConfig.getObject("SZA")["step"].asDouble();
 			double SZAmax = _applicationConfig.getObject("SZA")["max"].asDouble();
+			const Json::Value beacons = _applicationConfig.getArray("beacons");
 
 			BOOST_LOG_TRIVIAL(info) << "Scanning frequencies " << fmin << " Hz to " << fmax << "Hz with steps of " << fstep << "Hz";
 			BOOST_LOG_TRIVIAL(info) << "Scanning SZA " << SZAmin << " deg to " << SZAmax << " deg with steps of " << SZAstep << " deg";
@@ -162,23 +164,31 @@ namespace core {
 						CommandLine::getInstance().addToHeader(stringStream.str().c_str());
 			}
 
-			for (double freq = fmin; freq <= fmax; freq += fstep) {
-				for (double SZA = SZAmin; SZA <= SZAmax; SZA += SZAstep) {
-					Ray r;
-					r.rayNumber = ++rayCounter;
-					r.frequency = freq;
-					r.signalPower = 0;
-					r.o.y = 2 + _celestialConfig.getInt("radius");
-					r.originalAngle = SZA * Constants::PI / 180.0;
-					Vector3d direction = Vector3d(cos(Constants::PI/2.0 - r.originalAngle),
-							sin(Constants::PI/2.0 - r.originalAngle),
-							0);
-					r.d = direction.norm();
+			for(int b = 0; b < beacons.size(); b++) {
+				for (double freq = fmin; freq <= fmax; freq += fstep) {
+					for (double startAngle = SZAmin; startAngle <= SZAmax; startAngle += SZAstep) {
 
-					Worker w;
-					w.schedule(&tp, r);
+						double latitudeOffset = beacons[b].get("latitudeOffset", "").asDouble();
+						double longitudeOffset = beacons[b].get("longitudeOffset", "").asDouble();
 
-					numWorkers++;
+						Ray r;
+						r.rayNumber = ++rayCounter;
+						r.frequency = freq;
+						r.signalPower = 0;
+						r.o.x = sin(longitudeOffset * Constants::PI / 180.0) * radius;
+						r.o.y = cos(longitudeOffset * Constants::PI / 180.0) * (radius + 2);
+						r.o.z = 0;
+						r.originalAngle = startAngle * Constants::PI / 180.0;
+						Vector3d direction = Vector3d(cos(Constants::PI/2.0 - r.originalAngle),
+								sin(Constants::PI/2.0 - r.originalAngle),
+								0);
+						r.d = direction.norm();
+
+						Worker w;
+						w.schedule(&tp, r);
+
+						numWorkers++;
+					}
 				}
 			}
 
