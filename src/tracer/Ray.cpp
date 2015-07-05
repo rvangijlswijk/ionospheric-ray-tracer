@@ -55,7 +55,7 @@ namespace tracer {
 
 //		printf("Tracing ray: %6.3f %6.3f %6.3f %6.3f theta: %4.2f\n", o.x, o.y, d.x, d.y, angle * 57.296);
 
-		BOOST_LOG_TRIVIAL(debug) << "rayline: (" << rayLine.destination.x << "," << rayLine.destination.y << ") \n";
+		BOOST_LOG_TRIVIAL(debug) << "rayline: (" << rayLine.destination.x << "," << rayLine.destination.y << "," << rayLine.destination.z << ") \n";
 //		cout << "previndex: " << previousRefractiveIndex << "\n";
 
 		// limit the simulation to avoid unnecessary calculations

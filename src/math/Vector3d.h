@@ -9,7 +9,6 @@
 
 #include <iostream>
 #include <iomanip>
-#include "Vector.h"
 
 namespace raytracer {
 namespace math {

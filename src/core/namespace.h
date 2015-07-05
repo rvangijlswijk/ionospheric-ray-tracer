@@ -15,6 +15,10 @@ namespace raytracer {
 	namespace scene {
 		class Geometry;
 	}
+	namespace math {
+		class Vector3d;
+		class Matrix3d;
+	}
 }
 
 #endif
