@@ -37,8 +37,8 @@ namespace threading {
 
 		if (Application::getInstance().getVerbosity() > boost::log::trivial::info) {
 			char buffer[80];
-			sprintf(buffer, "Progress: %d/%d (%d\%)", r.rayNumber, Application::getInstance().numWorkers,
-					(int)round(100*r.rayNumber/Application::getInstance().numWorkers));
+			sprintf(buffer, "Progress: %d/%d (%4.2f\%)", r.rayNumber, Application::getInstance().numWorkers,
+					100*r.rayNumber/Application::getInstance().numWorkers);
 			CommandLine::getInstance().updateBody(buffer);
 		}
 	}
