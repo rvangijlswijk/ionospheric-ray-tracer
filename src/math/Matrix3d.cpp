@@ -27,21 +27,30 @@ namespace math {
 		_matrix[2][2] = col3.z;
 	}
 
+	/**
+	 * Get an individual element in the matrix
+	 */
 	double Matrix3d::get(int i, int j) {
 
 		return _matrix[i][j];
 	}
 
+	/**
+	 * Set an individual element in the matrix
+	 */
 	void Matrix3d::set(int i, int j, double val) {
 
 		_matrix[i][j] = val;
 	}
 
-	Matrix3d Matrix3d::createRotationMatrix(double angle, int direction) {
+	/**
+	 * Create a rotation matrix around a certain axis, following the right-hand rule
+	 */
+	Matrix3d Matrix3d::createRotationMatrix(double angle, int axis) {
 
 		Matrix3d m;
 
-		if (direction == ROTATION_X) {
+		if (axis == ROTATION_X) {
 			m.set(0,0,1);
 			m.set(0,1,0);
 			m.set(0,2,0);
@@ -51,7 +60,7 @@ namespace math {
 			m.set(2,0,0);
 			m.set(2,1,sin(angle));
 			m.set(2,2,cos(angle));
-		} else if (direction == ROTATION_Y) {
+		} else if (axis == ROTATION_Y) {
 			m.set(0,0,cos(angle));
 			m.set(0,1,0);
 			m.set(0,2,sin(angle));
@@ -61,7 +70,7 @@ namespace math {
 			m.set(2,0,-sin(angle));
 			m.set(2,1,0);
 			m.set(2,2,cos(angle));
-		} else if(direction == ROTATION_Z) {
+		} else if(axis == ROTATION_Z) {
 			m.set(0,0,cos(angle));
 			m.set(0,1,-sin(angle));
 			m.set(0,2,0);
@@ -76,13 +85,29 @@ namespace math {
 		return m;
 	}
 
+	/**
+	 * Perform a full matrix multiplication.
+	 * @param Matrix3d m2: the RHS matrix
+	 */
 	Matrix3d Matrix3d::multiply(Matrix3d rhs) {
 
-		return Matrix3d();
+		Matrix3d multipliedMatrix;
+
+		for(int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				double val;
+				for (int k = 0; k < 3; k++) {
+					val += get(i,k) * rhs.get(k,j);
+				}
+				multipliedMatrix.set(i, j, val);
+			}
+		}
+
+		return multipliedMatrix;
 	}
 
 	/**
-	 * Multiply with a matrix, to perform rotations for example
+	 * Multiply this matrix with a vector
 	 */
 	Vector3d Matrix3d::multiply(Vector3d vin) {
 
