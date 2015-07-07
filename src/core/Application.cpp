@@ -145,9 +145,9 @@ namespace core {
 		double SZAmin = _applicationConfig.getObject("SZA")["min"].asDouble();
 		double SZAstep = _applicationConfig.getObject("SZA")["step"].asDouble();
 		double SZAmax = _applicationConfig.getObject("SZA")["max"].asDouble();
-		double azimuthMin = _applicationConfig.getObject("azimuth")["min"].asDouble() * Constants::PI / 180;
-		double azimuthStep = _applicationConfig.getObject("azimuth")["step"].asDouble() * Constants::PI / 180;
-		double azimuthMax = _applicationConfig.getObject("azimuth")["max"].asDouble() * Constants::PI / 180;
+		double azimuthMin = _applicationConfig.getObject("azimuth")["min"].asDouble();
+		double azimuthStep = _applicationConfig.getObject("azimuth")["step"].asDouble();
+		double azimuthMax = _applicationConfig.getObject("azimuth")["max"].asDouble();
 		const Json::Value beacons = _applicationConfig.getArray("beacons");
 
 		// trace a ray
@@ -160,13 +160,15 @@ namespace core {
 
 			BOOST_LOG_TRIVIAL(info) << "Simulating " << beacons.size() << " beacons";
 			BOOST_LOG_TRIVIAL(info) << "Scanning frequencies " << fmin << " Hz to " << fmax << "Hz with steps of " << fstep << "Hz";
-			BOOST_LOG_TRIVIAL(info) << "Scanning SZA " << SZAmin << " deg to " << SZAmax << " deg with steps of " << SZAstep << " deg";
+			BOOST_LOG_TRIVIAL(info) << "Scanning SZA 9" << SZAmin << " deg to " << SZAmax << " deg with steps of " << SZAstep << " deg";
+			BOOST_LOG_TRIVIAL(info) << "Scanning azimuth " << azimuthMin << " deg to " << azimuthMax << " deg with steps of " << azimuthStep << " deg";
 
 			if (_verbosity > boost::log::trivial::info) {
 				std::ostringstream stringStream;
 				stringStream << "Simulating " << beacons.size() << " beacons\n" << "Scanning frequencies " << fmin << " Hz to " << fmax
 						<< "Hz with steps of " << fstep << "Hz\n" << "Scanning SZA " << SZAmin << " deg to "
-						<< SZAmax << " deg with steps of " << SZAstep << " deg";
+						<< SZAmax << " deg with steps of " << SZAstep << " deg\n"
+						<< "Scanning azimuth " << azimuthMin << " deg to " << azimuthMax << " deg with steps of " << azimuthStep << " deg";
 						CommandLine::getInstance().addToHeader(stringStream.str().c_str());
 			}
 
@@ -179,12 +181,15 @@ namespace core {
 				Matrix3d longitude = Matrix3d::createRotationMatrix(longitudeOffset, Matrix3d::ROTATION_Z);
 				Matrix3d rotationMatrix = latitude * longitude;
 
-				Vector3d startPosition = rotationMatrix * Vector3d(0, radius, 0);
+				Vector3d startPosition = rotationMatrix * Vector3d(0, (radius+2), 0);
 				BOOST_LOG_TRIVIAL(debug) << startPosition;
 
-				for (double freq = fmin; freq <= fmax; freq += fstep) {
-					for (double startAngle = SZAmin; startAngle <= SZAmax; startAngle += SZAstep) {
-						for(double azimuth = azimuthMin; azimuth <= azimuthMax; azimuth += azimuthStep) {
+				for(double azimuth = azimuthMin; azimuth <= azimuthMax; azimuth += azimuthStep) {
+
+					Matrix3d azimuthRotation = Matrix3d::createRotationMatrix(azimuth * Constants::PI / 180, Matrix3d::ROTATION_Y);
+
+					for (double freq = fmin; freq <= fmax; freq += fstep) {
+						for (double startAngle = SZAmin; startAngle <= SZAmax; startAngle += SZAstep) {
 
 							Ray r;
 							r.rayNumber = ++rayCounter;
@@ -194,8 +199,8 @@ namespace core {
 							r.originalAngle = startAngle * Constants::PI / 180.0;
 							Vector3d direction = Vector3d(cos(Constants::PI/2.0 - r.originalAngle),
 									sin(Constants::PI/2.0 - r.originalAngle),
-									azimuth);
-							r.d = direction.norm();
+									0).norm();
+							r.d = azimuthRotation * direction;
 
 							Worker w;
 							w.schedule(&tp, r);
@@ -252,12 +257,16 @@ namespace core {
 		double R = _celestialConfig.getInt("radius");
 		double angularStepSize = _applicationConfig.getDouble("angularStepSize");
 
-		// terrain
-		for (double latitude = Constants::PI/2 - 45*Constants::PI/180; latitude < Constants::PI/2 + 45*Constants::PI/180; latitude += angularStepSize) {
-			for (double theta = 0; theta < Constants::PI/2; theta += angularStepSize) {
+		for (double latitude = -25 * Constants::PI / 180.0; latitude <= 25 * Constants::PI / 180.0; latitude += angularStepSize) {
+			for (double longitude = -25 * Constants::PI / 180.0; longitude <= 25 * Constants::PI / 180.0; longitude += angularStepSize) {
 
-				Vector3d N = Vector3d(cos(theta), sin(theta), cos(latitude)).norm();
-				Plane3d mesh = Plane3d(N, Vector3d(R*N.x, R*N.y, R*N.z));
+				Matrix3d latitudeM = Matrix3d::createRotationMatrix(latitude, Matrix3d::ROTATION_X);
+				Matrix3d longitudeM = Matrix3d::createRotationMatrix(longitude, Matrix3d::ROTATION_Z);
+				Matrix3d rotationMatrix = latitudeM * longitudeM;
+
+				Vector3d startPosition = rotationMatrix * Vector3d(0, R, 0);
+
+				Plane3d mesh = Plane3d(startPosition.norm(), startPosition);
 				mesh.size = angularStepSize * R;
 				Terrain* tr = new Terrain(mesh);
 

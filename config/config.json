@@ -1,26 +1,28 @@
 {
-    "parallelism": 4,
+    "parallelism": 1,
     "iterations": 1,
-    "tracingLimit": 10000,
-    "angularStepSize": "8.726389e-3",
+    "tracingLimit": 2500,
+    "angularStepSize": "1.7453e-2",
     "frequencies": {
-        "min": 4500000,
-        "step": 500000,
-        "max": 4500000
+        "min": 5000000,
+        "step": 25000,
+        "max": 5000000
     },
     "SZA": {
-		"min": 10.0,
-		"step": 15,
+		"min": 15.0,
+		"step": 15.0,
 		"max": 75.0
 	},
 	"azimuth": {
-		"min": -60.0,
+		"min": 0.0,
 		"step": 30,
-		"max": -60.0	
+		"max": 30.0	
 	},
-	"beacons": [
-		{
-			"latitudeOffset": 0,
+	"beacons": [{
+			"latitudeOffset": 5,
+			"longitudeOffset": 0
+		},{
+			"latitudeOffset": -5,
 			"longitudeOffset": 0
 		}
 	],
