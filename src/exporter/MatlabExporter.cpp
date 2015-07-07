@@ -42,7 +42,8 @@ namespace exporter {
 				<< std::setprecision(1) << dataset.front().frequency << ","
 				<< std::setprecision(12) << dataset.front().signalPower << ","
 				<< std::setprecision(10) << dataset.front().timeOfFlight << ","
-				<< std::setprecision(1) << dataset.front().collisionType << "\n";
+				<< std::setprecision(1) << dataset.front().collisionType << ","
+				<< std::setprecision(1) << dataset.front().beaconId << "\n";
 			dataset.pop_front();
 		}
 		data.close();

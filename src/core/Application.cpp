@@ -197,6 +197,7 @@ namespace core {
 							r.signalPower = 0;
 							r.o = startPosition;
 							r.originalAngle = startAngle * Constants::PI / 180.0;
+							r.originBeaconId = b;
 							Vector3d direction = Vector3d(cos(Constants::PI/2.0 - r.originalAngle),
 									sin(Constants::PI/2.0 - r.originalAngle),
 									0).norm();

@@ -62,6 +62,7 @@ namespace tracer {
 			double timeDelay = 0.0;
 			double phaseAdvance = 0.0;
 			double altitude = 0.0;
+			int originBeaconId = 0;
 			GeometryType lastHitType;
 			Vector3d lastHitNormal;
 			enum waveBehaviour {

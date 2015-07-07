@@ -177,6 +177,7 @@ namespace tracer {
 		d.signalPower = signalPower;
 		d.timeOfFlight = timeOfFlight;
 		d.collisionType = collisionType;
+		d.beaconId = originBeaconId;
 		Application::getInstance().addToDataset(d);
 	}
 

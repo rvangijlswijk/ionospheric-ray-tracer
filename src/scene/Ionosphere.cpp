@@ -189,6 +189,7 @@ namespace scene {
 		d.signalPower = r->signalPower;
 		d.timeOfFlight = r->timeOfFlight;
 		d.collisionType = GeometryType::ionosphere;
+		d.beaconId = r->originBeaconId;
 		Application::getInstance().addToDataset(d);
 	}
 
