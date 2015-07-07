@@ -86,7 +86,7 @@ namespace {
 
 		Matrix3d latitude = Matrix3d::createRotationMatrix(-5 * Constants::PI / 180.0, Matrix3d::ROTATION_X);
 		Matrix3d longitude = Matrix3d::createRotationMatrix(0, Matrix3d::ROTATION_Z);
-		Matrix3d rotationMatrix = latitude.multiply(longitude);
+		Matrix3d rotationMatrix = latitude * longitude;
 
 		ASSERT_NEAR(1, rotationMatrix.get(0,0), 1e-10);
 		ASSERT_NEAR(0.996, rotationMatrix.get(1,1), 1e-3);

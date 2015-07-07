@@ -7,8 +7,6 @@
 
 #include <cmath>
 #include "Matrix3d.h"
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
 
 namespace raytracer {
 namespace math {
@@ -100,10 +98,8 @@ namespace math {
 			for (int j = 0; j < 3; j++) {
 				double val = 0;
 				for (int k = 0; k < 3; k++) {
-					BOOST_LOG_TRIVIAL(debug) << "(" << i << ", " << j << ", " << k << "): " <<  get(i,k) << " * " << rhs.get(k,j);
 					val += get(i,k) * rhs.get(k,j);
 				}
-				BOOST_LOG_TRIVIAL(debug) << "(" << i << "," << j << "): " << val;
 				multipliedMatrix.set(i, j, val);
 			}
 		}
