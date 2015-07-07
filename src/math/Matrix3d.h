@@ -20,6 +20,7 @@ namespace math {
 
 			/**
 			 * Create a rotation matrix around a certain axis, following the right-hand rule
+			 * @param double angle: the angle in radians
 			 */
 			static Matrix3d createRotationMatrix(double angle, int axis);
 

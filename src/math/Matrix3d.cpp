@@ -7,6 +7,8 @@
 
 #include <cmath>
 #include "Matrix3d.h"
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
 
 namespace raytracer {
 namespace math {
@@ -45,6 +47,7 @@ namespace math {
 
 	/**
 	 * Create a rotation matrix around a certain axis, following the right-hand rule
+	 * @param double angle: the angle in radians
 	 */
 	Matrix3d Matrix3d::createRotationMatrix(double angle, int axis) {
 
@@ -95,10 +98,12 @@ namespace math {
 
 		for(int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				double val;
+				double val = 0;
 				for (int k = 0; k < 3; k++) {
+					BOOST_LOG_TRIVIAL(debug) << "(" << i << ", " << j << ", " << k << "): " <<  get(i,k) << " * " << rhs.get(k,j);
 					val += get(i,k) * rhs.get(k,j);
 				}
+				BOOST_LOG_TRIVIAL(debug) << "(" << i << "," << j << "): " << val;
 				multipliedMatrix.set(i, j, val);
 			}
 		}

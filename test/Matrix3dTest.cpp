@@ -53,7 +53,7 @@ namespace {
 		ASSERT_NEAR(-0.707, rotZ.get(0,1), 1e-3);
 		ASSERT_NEAR(0.707, rotZ.get(1,1), 1e-3);
 		ASSERT_NEAR(0, rotZ.get(2,1), 1e-10);
-//		ASSERT_NEAR(0.183, rotationMatrix.get(2,1), 1e-3);
+		ASSERT_NEAR(0.183, rotationMatrix.get(2,1), 1e-3);
 		ASSERT_NEAR(0, rotationMatrix.get(0,2), 1e-3);
 
 		// results should be inverted as the order of execution matters.
@@ -66,6 +66,8 @@ namespace {
 	}
 
 	TEST_F(Matrix3dTest, VectorMultiplication) {
+
+		int radius = 3390e3;
 
 		Matrix3d rotX = Matrix3d::createRotationMatrix(10.0 * Constants::PI / 180.0, Matrix3d::ROTATION_X);
 		Matrix3d rotZ = Matrix3d::createRotationMatrix(-10.0 * Constants::PI / 180.0, Matrix3d::ROTATION_Z);
@@ -81,5 +83,19 @@ namespace {
 		ASSERT_NEAR(694.6, v3.x, 0.1);
 		ASSERT_NEAR(3879.4, v3.y, 0.1);
 		ASSERT_NEAR(684, v3.z, 0.1);
+
+		Matrix3d latitude = Matrix3d::createRotationMatrix(-5 * Constants::PI / 180.0, Matrix3d::ROTATION_X);
+		Matrix3d longitude = Matrix3d::createRotationMatrix(0, Matrix3d::ROTATION_Z);
+		Matrix3d rotationMatrix = latitude.multiply(longitude);
+
+		ASSERT_NEAR(1, rotationMatrix.get(0,0), 1e-10);
+		ASSERT_NEAR(0.996, rotationMatrix.get(1,1), 1e-3);
+
+		Vector3d startPosition = rotationMatrix * Vector3d(0, radius, 0);
+
+		ASSERT_NEAR(0, startPosition.x, 1e-3);
+		ASSERT_NEAR(3.3771e6, startPosition.y, 1);
+		ASSERT_NEAR(-2.954e5, startPosition.z, 1e2);
+		ASSERT_NEAR(radius, startPosition.magnitude(), 1);
 	}
 }
