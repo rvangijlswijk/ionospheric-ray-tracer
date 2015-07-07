@@ -17,7 +17,6 @@ namespace raytracer {
 	}
 	namespace math {
 		class Vector3d;
-		class Matrix3d;
 	}
 }
 
