@@ -178,6 +178,7 @@ namespace tracer {
 		d.timeOfFlight = timeOfFlight;
 		d.collisionType = collisionType;
 		d.beaconId = originBeaconId;
+		d.azimuth_0 = originalAzimuth;
 		Application::getInstance().addToDataset(d);
 	}
 

@@ -25,6 +25,7 @@ namespace exporter {
 			double n_e = 0;
 			double mu_r_sqrt = 0;
 			double theta_0 = 0;
+			double azimuth_0 = 0;
 			double frequency = 0;
 			double signalPower = 0;
 			double timeOfFlight = 0;

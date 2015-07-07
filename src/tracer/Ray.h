@@ -54,6 +54,8 @@ namespace tracer {
 			double previousRefractiveIndex = 1.0;
 			double previousAtmosphericRefractiveIndex = 1.0;
 			double originalAngle = 0.0;
+			double originalAzimuth = 0.0;
+			int originBeaconId = 0;
 			int tracings = 0;
 			double signalPower = 0.0;
 			double timeOfFlight = 0.0;
@@ -62,7 +64,6 @@ namespace tracer {
 			double timeDelay = 0.0;
 			double phaseAdvance = 0.0;
 			double altitude = 0.0;
-			int originBeaconId = 0;
 			GeometryType lastHitType;
 			Vector3d lastHitNormal;
 			enum waveBehaviour {

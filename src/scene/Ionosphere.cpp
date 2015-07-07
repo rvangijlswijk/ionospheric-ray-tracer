@@ -190,6 +190,7 @@ namespace scene {
 		d.timeOfFlight = r->timeOfFlight;
 		d.collisionType = GeometryType::ionosphere;
 		d.beaconId = r->originBeaconId;
+		d.azimuth_0 = r->originalAzimuth;
 		Application::getInstance().addToDataset(d);
 	}
 
