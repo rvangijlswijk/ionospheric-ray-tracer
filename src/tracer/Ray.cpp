@@ -64,7 +64,7 @@ namespace tracer {
 
 			return 0;
 		}
-		if (tracings >= 5000) {
+		if (tracings >= Application::getInstance().getApplicationConfig().getInt("tracingLimit")) {
 			BOOST_LOG_TRIVIAL(info) << "Ray " << rayNumber << " result: Tracing limit exceeded!";
 			return 0;
 		}

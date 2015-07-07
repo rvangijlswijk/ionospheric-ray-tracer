@@ -72,8 +72,8 @@ namespace scene {
 			double DA = R + r.altitude;
 			double DB = R + nextAlt;
 			// in x-y plane
-			Vector2d v1 = Vector2d(r.d.x, r.d.y);
-			Vector2d v2 = Vector2d(oldNormal.x, oldNormal.y);
+			Vector3d v1 = Vector3d(r.d.x, r.d.y, r.d.z);
+			Vector3d v2 = Vector3d(oldNormal.x, oldNormal.y, oldNormal.z);
 			double theta, dR;
 			if (goingUp) {
 				theta = Constants::PI - v1.angle(v2);
@@ -85,14 +85,12 @@ namespace scene {
 			Vector3d dRv = r.o + r.d * dR;
 			BOOST_LOG_TRIVIAL(debug) << "dRv: " << dRv;
 			BOOST_LOG_TRIVIAL(debug) << "DA: " << DA << ", DB: " << DB;
-			// construct new normal
-			Vector3d n = dRv.norm();//Vector3d(sin(gamma2), cos(gamma2), 0).norm();
 
-			BOOST_LOG_TRIVIAL(debug) << "normal created: " << n;
-			BOOST_LOG_TRIVIAL(debug) << "r.d: " << r.d << " -> theta_i: " << r.d.angle(n) * 180.0 / Constants::PI;
+			BOOST_LOG_TRIVIAL(debug) << "normal created: " << dRv.norm();
+			BOOST_LOG_TRIVIAL(debug) << "r.d: " << r.d << " -> theta_i: " << r.d.angle(dRv.norm()) * 180.0 / Constants::PI;
 
 			// construct new ionosphere object
-			Plane3d mesh = Plane3d(n, Vector3d(dRv.x, dRv.y, dRv.z));
+			Plane3d mesh = Plane3d(dRv.norm(), dRv);
 			mesh.size = angularStepSize * R;
 			Ionosphere* io = new Ionosphere(mesh);
 			io->layerHeight = dh;
