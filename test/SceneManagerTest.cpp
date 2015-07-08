@@ -59,11 +59,11 @@ namespace {
 		Plane3d mesh = is.g->mesh3d;
 
 		ASSERT_NE(GeometryType::none, is.o);
-		ASSERT_NEAR((mesh.centerpoint.y / rayLine.destination.y) * mesh.centerpoint.x, is.pos.x, 10);
-		ASSERT_EQ(3390e3 + 100e3, is.pos.y);
 		ASSERT_NEAR(100e3, mesh.centerpoint.x, 10);
 		ASSERT_NEAR(3390e3 + 100e3, mesh.centerpoint.y, 10);
 		ASSERT_NEAR(0, mesh.centerpoint.z, 10);
+		ASSERT_NEAR((mesh.centerpoint.y / rayLine.destination.y) * mesh.centerpoint.x, is.pos.x, 10);
+		ASSERT_EQ(3390e3 + 100e3, is.pos.y);
 	}
 
 	TEST_F(SceneManagerTest, SortScene) {

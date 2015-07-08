@@ -176,19 +176,19 @@ namespace {
 		me.dump("Debug/data_nielsen2007absorption.dat", dataSet);
 	}
 
-	TEST_F(ValidationTest, Withers2011AbsorptionTest) {
+	TEST_F(ValidationTest, DISABLED_Withers2011AbsorptionTest) {
 
 		list<Data> dataSet;
 		float SZA = 0;
 		int numRay = 0;
 		int dh = 100;
-		MatlabExporter me("Debug/data_withers2011_Meteoric.dat");
+		MatlabExporter me("Debug/data_withers2011_EP.dat");
 
 		Config celestialConfig = Config("config/scenario_withers2011_M2.json");
 		Application::getInstance().setCelestialConfig(celestialConfig);
 		const Json::Value ionosphereConfig = celestialConfig.getObject("ionosphere")["layers"];
 
-		double peakProductionAltitude = 85e3;//ionosphereConfig[0].get("peakProductionAltitude", "").asDouble();
+		double peakProductionAltitude = 35e3;//ionosphereConfig[0].get("peakProductionAltitude", "").asDouble();
 		double neutralScaleHeight = ionosphereConfig[0].get("neutralScaleHeight", "").asDouble();
 
 		// assume single-layer ionosphere as that is how withers models the absorption
@@ -213,7 +213,7 @@ namespace {
 				r.setAngle(Constants::PI/2 - SZA);
 				Vector3d N = Vector3d(sin(SZA), cos(SZA), 0).norm();
 
-				for (int h = 70e3; h < 250e3; h += dh) {
+				for (int h = 20e3; h < 250e3; h += dh) {
 					Plane3d mesh = Plane3d(N, Vector3d((R+h)*N.x, (R+h)*N.y, (R+h)*N.z));
 					mesh.size = 1000;
 					Ionosphere io = Ionosphere(mesh);
@@ -240,6 +240,6 @@ namespace {
 			}
 		}
 
-		me.dump("Debug/data_withers2011_Meteoric.dat", dataSet);
+		me.dump("Debug/data_withers2011_EP.dat", dataSet);
 	}
 }
