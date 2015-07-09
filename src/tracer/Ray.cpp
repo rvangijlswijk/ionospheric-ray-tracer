@@ -39,7 +39,7 @@ namespace tracer {
 
 		// isnan check
 		if (o.x != o.x || o.y != o.y) {
-			BOOST_LOG_TRIVIAL(error) << "NaN exception!";
+//			BOOST_LOG_TRIVIAL(error) << "NaN exception!";
 			return 0;
 		}
 

@@ -20,7 +20,7 @@
 #include "../tracer/Ray.h"
 #include "../exporter/Data.h"
 #include "../exporter/CsvExporter.h"
-#include "../exporter/MatlabExporter.h"
+#include "../exporter/IExporter.h"
 #include "../math/Constants.h"
 #include "../math/NormalDistribution.h"
 #include "../threading/Worker.h"
@@ -79,7 +79,7 @@ namespace core {
 			int _parallelism = 0;
 			int _iterations = 0;
 			SceneManager _scm;
-			MatlabExporter _me;
+			IExporter* _me;
 
 	};
 

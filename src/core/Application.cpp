@@ -14,6 +14,7 @@
 #include "Timer.cpp"
 #include "CommandLine.h"
 #include "../math/Matrix3d.h"
+#include "../exporter/JsonExporter.h"
 
 namespace raytracer {
 namespace core {
@@ -120,7 +121,7 @@ namespace core {
 				<< "celestialConfig:" << _celestialConfigFile << endl
 				<< _celestialConfig;
 
-		_me = MatlabExporter(_outputFile);
+		_me = new JsonExporter(_outputFile);
 	}
 
 	void Application::run() {
@@ -197,7 +198,7 @@ namespace core {
 							r.signalPower = 0;
 							r.o = startPosition;
 							r.originalAngle = startAngle * Constants::PI / 180.0;
-							r.originBeaconId = b;
+							r.originBeaconId = b+1;
 							r.originalAzimuth = azimuth * Constants::PI / 180.0;
 							Vector3d direction = Vector3d(cos(Constants::PI/2.0 - r.originalAngle),
 									sin(Constants::PI/2.0 - r.originalAngle),
@@ -237,7 +238,7 @@ namespace core {
 
 		//CsvExporter ce;
 		//ce.dump("Debug/data.csv", dataSet);
-		_me.dump(_outputFile, dataSet);
+		_me->dump(_outputFile, dataSet);
 
 	    BOOST_LOG_TRIVIAL(warning) << "Results stored at: " << _outputFile;
 	}
@@ -259,8 +260,8 @@ namespace core {
 		double R = _celestialConfig.getInt("radius");
 		double angularStepSize = _applicationConfig.getDouble("angularStepSize");
 
-		for (double latitude = -25 * Constants::PI / 180.0; latitude <= 25 * Constants::PI / 180.0; latitude += angularStepSize) {
-			for (double longitude = -25 * Constants::PI / 180.0; longitude <= 25 * Constants::PI / 180.0; longitude += angularStepSize) {
+		for (double latitude = -30 * Constants::PI / 180.0; latitude <= 30 * Constants::PI / 180.0; latitude += angularStepSize) {
+			for (double longitude = -30 * Constants::PI / 180.0; longitude <= 30 * Constants::PI / 180.0; longitude += angularStepSize) {
 
 				Matrix3d latitudeM = Matrix3d::createRotationMatrix(latitude, Matrix3d::ROTATION_X);
 				Matrix3d longitudeM = Matrix3d::createRotationMatrix(longitude, Matrix3d::ROTATION_Z);
@@ -300,7 +301,7 @@ namespace core {
 		datasetMutex.lock();
 		dataSet.push_back(dat);
 		if (dataSet.size() > Data::MAX_DATASET_SIZE) {
-			_me.dump(_outputFile, dataSet);
+			_me->dump(_outputFile, dataSet);
 			dataSet.clear();
 		}
 		datasetMutex.unlock();
