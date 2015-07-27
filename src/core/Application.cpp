@@ -15,6 +15,7 @@
 #include "CommandLine.h"
 #include "../math/Matrix3d.h"
 #include "../exporter/JsonExporter.h"
+#include "../exporter/MatlabExporter.h"
 
 namespace raytracer {
 namespace core {
@@ -121,7 +122,7 @@ namespace core {
 				<< "celestialConfig:" << _celestialConfigFile << endl
 				<< _celestialConfig;
 
-		_me = new JsonExporter(_outputFile);
+		_me = new MatlabExporter(_outputFile);
 	}
 
 	void Application::run() {
