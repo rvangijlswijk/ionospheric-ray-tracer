@@ -26,6 +26,7 @@ namespace core {
 	using namespace exporter;
 	using namespace math;
 	using namespace threading;
+	using namespace radio;
 
 	boost::mutex datasetMutex;
 	boost::mutex tracingIncMutex;
@@ -36,7 +37,7 @@ namespace core {
 
 		BOOST_LOG_TRIVIAL(debug) << "Init application";
 
-		radio::AntennaFactory::printMappedTypes();
+		AntennaFactory::printMappedTypes();
 
 		parseCommandLineArgs(argc, argv);
 		start();
@@ -181,6 +182,9 @@ namespace core {
 
 				double latitudeOffset = beacons[b].get("latitudeOffset", "").asDouble() * Constants::PI / 180.0;
 				double longitudeOffset = beacons[b].get("longitudeOffset", "").asDouble() * Constants::PI / 180.0;
+				const Json::Value antenna = beacons[b].get("antenna", "");
+				IAntenna* ant = AntennaFactory::createInstance(antenna.get("type", "").asString());
+				ant->setConfig(antenna);
 
 				Matrix3d latitude = Matrix3d::createRotationMatrix(latitudeOffset, Matrix3d::ROTATION_X);
 				Matrix3d longitude = Matrix3d::createRotationMatrix(longitudeOffset, Matrix3d::ROTATION_Z);
@@ -194,14 +198,14 @@ namespace core {
 					Matrix3d azimuthRotation = Matrix3d::createRotationMatrix(azimuth * Constants::PI / 180, Matrix3d::ROTATION_Y);
 
 					for (double freq = fmin; freq <= fmax; freq += fstep) {
-						for (double startAngle = SZAmin; startAngle <= SZAmax; startAngle += SZAstep) {
+						for (double elevation = SZAmin; elevation <= SZAmax; elevation += SZAstep) {
 
 							Ray r;
 							r.rayNumber = ++rayCounter;
 							r.frequency = freq;
-							r.signalPower = 0;
+							r.signalPower = ant->getSignalPowerAt(azimuth, elevation);
 							r.o = startPosition;
-							r.originalAngle = startAngle * Constants::PI / 180.0;
+							r.originalAngle = elevation * Constants::PI / 180.0;
 							r.originBeaconId = b+1;
 							r.originalAzimuth = azimuth * Constants::PI / 180.0;
 							Vector3d direction = Vector3d(cos(Constants::PI/2.0 - r.originalAngle),

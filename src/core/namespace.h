@@ -19,7 +19,6 @@ namespace raytracer {
 		class Vector3d;
 	}
 	namespace radio {
-		class IAntenna;
 	}
 }
 

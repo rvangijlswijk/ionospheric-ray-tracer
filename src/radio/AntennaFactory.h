@@ -27,8 +27,11 @@ namespace radio {
 
 			static IAntenna * createInstance(std::string const& s) {
 				map_type::iterator it = getMap()->find(s);
-				if(it == getMap()->end())
-					return 0;
+				if(it == getMap()->end()) {
+					std::cerr << "Instance type " << s << " does not exist!";
+					std::exit(-1);
+				}
+
 				return it->second();
 			}
 

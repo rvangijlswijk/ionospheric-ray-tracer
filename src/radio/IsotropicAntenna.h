@@ -18,10 +18,11 @@ namespace radio {
 
 		public:
 			IsotropicAntenna();
+			~IsotropicAntenna() {}
+			void setConfig(const Json::Value conf);
 			double getSignalPowerAt(double azimuth, double elevation);
 
 		private:
-			double _nominalSignalPower = 0.0;
 			static AntennaRegister<IsotropicAntenna> reg;
 	};
 

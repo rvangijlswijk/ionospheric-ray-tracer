@@ -20,10 +20,29 @@ namespace radio {
 			virtual ~IAntenna() {}
 
 			/**
+			 * Set the parameters of this antenna using a json configuration file
+			 */
+			virtual void setConfig(const Json::Value conf) = 0;
+
+			/**
 			 * get the signal power at a specific azimuth/elevation angle. This
 			 * is influenced by the radiation pattern
 			 */
-			virtual double getSignalPowerAt(double azimuth, double elevation) {};
+			virtual double getSignalPowerAt(double azimuth, double elevation) = 0;
+
+			double getNominalSignalPower() {
+
+				return _nominalSignalPower;
+			}
+
+			void setNominalSignalPower(double p) {
+
+				_nominalSignalPower = p;
+			}
+
+		protected:
+			double _nominalSignalPower = 0.0;
+			Json::Value _conf;
 	};
 
 }
