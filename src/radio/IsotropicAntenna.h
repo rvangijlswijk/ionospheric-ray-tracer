@@ -9,6 +9,7 @@
 #define RADIO_ISOTROPICANTENNA_H_
 
 #include "IAntenna.h"
+#include "AntennaFactory.h"
 
 namespace raytracer {
 namespace radio {
@@ -16,12 +17,14 @@ namespace radio {
 	class IsotropicAntenna : public IAntenna {
 
 		public:
-			IsotropicAntenna() {}
-			IsotropicAntenna(Json::Value config) {}
-			~IsotropicAntenna() {}
-			double getSignalPowerAt(double azimuth, double elevation) { return 0.0; }
-			void registerInMap() {}
+			IsotropicAntenna();
+			double getSignalPowerAt(double azimuth, double elevation);
+
+		private:
+			double _nominalSignalPower = 0.0;
+			static AntennaRegister<IsotropicAntenna> reg;
 	};
+
 
 } /* namespace radio */
 } /* namespace raytracer */

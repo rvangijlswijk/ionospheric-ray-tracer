@@ -16,32 +16,15 @@ namespace radio {
 	class IAntenna {
 
 		public:
-			IAntenna();
-			IAntenna(Json::Value config);
-			virtual ~IAntenna();
+			IAntenna() {}
+			virtual ~IAntenna() {}
 
 			/**
 			 * get the signal power at a specific azimuth/elevation angle. This
 			 * is influenced by the radiation pattern
 			 */
-			virtual double getSignalPowerAt(double azimuth, double elevation) = 0;
-
-			/**
-			 * Register this antenna class in the antenna mapper. This has to be done
-			 * so that the antenna mapper can load this class if required
-			 */
-			virtual void registerInMap() = 0;
-
-		protected:
-
-			/**
-			 * The default, or isotropic, signal power, assuming no gains/losses from
-			 * antenna radiation pattern
-			 */
-			double _isotropicSignalPower;
+			virtual double getSignalPowerAt(double azimuth, double elevation) {};
 	};
-
-	template<typename T> IAntenna * createInstance() { return new T; }
 
 }
 }

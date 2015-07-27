@@ -16,6 +16,7 @@
 #include "../math/Matrix3d.h"
 #include "../exporter/JsonExporter.h"
 #include "../exporter/MatlabExporter.h"
+#include "../radio/AntennaFactory.h"
 
 namespace raytracer {
 namespace core {
@@ -34,6 +35,8 @@ namespace core {
 	void Application::init(int argc, char * argv[]) {
 
 		BOOST_LOG_TRIVIAL(debug) << "Init application";
+
+		radio::AntennaFactory::printMappedTypes();
 
 		parseCommandLineArgs(argc, argv);
 		start();

@@ -10,5 +10,17 @@
 namespace raytracer {
 namespace radio {
 
+	IsotropicAntenna::IsotropicAntenna() {
+
+	}
+
+	double IsotropicAntenna::getSignalPowerAt(double azimuth, double elevation) {
+
+		return 0.0;
+	}
+
+	AntennaRegister<IsotropicAntenna> IsotropicAntenna::reg("IsotropicAntenna");
+
+
 } /* namespace radio */
 } /* namespace raytracer */
