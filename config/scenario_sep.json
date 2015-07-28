@@ -15,11 +15,17 @@
     	"step": 250,
     	"end": 250000,
 	    "layers": [{
-	        "name" : "Main layer",
-	        "peakProductionAltitude": 130000,
-	        "electronPeakDensity": "1.0e9",
+	        "name" : "M2 Layer",
+	        "peakProductionAltitude": 135000,
+	        "electronPeakDensity": "1.75e11",
 	        "neutralScaleHeight": 11000,
-	        "type": "constant"
+	        "type": "chapman"
+	    },{
+	        "name" : "M1 Layer",
+	        "peakProductionAltitude": 105000,
+	        "electronPeakDensity": "1.2e11",
+	        "neutralScaleHeight": 7600,
+	        "type": "chapman"
 	    }]
     }
 }

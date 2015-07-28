@@ -4,6 +4,7 @@
     "solarActivity": 250,
     "radius": 3390000,
     "surfaceNCO2": "2.8e17",
+    "surfaceTemperature": 200,
     "atmosphere": {
     	"start": 1000,
     	"end": 40000
@@ -17,7 +18,8 @@
 	        "stratification": "constant",
 	        "peakProductionAltitude": 125000,
 	        "electronPeakDensity": "2.5e11",
-	        "neutralScaleHeight": 11100
+	        "neutralScaleHeight": 11100,
+	        "type": "chapman"
 	    }]
     }
 }

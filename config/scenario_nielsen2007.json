@@ -18,7 +18,8 @@
 	        "stratification": "constant",
 	        "peakProductionAltitude": 120000,
 	        "electronPeakDensity": "1.65e11",
-	        "neutralScaleHeight": 9445
+	        "neutralScaleHeight": 9445,
+	        "type": "chapman"
 	    }]
     }
 }
