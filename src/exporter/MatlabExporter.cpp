@@ -9,6 +9,8 @@
 #include <iomanip>
 #include <fstream>
 #include "MatlabExporter.h"
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
 
 namespace raytracer {
 namespace exporter {
@@ -21,9 +23,16 @@ namespace exporter {
 
 	MatlabExporter::MatlabExporter(const char *filepath) {
 
-		ofstream data;
-		data.open(filepath);
-		data.close();
+		// check if file exists
+		ifstream infile(filepath);
+		if (!infile.good()) {
+			ofstream data;
+			data.open(filepath);
+			data.close();
+		} else {
+			BOOST_LOG_TRIVIAL(fatal) << "file " << filepath << " already exists! Exiting.";
+			std::exit(0);
+		}
 	}
 
 	void MatlabExporter::dump(const char *filepath, list<Data> dataset) {

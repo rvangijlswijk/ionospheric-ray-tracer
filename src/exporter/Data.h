@@ -32,7 +32,7 @@ namespace exporter {
 			int beaconId = 0;
 			scene::GeometryType collisionType = scene::GeometryType::none;
 
-			static constexpr int MAX_DATASET_SIZE = 3;
+			static constexpr int MAX_DATASET_SIZE = 1000;
 	};
 
 } /* namespace exporter */
