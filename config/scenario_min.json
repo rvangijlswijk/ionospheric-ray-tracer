@@ -12,14 +12,20 @@
     },
     "ionosphere": {
     	"start": 70000,
-    	"step": 250,
+    	"step": 50,
     	"end": 250000,
 	    "layers": [{
-	        "name" : "Main layer",
-	        "peakProductionAltitude": 130000,
-	        "electronPeakDensity": "1.0e9",
+	        "name" : "M2 Layer",
+	        "peakProductionAltitude": 115000,
+	        "electronPeakDensity": "1.4e11",
 	        "neutralScaleHeight": 11000,
-	        "type": "constant"
+	        "type": "chapman"
+	    },{
+	        "name" : "M1 Layer",
+	        "peakProductionAltitude": 100000,
+	        "electronPeakDensity": "9.0e10",
+	        "neutralScaleHeight": 7600,
+	        "type": "chapman"
 	    }]
     }
 }

@@ -16,6 +16,7 @@
 #include "../math/Matrix3d.h"
 #include "../exporter/JsonExporter.h"
 #include "../exporter/MatlabExporter.h"
+#include "../radio/AntennaFactory.h"
 
 namespace raytracer {
 namespace core {
@@ -25,6 +26,7 @@ namespace core {
 	using namespace exporter;
 	using namespace math;
 	using namespace threading;
+	using namespace radio;
 
 	boost::mutex datasetMutex;
 	boost::mutex tracingIncMutex;
@@ -34,6 +36,8 @@ namespace core {
 	void Application::init(int argc, char * argv[]) {
 
 		BOOST_LOG_TRIVIAL(debug) << "Init application";
+
+		AntennaFactory::printMappedTypes();
 
 		parseCommandLineArgs(argc, argv);
 		start();
@@ -83,6 +87,16 @@ namespace core {
 
 			} else if (strcmp(argv[i], "-vv") == 0) {
 				_verbosity = boost::log::trivial::debug;
+
+			} else if (strcmp(argv[i], "-fmin") == 0) {
+				_fmin = atoi(argv[i+1]);
+
+			} else if (strcmp(argv[i], "-fstep") == 0) {
+				_fstep = atoi(argv[i+1]);
+
+			} else if (strcmp(argv[i], "-fmax") == 0) {
+				_fmax = atoi(argv[i+1]);
+
 			}
 		}
 
@@ -108,6 +122,15 @@ namespace core {
 		}
 		if (_iterations < 1) {
 			_iterations = _applicationConfig.getInt("iterations");
+		}
+		if (_fmin < 1) {
+			_fmin = _applicationConfig.getObject("frequencies")["min"].asInt();
+		}
+		if (_fstep < 1) {
+			_fstep = _applicationConfig.getObject("frequencies")["step"].asInt();
+		}
+		if (_fmax < 1) {
+			_fmax = _applicationConfig.getObject("frequencies")["max"].asInt();
 		}
 
 //		boost::log::add_file_log("log/sample.log");
@@ -141,9 +164,6 @@ namespace core {
 		BOOST_LOG_TRIVIAL(info) << _applicationConfig.getInt("iterations") << " iterations";
 
 		// load config values
-		double fmin = _applicationConfig.getObject("frequencies")["min"].asDouble();
-		double fstep = _applicationConfig.getObject("frequencies")["step"].asDouble();
-		double fmax = _applicationConfig.getObject("frequencies")["max"].asDouble();
 		double SZAmin = _applicationConfig.getObject("SZA")["min"].asDouble();
 		double SZAstep = _applicationConfig.getObject("SZA")["step"].asDouble();
 		double SZAmax = _applicationConfig.getObject("SZA")["max"].asDouble();
@@ -161,14 +181,14 @@ namespace core {
 			createScene();
 
 			BOOST_LOG_TRIVIAL(info) << "Simulating " << beacons.size() << " beacons";
-			BOOST_LOG_TRIVIAL(info) << "Scanning frequencies " << fmin << " Hz to " << fmax << "Hz with steps of " << fstep << "Hz";
-			BOOST_LOG_TRIVIAL(info) << "Scanning SZA 9" << SZAmin << " deg to " << SZAmax << " deg with steps of " << SZAstep << " deg";
+			BOOST_LOG_TRIVIAL(info) << "Scanning frequencies " << _fmin << " Hz to " << _fmax << "Hz with steps of " << _fstep << "Hz";
+			BOOST_LOG_TRIVIAL(info) << "Scanning SZA " << SZAmin << " deg to " << SZAmax << " deg with steps of " << SZAstep << " deg";
 			BOOST_LOG_TRIVIAL(info) << "Scanning azimuth " << azimuthMin << " deg to " << azimuthMax << " deg with steps of " << azimuthStep << " deg";
 
 			if (_verbosity > boost::log::trivial::info) {
 				std::ostringstream stringStream;
-				stringStream << "Simulating " << beacons.size() << " beacons\n" << "Scanning frequencies " << fmin << " Hz to " << fmax
-						<< "Hz with steps of " << fstep << "Hz\n" << "Scanning SZA " << SZAmin << " deg to "
+				stringStream << "Simulating " << beacons.size() << " beacons\n" << "Scanning frequencies " << _fmin << " Hz to " << _fmax
+						<< "Hz with steps of " << _fstep << "Hz\n" << "Scanning SZA " << SZAmin << " deg to "
 						<< SZAmax << " deg with steps of " << SZAstep << " deg\n"
 						<< "Scanning azimuth " << azimuthMin << " deg to " << azimuthMax << " deg with steps of " << azimuthStep << " deg";
 						CommandLine::getInstance().addToHeader(stringStream.str().c_str());
@@ -178,6 +198,9 @@ namespace core {
 
 				double latitudeOffset = beacons[b].get("latitudeOffset", "").asDouble() * Constants::PI / 180.0;
 				double longitudeOffset = beacons[b].get("longitudeOffset", "").asDouble() * Constants::PI / 180.0;
+				const Json::Value antenna = beacons[b].get("antenna", "");
+				IAntenna* ant = AntennaFactory::createInstance(antenna.get("type", "").asString());
+				ant->setConfig(antenna);
 
 				Matrix3d latitude = Matrix3d::createRotationMatrix(latitudeOffset, Matrix3d::ROTATION_X);
 				Matrix3d longitude = Matrix3d::createRotationMatrix(longitudeOffset, Matrix3d::ROTATION_Z);
@@ -190,15 +213,15 @@ namespace core {
 
 					Matrix3d azimuthRotation = Matrix3d::createRotationMatrix(azimuth * Constants::PI / 180, Matrix3d::ROTATION_Y);
 
-					for (double freq = fmin; freq <= fmax; freq += fstep) {
-						for (double startAngle = SZAmin; startAngle <= SZAmax; startAngle += SZAstep) {
+					for (int freq = _fmin; freq <= _fmax; freq += _fstep) {
+						for (double elevation = SZAmin; elevation <= SZAmax; elevation += SZAstep) {
 
 							Ray r;
 							r.rayNumber = ++rayCounter;
-							r.frequency = freq;
-							r.signalPower = 0;
+							r.frequency = (double)freq;
+							r.signalPower = ant->getSignalPowerAt(azimuth, elevation);
 							r.o = startPosition;
-							r.originalAngle = startAngle * Constants::PI / 180.0;
+							r.originalAngle = elevation * Constants::PI / 180.0;
 							r.originBeaconId = b+1;
 							r.originalAzimuth = azimuth * Constants::PI / 180.0;
 							Vector3d direction = Vector3d(cos(Constants::PI/2.0 - r.originalAngle),
@@ -261,8 +284,8 @@ namespace core {
 		double R = _celestialConfig.getInt("radius");
 		double angularStepSize = _applicationConfig.getDouble("angularStepSize");
 
-		for (double latitude = -30 * Constants::PI / 180.0; latitude <= 30 * Constants::PI / 180.0; latitude += angularStepSize) {
-			for (double longitude = -30 * Constants::PI / 180.0; longitude <= 30 * Constants::PI / 180.0; longitude += angularStepSize) {
+		for (double latitude = 0 * Constants::PI; latitude <= 0.3 * Constants::PI; latitude += angularStepSize) {
+			for (double longitude = 0 * Constants::PI; longitude <= 2 * Constants::PI; longitude += angularStepSize) {
 
 				Matrix3d latitudeM = Matrix3d::createRotationMatrix(latitude, Matrix3d::ROTATION_X);
 				Matrix3d longitudeM = Matrix3d::createRotationMatrix(longitude, Matrix3d::ROTATION_Z);

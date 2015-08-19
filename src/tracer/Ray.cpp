@@ -74,6 +74,7 @@ namespace tracer {
 		Intersection hit = Application::getInstance().getSceneManager().intersect(*this, rayLine);
 		lastHitType = hit.g->type;
 		lastHitNormal = hit.g->mesh3d.normal;
+		lastHitPos = hit.pos;
 //		printf("Hit: %6.3f, %6.3f \n", hit.pos.x, hit.pos.y);
 
 		// calculate time-of-flight
@@ -88,6 +89,7 @@ namespace tracer {
 
 		// determine ray behaviour
 		// intersection with an ionospheric or atmospheric layer
+		prev = d;
 		if (hit.o == GeometryType::ionosphere || hit.o == GeometryType::atmosphere) {
 			hit.g->interact(this, hit.pos);
 			delete hit.g;
@@ -159,6 +161,22 @@ namespace tracer {
 		timeOfFlight += magnitude / Constants::C;
 	}
 
+	/**
+	 * Calculate the angle of a ray w.r.t the terrain.
+     * dRVector = prevVector - rayVector;
+	 * theta_e2 = atan2(norm(cross(subSolar, dRVector)), dot(subSolar, dRVector));
+	 * theta_e = pi/2 - theta_e2;
+	 * delta = atan2(norm(cross(subSolar,rayVector)), dot(subSolar, rayVector));
+	 * aoa = theta_e - delta;
+	 */
+	double Ray::calculateTerrainAngle() {
+
+		BOOST_LOG_TRIVIAL(debug) << "lastHitPos: " << lastHitPos << ", d: " << d;
+
+		double theta = lastHitPos.angle(Vector3d::SUBSOLAR);
+		return d.angle(Vector3d::SUBSOLAR) - theta;
+	}
+
 	void Ray::updateAltitude() {
 
 		altitude = o.distance(Vector3d(0,0,0)) - Application::getInstance().getCelestialConfig().getInt("radius");
@@ -166,20 +184,26 @@ namespace tracer {
 
 	void Ray::exportData(GeometryType collisionType) {
 
-		Data d;
-		d.x = o.x;
-		d.y = o.y;
-		d.z = o.z;
-		d.rayNumber = rayNumber;
-		d.mu_r_sqrt = pow(previousRefractiveIndex, 2);
-		d.theta_0 = originalAngle;
-		d.frequency = frequency;
-		d.signalPower = signalPower;
-		d.timeOfFlight = timeOfFlight;
-		d.collisionType = collisionType;
-		d.beaconId = originBeaconId;
-		d.azimuth_0 = originalAzimuth;
-		Application::getInstance().addToDataset(d);
+		if (collisionType == GeometryType::terrain) {
+
+			Data d;
+			d.x = o.x;
+			d.y = o.y;
+			d.z = o.z;
+			d.rayNumber = rayNumber;
+			d.mu_r_sqrt = pow(previousRefractiveIndex, 2);
+			d.theta_0 = originalAngle;
+			d.frequency = frequency;
+			d.signalPower = signalPower;
+			d.timeOfFlight = timeOfFlight;
+			d.collisionType = collisionType;
+			d.beaconId = originBeaconId;
+			d.azimuth_0 = originalAzimuth;
+			if (collisionType == GeometryType::terrain) {
+				d.aoa = calculateTerrainAngle();
+			}
+			Application::getInstance().addToDataset(d);
+		}
 	}
 
 } /* namespace tracer */

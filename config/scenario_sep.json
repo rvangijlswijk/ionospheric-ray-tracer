@@ -4,6 +4,7 @@
     "solarActivity": 75,
     "radius": 3390000,
     "surfaceNCO2": "2.8e17",
+    "surfaceTemperature": 200,
     "atmosphere": {
     	"start": 1000,
     	"end": 40000,
@@ -11,20 +12,20 @@
     },
     "ionosphere": {
     	"start": 70000,
-    	"step": 400,
+    	"step": 50,
     	"end": 250000,
 	    "layers": [{
 	        "name" : "M2 Layer",
-	        "stratification": "constant",
-	        "peakProductionAltitude": 121000,
-	        "electronPeakDensity": "1.7e11",
-	        "neutralScaleHeight": 9500
+	        "peakProductionAltitude": 135000,
+	        "electronPeakDensity": "1.75e11",
+	        "neutralScaleHeight": 11000,
+	        "type": "chapman"
 	    },{
 	        "name" : "M1 Layer",
-	        "stratification": "constant",
-	        "peakProductionAltitude": 95000,
-	        "electronPeakDensity": "6.0e10",
-	        "neutralScaleHeight": 7600
+	        "peakProductionAltitude": 105000,
+	        "electronPeakDensity": "1.2e11",
+	        "neutralScaleHeight": 7600,
+	        "type": "chapman"
 	    }]
     }
 }

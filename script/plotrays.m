@@ -2,8 +2,8 @@ clc;
 clear all;
 close all;
 
-angles = 15:15:75;
-frequencies = 3e6:0.5e6:6.0e6;
+angles = 0:2:75;
+frequencies = 2.5e6:1e6:2.5e6;
 ang=0:0.01:2*pi;
 
 % constants
@@ -22,6 +22,8 @@ colFrequency = 9;
 colSignalPower = 10;
 colTimeOfFlight = 11;
 colCollisionType = 12;
+colBeaconId = 13;
+colAzimuth_0 = 14;
 
 load ../Debug/data.dat;
 
@@ -29,23 +31,20 @@ numRays = max(data(:,1));
 numDataPoints = length(data);
 
 % calculate plasma frequency
-plasmaFreq = max(data(data(:, colOmega_p) ~= 0, colOmega_p)) / (2*pi);
+% plasmaFreq = max(data(data(:, colOmega_p) ~= 0, colOmega_p)) / (2*pi);
 
 %% Plotting rays
 figure;
 for f=1:length(frequencies)
-    x = zeros(length(angles), length(data));
-    h = zeros(length(angles), length(data));
-    for n=1:length(angles)
-        xCur = data(abs(data(:,colTheta0) - deg2rad(angles(n))) < 0.0001 ...
+    x = zeros(numRays, length(data));
+    h = zeros(numRays, length(data));
+    for n=1:numRays
+        xCur = data(data(:,1) == n ...
             & data(:,colFrequency) == frequencies(f) & data(:, colCollisionType) ~= 5, colX);
         x(n,1:length(xCur)) = xCur;
-        hCur = data(abs(data(:,colTheta0) - deg2rad(angles(n))) < 0.0001 ...
+        hCur = data(data(:,1) == n ...
             & data(:,colFrequency) == frequencies(f) & data(:, colCollisionType) ~= 5, colY);
         h(n,1:length(hCur)) = hCur;
-        %omega_p = data(:,3);
-        %Ne = data(:,4);
-        %mu_r_sqrt = data(:,5);
     end
 
     % Dont draw back to 0
@@ -60,18 +59,18 @@ for f=1:length(frequencies)
     plot(x'/1000,h'/1000-3390 ,'Color', [0.5 0.5 0.5])
     plot(0 + 3390*cos(ang), 3390 * sin(ang)-3390, 'k', 'LineWidth', 2)
     
-    %title(['frequency: ' num2str(frequencies(f)/1e6) ' MHz']);
+%     title(['frequency: ' num2str(frequencies(f)/1e6) ' MHz']);
     grid on
     xlabel('Cartesian distance [km]')
     ylabel('altitude [km]')
-    xlim([-50 800]);
-    ylim([-100 250]);
+    xlim([-50 600]);
+    ylim([-50 175]);
 
-    f_f0 = plasmaFreq / frequencies(f);
-    irisAngle = asin(sqrt(1 - f_f0^2));
-    fprintf('Iris angle for f=%2.1f MHz: %4.2f\n', frequencies(f)/1e6, rad2deg(irisAngle));
+%     f_f0 = plasmaFreq / frequencies(f);
+%     irisAngle = asin(sqrt(1 - f_f0^2));
+%     fprintf('Iris angle for f=%2.1f MHz: %4.2f\n', frequencies(f)/1e6, rad2deg(irisAngle));
 
-    line([0 250*sin(irisAngle)],[0, 250], 'LineStyle', '--', 'Color', 'black');
+%     line([0 250*tan(irisAngle)],[0, 250], 'LineStyle', '--', 'Color', 'black');
 end
 
 SZA = zeros(numRays, 1);

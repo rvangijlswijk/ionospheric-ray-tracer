@@ -11,6 +11,7 @@
 #include <string>
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
 #include "../../contrib/jsoncpp/reader.h"
 
 namespace raytracer {

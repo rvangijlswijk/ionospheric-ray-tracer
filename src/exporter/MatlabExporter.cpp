@@ -9,6 +9,9 @@
 #include <iomanip>
 #include <fstream>
 #include "MatlabExporter.h"
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
 
 namespace raytracer {
 namespace exporter {
@@ -21,9 +24,16 @@ namespace exporter {
 
 	MatlabExporter::MatlabExporter(const char *filepath) {
 
-		ofstream data;
-		data.open(filepath);
-		data.close();
+		// check if file exists
+		ifstream infile(filepath);
+		if (!infile.good()) {
+			ofstream data;
+			data.open(filepath);
+			data.close();
+		} else {
+			BOOST_LOG_TRIVIAL(fatal) << "file " << filepath << " already exists! Exiting.";
+			std::exit(0);
+		}
 	}
 
 	void MatlabExporter::dump(const char *filepath, list<Data> dataset) {
@@ -44,7 +54,8 @@ namespace exporter {
 				<< std::setprecision(10) << dataset.front().timeOfFlight << ","
 				<< std::setprecision(1) << dataset.front().collisionType << ","
 				<< std::setprecision(1) << dataset.front().beaconId << ","
-				<< std::setprecision(4) << dataset.front().azimuth_0 << "\n";
+				<< std::setprecision(4) << dataset.front().azimuth_0 << ","
+				<< std::setprecision(4) << dataset.front().aoa << "\n";
 			dataset.pop_front();
 		}
 		data.close();

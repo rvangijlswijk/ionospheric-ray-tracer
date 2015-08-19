@@ -18,6 +18,8 @@ namespace raytracer {
 	namespace math {
 		class Vector3d;
 	}
+	namespace radio {
+	}
 }
 
 #endif
