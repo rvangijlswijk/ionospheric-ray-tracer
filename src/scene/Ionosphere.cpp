@@ -70,7 +70,7 @@ namespace scene {
 		phaseAdvance(r);
 		timeDelay(r);
 
-		exportData(r);
+//		exportData(r);
 	}
 
 	/**
@@ -90,7 +90,8 @@ namespace scene {
 		else
 			newR = r->d * ratio + mesh3d.normal * coefficient;
 
-		BOOST_LOG_TRIVIAL(debug) << std::fixed << "REFRACT Alt: " << std::setprecision(0) << getAltitude() << "\tr.d_i: " << r->d << "\tr.d_r: " << newR;
+		BOOST_LOG_TRIVIAL(debug) << std::fixed << "n1: " << r->previousRefractiveIndex << ", n2: " << refractiveIndex;
+		BOOST_LOG_TRIVIAL(debug) << "REFRACT Alt: " << std::setprecision(0) << getAltitude() << "\tr.d_i: " << r->d << "\tr.d_r: " << newR;
 		BOOST_LOG_TRIVIAL(debug) << "N: " << mesh3d.normal << "\tn1/n2: " << ratio << "\ttheta_i: " << theta_i*180/Constants::PI << "\ttheta_r: " << newR.angle(mesh3d.normal) * 180 / Constants::PI;
 
 		r->d = newR.norm();
@@ -110,12 +111,12 @@ namespace scene {
 		if (r->d.y > 0)
 			newR = r->d - mesh3d.normal * 2 * cos(theta_i);
 		else
-			newR = r->d + mesh3d.normal * 2 * cos(theta_i);
+			newR = r->d - mesh3d.normal * 2 * cos(Constants::PI - theta_i);
 
 		BOOST_LOG_TRIVIAL(debug) << std::fixed << "REFLECT Alt: " << std::setprecision(0) << getAltitude() << "\tr.d_i: " << r->d << "\tr.d_r: " << newR << "\tN: " << mesh3d.normal << "\ttheta_i: " << theta_i;
 
 		r->d = newR.norm();
-		r->previousRefractiveIndex = refractiveIndex;
+		//r->previousRefractiveIndex = refractiveIndex;
 	}
 
 	/**
@@ -260,11 +261,18 @@ namespace scene {
 
 		if (m == REFRACTION_KELSO) {
 
-			n = sqrt(1 - pow(getPlasmaFrequency(), 2) / pow(2 * Constants::PI * r->frequency, 2));
+			double X = pow(getPlasmaFrequency(), 2) / pow(2 * Constants::PI * r->frequency, 2);
+			double Z = getCollisionFrequency() / getPlasmaFrequency();
+			double a = 1.0 / (1 + pow(Z, 2));
+
+			n = sqrt(1 - X);
+//			n = sqrt(0.5 * (1 + a * X + sqrt(pow(1 - a * X, 2) + pow(a, 2) * pow(X, 2) * pow(Z, 2))));
 		} else if (m == REFRACTION_AHDR) {
 
 			//n = 1 - X / (1);
 		}
+
+		BOOST_LOG_TRIVIAL(debug) << "omega:" << getPlasmaFrequency() << ", v: " << getCollisionFrequency();
 
 		return n;
 	}
@@ -322,8 +330,8 @@ namespace scene {
 		if (incidentAngle > Constants::PI/2)
 			incidentAngle -= Constants::PI/2;
 
-		if (angularFrequency / cos(r->originalAngle) < getPeakPlasmaFrequency())
-			r->behaviour = Ray::wave_no_propagation;
+		if (angularFrequency < getPlasmaFrequency())
+			r->behaviour = Ray::wave_reflection;
 		else {
 
 			if (refractiveIndex <= r->previousRefractiveIndex)
@@ -331,8 +339,7 @@ namespace scene {
 			else
 				criticalAngle = asin(r->previousRefractiveIndex / refractiveIndex);
 
-			if (r->previousRefractiveIndex > refractiveIndex &&
-					(incidentAngle >= criticalAngle || abs(angularFrequency - getPlasmaFrequency()) < epsilon))
+			if (r->previousRefractiveIndex > refractiveIndex && incidentAngle >= criticalAngle)
 				r->behaviour = Ray::wave_reflection;
 			else
 				r->behaviour = Ray::wave_refraction;

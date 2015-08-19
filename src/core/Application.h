@@ -78,6 +78,9 @@ namespace core {
 			int _verbosity = boost::log::trivial::warning;
 			int _parallelism = 0;
 			int _iterations = 0;
+			int _fmin = 0;
+			int _fstep = 0;
+			int _fmax = 0;
 			SceneManager _scm;
 			IExporter* _me;
 

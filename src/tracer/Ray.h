@@ -28,6 +28,7 @@ namespace tracer {
 			~Ray();
 			int trace();
 			void calculateTimeOfFlight(Vector3d rayEnd);
+			double calculateTerrainAngle();
 			double getNormalAngle();
 			void setNormalAngle(double angleRad);
 
@@ -66,6 +67,8 @@ namespace tracer {
 			double altitude = 0.0;
 			GeometryType lastHitType;
 			Vector3d lastHitNormal;
+			Vector3d lastHitPos;
+			Vector3d prev;
 			enum waveBehaviour {
 				wave_reflection = 1,
 				wave_refraction = 2,

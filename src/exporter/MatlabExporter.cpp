@@ -11,6 +11,7 @@
 #include "MatlabExporter.h"
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
 
 namespace raytracer {
 namespace exporter {
@@ -53,7 +54,8 @@ namespace exporter {
 				<< std::setprecision(10) << dataset.front().timeOfFlight << ","
 				<< std::setprecision(1) << dataset.front().collisionType << ","
 				<< std::setprecision(1) << dataset.front().beaconId << ","
-				<< std::setprecision(4) << dataset.front().azimuth_0 << "\n";
+				<< std::setprecision(4) << dataset.front().azimuth_0 << ","
+				<< std::setprecision(4) << dataset.front().aoa << "\n";
 			dataset.pop_front();
 		}
 		data.close();

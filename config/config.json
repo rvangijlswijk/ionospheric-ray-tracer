@@ -1,16 +1,16 @@
 {
-    "parallelism": 4,
+    "parallelism": 3,
     "iterations": 1,
     "tracingLimit": 5000,
-    "angularStepSize": "1.7453e-2",
+    "angularStepSize": "0.03491",
     "frequencies": {
-        "min": 4000000,
-        "step": 100000,
-        "max": 4000000
+        "min": 2500000,
+        "step": 1000000,
+        "max": 5500000
     },
     "SZA": {
-		"min": 15.0,
-		"step": 15,
+		"min": 0.0,
+		"step": 0.005,
 		"max": 75.0
 	},
 	"azimuth": {
@@ -19,13 +19,13 @@
 		"max": 0.0	
 	},
 	"beacons": [{
-			"latitudeOffset": 0,
-			"longitudeOffset": 0,
-			"antenna": {
-				"type": "IsotropicAntenna",
-				"nominalSignalPower": 0
-			}
-		}
+            "latitudeOffset": 0,
+            "longitudeOffset": 0,
+            "antenna": {
+                "type": "IsotropicAntenna",
+                "nominalSignalPower": 0
+            }
+        }
 	],
     "layerHeight": {
     	"constant": 1000,
