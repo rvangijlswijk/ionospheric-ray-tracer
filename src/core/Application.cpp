@@ -17,6 +17,7 @@
 #include "../exporter/JsonExporter.h"
 #include "../exporter/MatlabExporter.h"
 #include "../radio/AntennaFactory.h"
+#include "../radio/IsotropicAntenna.h"
 
 namespace raytracer {
 namespace core {
@@ -199,7 +200,8 @@ namespace core {
 				double latitudeOffset = beacons[b].get("latitudeOffset", "").asDouble() * Constants::PI / 180.0;
 				double longitudeOffset = beacons[b].get("longitudeOffset", "").asDouble() * Constants::PI / 180.0;
 				const Json::Value antenna = beacons[b].get("antenna", "");
-				IAntenna* ant = AntennaFactory::createInstance(antenna.get("type", "").asString());
+				//IAntenna* ant = AntennaFactory::createInstance(antenna.get("type", "").asString());
+				IAntenna* ant = new IsotropicAntenna();
 				ant->setConfig(antenna);
 
 				Matrix3d latitude = Matrix3d::createRotationMatrix(latitudeOffset, Matrix3d::ROTATION_X);
