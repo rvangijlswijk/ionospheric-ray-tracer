@@ -1,5 +1,5 @@
 {
-    "parallelism": 3,
+    "parallelism": 4,
     "iterations": 1,
     "tracingLimit": 5000,
     "angularStepSize": "0.03491",
@@ -10,7 +10,7 @@
     },
     "SZA": {
 		"min": 0.0,
-		"step": 0.005,
+		"step": 5,
 		"max": 75.0
 	},
 	"azimuth": {
